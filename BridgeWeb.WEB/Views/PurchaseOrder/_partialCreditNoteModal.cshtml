@@ -1,0 +1,182 @@
+﻿ @model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var totalTax1 = 0.0m;
+    var totalTax2 = 0.0m;
+    var totalTax3 = 0.0m;
+    var subtotal = 0.0m;
+    string FormatNumber(decimal number)
+    {
+
+        // Round the number to 2 decimal places first
+        number = Math.Round(number, 2);
+
+        // Format number with commas and ensure it's a string
+        return number.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+}
+<div class="modal fade credit_note_modal" id="credit_note_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Credit Note</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row custom_gutter5-x pb-2">
+                    <div class="col-12">
+                        <div class="row custom_gutter5-x">
+                            <div class="col-2">
+                                <div class="frm_fld_wrp">
+                                    <div class="form-label">Vendor</div>
+                                    <input type="text" class="form-control right-txt" disabled="disabled" name="" id="credit_vendor" data-id="@(Model.VendorDetailsInCN is not null ? Model.VendorDetailsInCN.ParentVendorID : 0)" value="@(Model.VendorDetailsInCN is not null ? Model.VendorDetailsInCN.ParentVendorName:string.Empty )">
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="frm_fld_wrp">
+                                    <div class="form-label">Project</div>
+                                    <input type="text" class="form-control right-txt" name="" id="credit_project" value="@(Model.VendorDetailsInCN is not null ?Model.VendorDetailsInCN.Project:string.Empty)" disabled="disabled">
+                                </div>
+                            </div>
+                            <div class="col-1">
+                                <div class="frm_fld_wrp">
+                                    <div class="form-label">Date</div>
+                                    <input type="text" class="form-control makedisable" name="" id="txt_InvoiceDate">
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="frm_fld_wrp">
+                                    <div class="form-label">Number</div>
+                                    <input type="text" class="form-control" name="" id="txt_InvoiceNumber" value="CR-">
+                                </div>
+                            </div>
+                            <div class="col-1">
+                                <div class="frm_fld_wrp">
+                                    <div class="form-label">FX Rate</div>
+                                    <input type="text" class="form-control right-txt" name="" id="exchngrate" value="1.0000">
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="frm_fld_wrp">
+                                    <div class="form-label">Project Account</div>
+                                    <select name="" id="Ddl_ProjectAccount" class="form-select">
+                                        <option value="" selected>--Select Project Account--</option>
+                                        @if (Model.ProjectAccountInCN.Count()>0)
+                                        { foreach(var items in Model.ProjectAccountInCN)
+                                            {
+                                                <option value="@items.FldId">@items.AccountNumber</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="frm_fld_wrp">
+                                    <div class="form-label">Credit Memo</div>
+                                    <input type="text" class="form-control" name="" id="txt_InvoiceMemo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table id="credit_note" class="po_table table table-striped table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>PO#</th>
+                            <th>Item #</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.POLIinCN.Count()>0)
+                        {
+                            foreach(var item in Model.POLIinCN)
+                            {
+
+                                <tr data-poli="@item.POLineItemID">
+                                    <td>@item.PONumber</td>
+                                    <td>@item.POLineItemNumber</td>
+                                    <td>@item.Description</td>
+                                    <td>
+                                        @{
+                                            var amount = Model.TotalInvoiceDataDTo.Where(i => long.Parse(i.poLineItemId) == item.POLineItemID).Select(u => u.amount).FirstOrDefault();
+                                            subtotal += (decimal)amount;
+                                            if(item.GSTHSTType =="%")
+                                            {
+
+                                                var tax1 = (amount * item.GSTHST) / 100;
+                                                totalTax1 += (decimal)tax1;
+                                            }
+                                            if (item.PSTType == "%")
+                                            {
+                                                var tax2 = (amount * item.PST) / 100;
+                                                totalTax2 += (decimal)tax2;
+                                            }
+                                            if(item.StateTaxType =="%")
+                                            {
+                                                var tax3 = (amount * item.StateTax) / 100;
+                                                totalTax3 += (decimal)tax3;
+                                            }
+
+                                        }
+                                        <input type="text" disabled class="form-control right-txt" name="" id="liAmt" value="@FormatNumber(Math.Round(amount.Value,2))">
+                                    </td>
+                                </tr>
+                            }
+                        }
+                       
+                       
+                    </tbody>
+                </table>
+                <div class="total_inputs">
+                    <div class="total_inputs_row">
+                        <div class="total_inputs_col">
+                            <label for="" class="form-label">Subtotal Invoice</label>
+                        </div>
+                        <div class="total_inputs_col">
+                            <input type="text" class="form-control" disabled="" id="txt_SubtotalInvoice" value="@FormatNumber(Math.Round(subtotal))">
+                        </div>
+                    </div>
+                    <div class="total_inputs_row">
+                        <div class="total_inputs_col">
+                            <label for="" class="form-label">Total Tax1</label>
+                        </div>
+                        <div class="total_inputs_col">
+                            <input type="text" class="form-control" id="txt_TotalTax1" value="@FormatNumber(Math.Round(totalTax1,2))">
+                        </div>
+                    </div>
+                    <div class="total_inputs_row">
+                        <div class="total_inputs_col">
+                            <label for="" class="form-label">Total Tax 2</label>
+                        </div>
+                        <div class="total_inputs_col">
+                            <input type="text" class="form-control" id="txt_TotalTax2" value="@FormatNumber(Math.Round(totalTax2,2))">
+                        </div>
+                    </div>
+                    <div class="total_inputs_row">
+                        <div class="total_inputs_col">
+                            <label for="" class="form-label">Total Tax 3</label>
+                        </div>
+                        <div class="total_inputs_col">
+                            <input type="text" class="form-control" value="@FormatNumber(Math.Round(totalTax3,2))" id="txt_TotalTax3">
+                        </div>
+                    </div>
+                    <div class="total_inputs_row">
+                        <div class="total_inputs_col">
+                            <label for="" class="form-label">Total Invoice</label>
+                        </div>
+                        <div class="total_inputs_col">
+                            <input type="text" class="form-control" disabled="" value="@FormatNumber(Math.Round((totalTax1+totalTax2+totalTax3+subtotal),2))" id="txt_TotalInvoice">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-dismiss="modal" id="saveCMPO">SAVE CREDIT MEMO AND COMMIT PO</button>
+            </div>
+        </div>
+    </div>
+</div>

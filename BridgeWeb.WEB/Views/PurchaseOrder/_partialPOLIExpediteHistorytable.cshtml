@@ -1,0 +1,50 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@* <table style="width: 100%;" class="table tblPOLineItemExpediteHistory" id="">
+    <thead>
+        <tr>
+            <th class="leftposition" width="9%">Action</th>
+            <th class="leftposition" width="8%">Status</th>
+            <th class="leftposition" width="7%">Name</th>
+            <th class="leftposition" width="18%">Expedite Note</th>
+            <th class="leftposition" width="8%">R-Qty</th>
+            <th class="leftposition" width="10%">R-Date</th>
+            <th class="leftposition" width="11%">Reference</th>
+            <th class="leftposition" width="14%">Expected Arrival Date</th>
+            <th class="leftposition" width="10%">Added on</th>
+        </tr>
+    </thead>
+    <tbody> *@
+        @if (Model.POLIExpediteHistoryList.Count() > 0)
+        {
+            @foreach (var items in Model.POLIExpediteHistoryList)
+            {
+                <tr style="border-top: 2px solid #ddd;text-align: center">
+                    <td class="leftposition" width="10%">
+                        <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#popupforeditexpedite" class="POLIExphist" data-id="@items.FLdId">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="deletepoliexpnote" data-id="@items.FLdId"><i class="fa fa-trash-o mrg5L"></i></a>
+                    </td>
+                    <td class="leftposition" width="9%">@items.Status</td>
+                    <td class="leftposition" width="13%">@items.Name</td>
+                    <td class="leftposition" width="20%">@items.ExpediteNote</td>
+                    <td class="leftposition" width="10%">@(items.ReceivedQty != "-" ? Math.Round(Convert.ToDecimal(items.ReceivedQty), 0) : items.ReceivedQty)</td>
+                    <td class="leftposition" width="11%">@(items.ReceivedDate.HasValue && items.ReceivedDate != new DateTime(1900, 1, 1) ? items.ReceivedDate.Value.ToString("yyyy.MM.dd") : string.Empty)</td>
+                    <td class="leftposition" width="12%">@items.Reference</td>
+                    <td class="leftposition" width="10%">
+                        @(items != null && items.ArrivalDate.HasValue && items.ArrivalDate.Value != new DateTime(1900, 1, 1) ? items.ArrivalDate.Value.ToString("yyyy.MM.dd") : string.Empty)
+                    </td>
+                    <td class="leftposition" width="10%">@(items!.CreatedDate.HasValue? items.CreatedDate.Value.ToString("yyyy.MM.dd") : string.Empty)</td>
+                </tr>
+            }
+        }
+        @* else
+        {
+            <tr><td colspan="9" class="empty_cell">No Expedite History Found</td></tr>
+        } *@
+
+    @* </tbody>
+</table> *@
+
+

@@ -1,0 +1,124 @@
+﻿
+ @model BridgeWeb.Domain.Model.MultipleModel
+
+<table id="all_vendor_modalTable" class="table table-hover" style="width:100%">
+    <thead>
+        <tr>
+            <th>Action</th>
+            <th>Common Name</th>
+            <th>Legal Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.mergeVendorContactDtosList)
+        {
+
+            <tr>
+                <td>
+                    <div class="check_vendor">
+                        <input type="hidden" value="@item.CurrCode" id="pvCurrCode"/>
+
+                        <input class="pvId" type="checkbox" data-id="@item.ParentVendor_ID" value="0" id="hiddenPvId"> | <i class="fa-solid fa-magnifying-glass teal_color modalParentVendorId" data-id="@item.ParentVendor_ID" target="_blank"></i>
+                    </div>
+                </td>
+                <td>
+                    @* AMERICAN FLAMECOAT INC
+                    (USD) *@
+                    @item.ParentVendorName
+                </td>
+                <td>@item.LegalName</td>
+            </tr>
+        }
+
+       @*  <tr>
+            <td>
+                <div class="check_vendor">
+                    <input type="checkbox"> | <i class="fa-solid fa-magnifying-glass teal_color"></i>
+                </div>
+            </td>
+            <td>
+                CONSOLIDATED HOSPITALITY
+                SUPPLIES LLC (USD)
+            </td>
+            <td>
+                CONSOLIDATED HOSPITALITY
+                SUPPLIES LLC
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="check_vendor">
+                    <input type="checkbox"> | <i class="fa-solid fa-magnifying-glass teal_color"></i>
+                </div>
+            </td>
+            <td>
+                AMERICAN LEATHER, INC.
+                (USD)
+            </td>
+            <td>ANDREU WORLD CHICAGO</td>
+        </tr>
+        <tr>
+            <td>
+                <div class="check_vendor">
+                    <input type="checkbox"> | <i class="fa-solid fa-magnifying-glass teal_color"></i>
+                </div>
+            </td>
+            <td>
+                ANDRIANNA SHAMARIS INC
+                (USD)
+            </td>
+            <td>ANTI-FLAME (USD)</td>
+        </tr>
+        <tr>
+            <td>
+                <div class="check_vendor">
+                    <input type="checkbox"> | <i class="fa-solid fa-magnifying-glass teal_color"></i>
+                </div>
+            </td>
+            <td>
+                AMERICAN FLAMECOAT INC
+                (USD)
+            </td>
+            <td>AMERICAN FLAMECOAT INC</td>
+        </tr>
+        <tr>
+            <td>
+                <div class="check_vendor">
+                    <input type="checkbox"> | <i class="fa-solid fa-magnifying-glass teal_color"></i>
+                </div>
+            </td>
+            <td>
+                CONSOLIDATED HOSPITALITY
+                SUPPLIES LLC (USD)
+            </td>
+            <td>
+                CONSOLIDATED HOSPITALITY
+                SUPPLIES LLC
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="check_vendor">
+                    <input type="checkbox"> | <i class="fa-solid fa-magnifying-glass teal_color"></i>
+                </div>
+            </td>
+            <td>
+                AMERICAN LEATHER, INC.
+                (USD)
+            </td>
+            <td>ANDREU WORLD CHICAGO</td>
+        </tr>
+        <tr>
+            <td>
+                <div class="check_vendor">
+                    <input type="checkbox"> | <i class="fa-solid fa-magnifying-glass teal_color"></i>
+                </div>
+            </td>
+            <td>
+                ANDRIANNA SHAMARIS INC
+                (USD)
+            </td>
+            <td>ANTI-FLAME (USD)</td>
+        </tr> *@
+    </tbody>
+</table>

@@ -1,0 +1,64 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var poids = Model.POSelectorList.Any()
+    ? string.Join(",", Model.POSelectorList.Select(u => u.poid)) + ","
+    : "0";
+
+    var poidsforcheck = ViewBag.POID as string ?? string.Empty;
+    var listOfData = poidsforcheck.Split("^").Select(x => Convert.ToInt64(x)).ToList();
+}
+
+<input type="hidden" value="@poids" id="hiddenPOIds" />
+
+<table id="po_selector" class="table table-striped table-hover po_selector_table" style="width:100%">
+    <thead>
+        <tr>
+            <th style="width: 5%"></th> @* 0 *@
+            <th style="text-align: center; width: 40%;">PO #</th>@* 1 *@
+            <th style="text-align: center; width:15%;">Curr</th> @* 2 *@
+            <th style="text-align: right; width: 20%;">Amount</th> @* 3 *@
+            <th style="text-align: right; width: 20%;">Remaning</th> @* 4 *@
+            <th class="d-none">Payment Schedule</th>  @* 5 *@
+            <th class="d-none">Taxes</th>  @* 6 *@
+            <th class="d-none">ProjectID</th>  @* 7 *@
+            <th class="d-none">VendorId</th>  @* 8 *@
+            <th class="d-none">RemainingDuplicate</th> @* 9 *@
+            <th class="d-none">PurchaseOrderID</th> @* 10 *@
+            <th class="d-none">CR</th>@* 11 *@
+
+
+
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.POSelectorList.Count() > 0)
+        {
+            foreach (var items in Model.POSelectorList)
+            {
+                <tr>
+                    <td><input type="checkbox" class="poselector_chk" @(listOfData.Contains((long)items.poid) ? "checked" : "") data-poid="@items.poid"></td>
+                    <td>
+                        <a class="redirectpoedit" style="color: #7792a8;text-decoration: none;cursor:pointer;" data-poid="@items.poid">@items.totalid</a>
+                    </td>
+                    <td>@items.currencycode</td>
+                    <td>@items.total</td>
+                    <td>@items.remaining</td>
+                    <td>@items.terms</td>
+                    <td>@items.Tax</td>
+                    <td>@items.projectid</td>
+                    <td>@items.vendor_id</td>
+                    <td>@items.remaining</td>
+                    <td>@items.poid</td>
+                    <td>@items.CR</td>
+
+
+                </tr>
+            }
+
+        }
+
+
+    </tbody>
+</table>

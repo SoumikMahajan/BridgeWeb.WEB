@@ -1,0 +1,90 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+<div class="table-responsive Fab_Approe_History_table">
+    <table class="table">
+        <thead>
+            <tr>                
+                <th>History</th>
+                <th>Comment</th>
+                <th>Attachment</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.fabricationHistoryDashboard.Count > 0)
+            {
+                foreach (var item in Model.fabricationHistoryDashboard)
+                {
+                    string Action = item.ActionType switch
+                    {
+                        "Add Comment" => "Commented",
+                        "Approve" => "Approved",
+                        "Reject" => "Rejected",
+                        "Send" => "Sent",
+                        "Receive" => "Received",
+                        _ => item.ActionType
+                    };
+
+                    string Color = Action switch
+                    {
+                        "Rejected" => "red",
+                        "Amended" => "#a6320f",
+                        _ => "green"
+                    };
+
+                    var finalUserName = "";
+                    if (item.ManagerName == "")
+                    {
+                        finalUserName = $"<strong style='color:{Color};'>{item.Username}</strong>";
+                    }
+                    else
+                    {
+                        finalUserName = $"<strong style='color:{Color};'>{item.ManagerName}</strong> On behalf of <strong style='color:{Color}'>{item.Username}</strong>";                      
+                    }
+
+                    if (item.HistoryID == 1)
+                    {
+                        <tr>
+                            <td>
+                                Added on <strong style="color:#008000;">@item.ShowDate</strong> by <strong style="color:#008000;">@item.Username</strong>
+                            </td>                            
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td>
+                                @Action on <strong style="color:@Color;">@item.ShowDate</strong> @Html.Raw(finalUserName)
+                            </td>
+                            <td>@item.Comment</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.FileNamePhysical) && !string.IsNullOrEmpty(item.FileNameToShow))
+                                {
+                                    var physicalFiles = item.FileNamePhysical.Split("^^^");
+                                    var displayFiles = item.FileNameToShow.Split("^^^");
+
+                                    for (int i = 0; i < physicalFiles.Length; i++)
+                                    {
+                                        var file = physicalFiles[i];
+                                        var fshow = i < displayFiles.Length ? displayFiles[i] : "Unknown File";
+                                        var furl = Uri.EscapeDataString(file).Replace("#", "%23");
+                                        var filepath = $"/Assets/Approvals/{furl}";
+                                        <u><a target="_blank" href="@filepath">@fshow</a></u>
+
+                                        if (i < physicalFiles.Length - 1)
+                                        {
+                                            <text>, </text>
+                                        }
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                    
+                }                              
+            }           
+            
+        </tbody>
+    </table>
+</div>

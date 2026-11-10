@@ -1,0 +1,22 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Budget
+@model List<BudgetSectionDto>
+
+@{
+    var subTotal = 0.0d;
+}
+@foreach (var d in Model)
+{       //class="ui-state-default headerbar" default was this. Needed to remove this "ui-state-default" class to get the proper font color
+    <li class="headerbar" data-orderindex="@d.SectionOrder">
+        <div class="edit">
+            <i class="fa-regular fa-pen-to-square" data-bs-toggle="modal"
+               data-bs-target="#edit_section" id="editSectionModalId" data-id="@d.BudgetSectionID"></i>
+        </div>
+        <div class="number sort order"><span>@d.Sectionnumber</span></div>
+        <div class="name"><span>@d.Name</span></div>
+        <div class="line-items "><span>@d.LineItemCount</span></div>
+        <div class="total"><span>@d.Cost?.ToString("N2")</span></div>
+    </li>
+
+    subTotal += d.Cost ?? 0;
+}
+<input type="hidden" id="subTotalCost" value="@subTotal.ToString("N2")" />

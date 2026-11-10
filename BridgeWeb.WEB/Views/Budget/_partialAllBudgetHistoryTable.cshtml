@@ -1,0 +1,51 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Budget
+ @model BridgeWeb.Domain.Model.MultipleModel
+
+ @{
+    var budgetHistory = Model.BudgetHistoryList
+        ?? Enumerable.Empty<BudgetHistoryDTO>();
+ }
+
+<table class="budget_hist_table table table-striped table-hover" id="budget_hist_table" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Version</th>
+            <th>Action</th>
+            <th>User</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var items in budgetHistory)
+        {
+            var OperationDate = @items.OperationDate?.ToString("yyyy.MM.dd hh:mm tt") ?? "";
+            <tr>
+                <td>@items.Version</td>
+                @if (!string.IsNullOrEmpty(items.PID))
+                {
+                    <td>@items.Type @items.Operation (@items.PID )
+                        @if (@items.Operation?.Trim() == "UPDATE" || @items.Operation?.Trim() == "UPDATED")
+                        {
+                            <i class="fa-solid fa-circle-info pointer getChangedLIBS" data-type="@items.Type" data-bs-target="#changeLI" data-fldid="@items.FldID" data-bs-toggle="modal"></i>
+                        }
+                        
+                        
+                    </td>
+                }
+                else
+                {
+                    <td>@items.Type @items.Operation
+                        @if (@items.Operation?.Trim() == "UPDATE" || @items.Operation?.Trim() == "UPDATED")
+                        {
+                            <i class="fa-solid fa-circle-info pointer getChangedLIBS" data-bs-toggle="modal" data-bs-target="#changeLI" data-fldid="@items.FldID"data-type="@items.Type"></i>
+                        }
+                    </td>
+                }
+               
+                <td>@items.UserName</td>
+                <td>@OperationDate</td>
+            </tr>
+        }      
+       
+    </tbody>
+</table>

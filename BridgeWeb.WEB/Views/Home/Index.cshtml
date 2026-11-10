@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "TheBridgeByTCG";
+}
+
+<form class="login_form">
+    @Html.AntiForgeryToken()
+    <div class="email frm_fld">
+        <label>E-mail ID</label>
+        <input type="email" id="email">
+        <span class="d-none err_msg" id="lblEmailid">Enter E-mail Id</span>
+    </div>
+    <div class="password frm_fld">
+        <label>Password</label>
+        <input type="password" id="password">
+        <span class="d-none err_msg" id="lblPass">Enter Password</span>
+        <div class="hide_show_pass">
+            <a href="javascript:void(0)" class="d-none eyebutton" id="hidepw"><i class="fa-solid fa-eye"></i></a>
+            <a href="javascript:void(0)" class="eyebutton" id="showpw"><i class="fa-solid fa-eye-slash"></i></a>
+        </div>
+    </div>
+    <div class="user_panel">
+        <div class="remember">
+            <input type="checkbox" id="remember_pass">
+            <label for="remember_pass">Remember me </label>
+        </div>
+        <span class="line"> | </span>
+        <a href="@Url.Content("~/Home/ForgetPassword")"> Forgot password?</a>
+    </div>
+    <input type="button" value="Log In" class="input_btn" id="btnLogin">
+</form>

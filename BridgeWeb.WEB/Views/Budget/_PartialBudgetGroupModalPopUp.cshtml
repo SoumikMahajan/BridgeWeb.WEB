@@ -1,0 +1,25 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Budget
+ @model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var ApprovalGroup = Model.BudgeApprovalGroupListDTO
+        ?? Enumerable.Empty<BudgeApprovalGroupDTO>();
+
+    var groupedSectionName = ApprovalGroup.GroupBy(g => g.Groupname).ToList();
+}
+
+@foreach (var group in groupedSectionName)
+{
+    <div class="group-head"><input class="groupid" type="checkbox" data-gname="@group.ElementAt(0).Groupname" data-issent="@group.ElementAt(0).Issentforapproval" data-groupid="@group.ElementAt(0).FldID">@group.Key?.ToUpper()</div>
+
+    <div class="container-fluid">
+        <ul class="approval_list">
+            @foreach (var item in group)
+            {
+                <li>@item.Sectionnumber - @item.Name</li>
+            }            
+        </ul>
+    </div>
+}
+
+

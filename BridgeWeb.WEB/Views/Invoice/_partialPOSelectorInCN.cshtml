@@ -1,0 +1,47 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    string FormatNumber(decimal? number)
+    {
+        if (!number.HasValue)
+        {
+            return "0.00";  // Return default value for null
+        }
+
+        // Round the number to 2 decimal places
+        decimal roundedNumber = Math.Round(number.Value, 2);
+
+        // Format with commas and two decimal places
+        return roundedNumber.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+}
+<table id="po_selector" class="table table-striped table-hover po_selector_table" style="width:100%">
+    <thead>
+        <tr>
+            <th></th>
+            <th>PO</th>
+            <th>Curr</th>
+            <th>Amount</th>
+            <th>Inv. Amt.</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.POInCreditNoteList.Count()>0)
+        {
+            foreach (var items in Model.POInCreditNoteList)
+            {
+                <tr>
+                    <td><input type="checkbox" class="poselector_chk" data-poid="@items.PurchaseOrderID"></td>
+                    <td><a href="@Url.Action("POEdit", "PurchaseOrder", new { POId = items.PurchaseOrderID })" target="_blank" style="color: #7792a8;">@items.PONUMBER</a></td>
+                    <td>@items.CurrencyCode</td>
+                    <td>@(FormatNumber(items.TotalPOCOST))</td>
+                    <td>@(FormatNumber(items.InvoiceCost))</td>
+                </tr>
+            }
+           
+        }
+       
+        
+    </tbody>
+</table>

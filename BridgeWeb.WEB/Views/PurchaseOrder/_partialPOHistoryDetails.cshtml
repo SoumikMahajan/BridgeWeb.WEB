@@ -1,0 +1,184 @@
+﻿@using System.Web
+@model MultipleModel
+<table class="table table-striped table-hover" id="history_details_table" style="width:100%">
+    <thead>
+        <tr>
+            <th>Field</th>
+            <th>Old Value</th>
+            <th>New Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if(Model.singlePOHistoryDetailsDTOs.Count > 0)
+        {
+            @if(Model.singlePOHistoryDetailsDTOs[0].Vendor != Model.singlePOHistoryDetailsDTOs[1].Vendor)
+            {
+                <tr>
+                    <td>Vendor</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].Vendor</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].Vendor</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].VendorCO != Model.singlePOHistoryDetailsDTOs[1].VendorCO)
+            {
+                <tr>
+                    <td>VendorCO</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].VendorCO</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].VendorCO</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].ShipMethod != Model.singlePOHistoryDetailsDTOs[1].ShipMethod)
+            {
+                <tr>
+                    <td>ShipMethod</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].ShipMethod</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].ShipMethod</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].ConversionRate != Model.singlePOHistoryDetailsDTOs[1].ConversionRate)
+            {
+                <tr>
+                    <td>ConversionRate</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].ConversionRate</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].ConversionRate</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].ArrivalDate != Model.singlePOHistoryDetailsDTOs[1].ArrivalDate)
+            {
+                <tr>
+                    <td>ArrivalDate</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].ArrivalDate</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].ArrivalDate</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].CheckBackDate != Model.singlePOHistoryDetailsDTOs[1].CheckBackDate)
+            {
+                <tr>
+                    <td>CheckBackDate</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].CheckBackDate</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].CheckBackDate</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].FOB != Model.singlePOHistoryDetailsDTOs[1].FOB)
+            {
+                <tr>
+                    <td>FOB</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].FOB</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].FOB</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].Freight != Model.singlePOHistoryDetailsDTOs[1].Freight)
+            {
+                <tr>
+                    <td>Freight</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].Freight</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].Freight</td>
+                </tr>
+            }
+            @if(Model.singlePOHistoryDetailsDTOs[0].Notes != Model.singlePOHistoryDetailsDTOs[1].Notes)
+            {
+                <tr>
+                    <td>Notes</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].Notes</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].Notes</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].ShipTo != Model.singlePOHistoryDetailsDTOs[1].ShipTo)
+            {
+                <tr>
+                    <td>ShipTo</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].ShipTo</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].ShipTo</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].InvoiceTo != Model.singlePOHistoryDetailsDTOs[1].InvoiceTo)
+            {
+                <tr>
+                    <td>InvoiceTo</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].InvoiceTo</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].InvoiceTo</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].Address != Model.singlePOHistoryDetailsDTOs[1].Address)
+            {
+                <tr>
+                    <td>Address</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].Address</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].Address</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].GSTHST != Model.singlePOHistoryDetailsDTOs[1].GSTHST)
+            {
+                <tr>
+                    <td>GSTHST</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].GSTHST</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].GSTHST</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].GSTHSTName != Model.singlePOHistoryDetailsDTOs[1].GSTHSTName)
+            {
+                <tr>
+                    <td>GSTHSTName</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].GSTHSTName</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].GSTHSTName</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].GSTHSTType != Model.singlePOHistoryDetailsDTOs[1].GSTHSTType)
+            {
+                <tr>
+                    <td>GSTHSTType</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].GSTHSTType</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].GSTHSTType</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].PST != Model.singlePOHistoryDetailsDTOs[1].PST)
+            {
+                <tr>
+                    <td>PST</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].PST</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].PST</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].PSTName != Model.singlePOHistoryDetailsDTOs[1].PSTName)
+            {
+                <tr>
+                    <td>PSTName</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].PSTName</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].PSTName</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].PSTType != Model.singlePOHistoryDetailsDTOs[1].PSTType)
+            {
+                <tr>
+                    <td>PSTType</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].PSTType</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].PSTType</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].StateTax != Model.singlePOHistoryDetailsDTOs[1].StateTax)
+            {
+                <tr>
+                    <td>StateTax</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].StateTax</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].StateTax</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].StateTaxName != Model.singlePOHistoryDetailsDTOs[1].StateTaxName)
+            {
+                <tr>
+                    <td>StateTaxName</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].StateTaxName</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].StateTaxName</td>
+                </tr>
+            }
+            @if (Model.singlePOHistoryDetailsDTOs[0].StateTaxType != Model.singlePOHistoryDetailsDTOs[1].StateTaxType)
+            {
+                <tr>
+                    <td>StateTaxType</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[0].StateTaxType</td>
+                    <td>@Model.singlePOHistoryDetailsDTOs[1].StateTaxType</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

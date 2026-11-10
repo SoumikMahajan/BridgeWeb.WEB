@@ -1,0 +1,272 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    ViewData["Title"] = "Bridge Supporter";
+}
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>BRIDGE SUPPORTER CONTROL</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+
+<section class="master_wrap">
+    <div class="container-fluid">
+        <div class="support_controle_wrp">
+            <h2 class="section_header">BRIDGE SUPPORTER CONTROL</h2>
+            <div class="frm_wrp">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="multi_slc_wrp">
+                            <label for="" class="form-label">Project Number</label>
+                            <select multiple="multiple" class="multislct" data-width="100%" id="projectId">
+                                @foreach(var item in Model.allProjectDropdownDtos)
+                                {
+                                    <option data-id="@item.projectID" value="@item.projectID">@item.proName</option>
+                                }
+                                
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2">
+                        <div class="multi_slc_wrp">
+                            <label for="" class="form-label">Vendor</label>
+                            <select multiple="multiple" class="multislct" data-width="100%" id="vendorid">
+                                @foreach(var item in Model.allVendorDropdownDtos)
+                                {
+                                    <option value="@item.parentVendor_ID">@item.vendorName</option>
+                                }
+                                
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2">
+                        <div class="frm_fld_wrp">
+                            <label for="pick_date" class="form-label">Date Range</label>
+                            <select type="text" class="form-select classselector datecontrol" id="pick_date" data-from="txt_FromDate" data-to="txt_ToDate">
+                                <option value="13" data-val="All">ALL</option>
+                                <option value="1" data-val="custom">Custom</option>
+                                <option value="2" data-val="last365">Last 365 Days</option>
+                                <option value="3" data-val="today">Today</option>
+                                <option value="4" data-val="yesterday">Yesterday</option>
+                                <option value="5" data-val="thisweek">This Week</option>
+                                <option value="6" data-val="thismonth">This Month</option>
+                                <option value="7" data-val="thisquarter">This Quarter</option>
+                                <option value="8" data-val="thisyear">This Year</option>
+                                <option value="9" data-val="lastweek">Last Week</option>
+                                <option value="10" data-val="lastmonth">Last Month</option>
+                                <option value="11" data-val="lastquarter">Last Quarter</option>
+                                <option value="12" data-val="lastyear">Last Year</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2">
+                        <div class="frm_fld_wrp">
+                            <label for="" class="form-label">From Date</label>
+                            <input type="text" class="form-control datepicker txt_FromDate" id="fromdate" placeholder="From Date">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2">
+                        <div class="frm_fld_wrp">
+                            <label for="" class="form-label">To Date</label>
+                            <input type="text" class="form-control datepicker txt_ToDate" id="todate" placeholder="To Date">
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="supprot_ckeck_wrp">
+                            <a class="gray_checkbtn" href="javascript:void(0);" id="searchInvoice">Search</a>
+                            <a href="@Url.Content("~/User/BridgeSupporterReport")" class="gray_checkbtn">Report</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="invoices">
+            <h2 class="section_header">INVOICES</h2>
+            <div class="frm_wrp">
+                @* <div class="dataTables_length">
+                    <div class="frm_fld_wrp">
+                        <label class="no_of_data_show">
+                            Show
+                            <select id="" class="form-select">
+                                <option selected>10</option>
+                                <option>25</option>
+                                <option>50</option>
+                            </select> Entries
+                        </label>
+                    </div>
+                    <div class="frm_fld_wrp">
+                        <label>Search: <input type="text" class="form-control"></label>
+                    </div>
+                </div> *@
+
+                <div class="table-responsive invoiceTable" id="invoicetableData">
+                    
+                </div>
+
+                @* <div class="pagination_wrp">
+                    <div class="dataTables_info">Showing 1 - 7 out of 7 entries</div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item"><a class="page-link disabled" href="#">Previous</a></li>
+                            <li class="page-item"><a class="page-link current-page" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div> *@
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Modal -->
+<div class="modal fade" id="invoiceHistory" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">History</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                @* <div class="dataTables_length">
+                    <div class="frm_fld_wrp">
+                        <label class="no_of_data_show">
+                            Show
+                            <select id="" class="form-select">
+                                <option selected>10</option>
+                                <option>25</option>
+                                <option>50</option>
+                            </select> Entries
+                        </label>
+                    </div>
+                    <div class="frm_fld_wrp">
+                        <label>Search: <input type="text" class="form-control"></label>
+                    </div>
+                </div> *@
+
+                <div class="table-responsive" id="invoicehistorytable">
+                    @* <table class="table table-striped table-hover invoice_data_table">
+                        <thead>
+                            <tr>
+                                <th class="history">
+                                    <div class="sorting">History <i class="fa-solid fa-sort"></i></div>
+                                </th>
+                                <th class="po_num">
+                                    <div class="sorting">PO Number <i class="fa-solid fa-sort"></i></div>
+                                </th>
+                                <th class="vendor">
+                                    <div class="sorting">Vendor <i class="fa-solid fa-sort"></i></div>
+                                </th>
+                                <th class="inv_Num">
+                                    <div class="sorting">Inv Number <i class="fa-solid fa-sort"></i></div>
+                                </th>
+                            </tr>
+
+                            <tr>
+                                <th class="reset_history_btn">
+                                    <input type="button" value="Reset" class="form-control">
+                                </th>
+
+                                <th>
+                                    <div class="frm_fld_wrp"><input type="text" class="form-control"></div>
+                                </th>
+
+                                <th>
+                                    <div class="frm_fld_wrp">
+                                        <input type="number" class="form-control">
+                                    </div>
+                                </th>
+
+                                <th>
+                                    <div class="frm_fld_wrp">
+                                        <select id="" class="form-select">
+                                            <option selected>All</option>
+                                            <option>Yes</option>
+                                            <option>No</option>
+                                        </select>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tr>
+                            <td>
+                                <a href="#" class="eye" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
+                            <td>1162-0020</td>
+                            <td>ARTCO INTERNATIONAL INC.</td>
+                            <td>20079, 20905</td>
+                        </tr>
+
+                        <tr>
+                            <td><a href="#" class="eye"><i class="fa-solid fa-eye"></i></a></td>
+                            <td>1162-0020</td>
+                            <td>ARTCO INTERNATIONAL INC.</td>
+                            <td>20079, 20905</td>
+                        </tr>
+
+                        <tr>
+                            <td><a href="#" class="eye"><i class="fa-solid fa-eye"></i></a></td>
+                            <td>1162-0020</td>
+                            <td>ARTCO INTERNATIONAL INC.</td>
+                            <td>20079, 20905</td>
+                        </tr>
+                    </table> *@
+                </div>
+
+                @* <div class="pagination_wrp">
+                    <div class="dataTables_info">Showing 1 - 7 out of 7 entries</div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item"><a class="page-link disabled" href="#">Previous</a></li>
+                            <li class="page-item"><a class="page-link current-page" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div> *@
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="refNumberEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Add/Edit Ref</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="flId" />
+                <label for="refNo">Ref No</label>
+                <input type="text" id="refNo" class="col-sm-12" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="saveRefNo">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

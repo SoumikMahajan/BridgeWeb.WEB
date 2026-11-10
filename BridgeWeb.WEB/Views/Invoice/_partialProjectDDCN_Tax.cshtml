@@ -1,0 +1,14 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+
+<select multiple="multiple" class="multislct" data-width="100%" id="ddl_project">
+    @if (Model.ProjectListEnterInvoice.Count() > 0)
+    {
+        foreach (var items in Model.ProjectListEnterInvoice)
+        {
+            <!option  data-curr="@items.CurrencyCode" value="@items.ProjectID">@items.ProjectName</!option>
+        }
+
+    }
+
+</select>

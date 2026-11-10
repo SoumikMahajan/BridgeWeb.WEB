@@ -1,0 +1,155 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@if (Model.budgetApprovalHstAndStatus.budgetSendApprovalStatusDTOs.Count > 0)
+{
+    var SentForApprovalDate = "";
+    int? NumOfUserToAprv_Budget = 0;
+    int? AlreadyApprovedvr = 0;
+    var DateWhenBudgetApproved = "";
+    var alreadyapproved = "";
+    var alreadyapproved1 = "";
+    var toapprove = "";
+    var toapprove1 = "";
+    var textstatusforapproval = "";
+    @foreach (var item in Model.budgetApprovalHstAndStatus.budgetSendApprovalStatusDTOs)
+    {
+        var ManagerName = item.ManagerName;
+        var UserName = item.UserName;
+        var Approved = item.Approved;
+        SentForApprovalDate = item.SentForApprovalDate;
+        NumOfUserToAprv_Budget = item.NumOfUserToAprv_Budget;
+        DateWhenBudgetApproved = item.DateWhenBudgetApproved;
+        AlreadyApprovedvr = item.AlreadyApproved;
+        var UserApprovedDate = item.UserApprovedDate;
+        var titleinner = "";
+
+        if (Approved == 1)
+        {
+            if (!string.IsNullOrEmpty(ManagerName))
+            {
+                titleinner = "By " + ManagerName + ". ";
+            }
+            else
+            {
+                titleinner = "Self Approved ";
+            }
+
+            titleinner += "On " + UserApprovedDate;
+            if (string.IsNullOrEmpty(alreadyapproved1))
+            {
+                alreadyapproved1 += $"<span style=\"cursor:pointer;\" title=\"{titleinner}\"><i class=\"fa fa-check\" style=\"color: #449d44;\"></i> {UserName}</span>";
+            }
+            else
+            {
+                alreadyapproved1 += $", <span style=\"cursor:pointer;\" title=\"{titleinner}\"><i title=\"{titleinner}\" class=\"fa fa-check\" style=\"color: #449d44;\"></i> {UserName}</span>";
+            }
+
+            if (string.IsNullOrEmpty(alreadyapproved))
+            {
+                alreadyapproved += UserName;
+            }
+            else
+            {
+                alreadyapproved += ", " + UserName;
+            }
+        }
+        else
+        {
+            if (string.IsNullOrEmpty(toapprove1))
+            {
+                toapprove1 += $"<i class=\"fa fa-times mrg5R\" style=\"color: #E33747;\"></i> {UserName}";
+            }
+            else
+            {
+                toapprove1 += $", <i class=\"fa fa-times mrg5R\" style=\"color: #E33747;\"></i> {UserName}";
+            }
+
+            if (string.IsNullOrEmpty(toapprove))
+            {
+                toapprove += UserName;
+            }
+            else
+            {
+                toapprove += ", " + UserName;
+            }
+        }
+    }
+
+    if (NumOfUserToAprv_Budget > AlreadyApprovedvr)
+    {
+        textstatusforapproval = ". Budget is not yet approved.";
+    }
+    else
+    {
+        textstatusforapproval = ". Budget was approved on " + DateWhenBudgetApproved + ".";
+        toapprove1 = "";
+    }
+    if (alreadyapproved1.Trim() != "" && (NumOfUserToAprv_Budget > AlreadyApprovedvr))
+    {
+        alreadyapproved1 += " | ";
+    }
+    <div class="col"><p>Sent for approval on @SentForApprovalDate @textstatusforapproval </p></div>
+    <div class="col"><strong> @Html.Raw(alreadyapproved1) @Html.Raw(toapprove1)</strong></div>
+
+}
+
+@* <p>Budget not yet submitted for approval.</p>
+<ul class="name_list">
+    <li>AVIJIT ROUTH</li>
+</ul> *@
+
+
+
+<table id="prevversionapproval" class="table">
+    <thead style="background:rgba(60, 74, 85, 0.35); text-align:center;">
+        <tr>
+
+            <th style="text-align: center; width:50%;">History</th>
+            <th style="text-align: center; width:50%;">Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.budgetApprovalHstAndStatus.budgetApprovalHstDTOs.Any())
+        {
+            @foreach (var item in Model.budgetApprovalHstAndStatus.budgetApprovalHstDTOs)
+            {
+                var cdate = "";
+                if (item.Version == 1)
+                {
+                    cdate = $", Added on {item.CreatedDate}";
+                }
+                else
+                {
+                    cdate = $", Budget revised on {item.CreatedDate}";
+                }
+                <tr style="background: rgb(192, 186, 186);">
+                    <td> (@item.Version VERSION) VERSION NAME : @item.Versionname @cdate, FROM @item.GroupName GROUP</td>
+                    <td>
+                        <ul>
+                            @if ((string.IsNullOrEmpty(item.ApprovedByName) || string.IsNullOrWhiteSpace(item.ApprovedByName)) && item.Comment != "")
+                            {
+                                <li>@item.Approver @item.Status on @item.CreatedDate with @item.Comment</li>
+                            }
+                            else if ((string.IsNullOrEmpty(item.ApprovedByName) || (string.IsNullOrWhiteSpace(item.ApprovedByName)) && item.Comment == ""))
+                            {
+                                <li>@item.Approver @item.Status on @item.CreatedDate</li>
+                            }
+                            else
+                            {
+                                <li>@item.ApprovedByName @item.Status on behalf of @item.Approver on @item.CreatedDate </li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr style="background: rgb(192, 186, 186);">
+                <td colspan="2" class="text-center">
+                    Budget not yet submitted for approval
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

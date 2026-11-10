@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BridgeWeb.Domain.Model.Dto.Vendor
+{
+    public class CreateVendorAndParentVendorDto
+    {
+        public ParentVendorCreateDto? ParentVendorCreateDto { get; set; }
+        public VendorCreateDto? VendorCreateDto { get; set; }
+    }
+}

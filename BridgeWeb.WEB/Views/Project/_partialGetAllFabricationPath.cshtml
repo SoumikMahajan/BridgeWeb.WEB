@@ -1,0 +1,71 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+<table class="table table-striped catalague_table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FabApprovalPathNameListData)
+        {
+            <tr>
+                <td>@item.ApprovalPathName</td>
+                <td>
+                    <i class="fa-regular fa-pen-to-square editFabApprovalPath" data-id="@item.FldID" style="cursor:pointer"></i>
+                    <i class="fa-solid fa-trash-can deleteFabApprovalPath" data-id="@item.FldID" style="cursor:pointer"></i>
+                </td>
+            </tr>
+        }       
+    </tbody>
+</table>
+
+<div class="new_appro_btn">
+    <button type="button" class="solid_teal_btn" id="newfabapprovalpath">
+        <i class="fa fa-plus-square"></i>
+        New Approval Path
+    </button>
+</div>
+<hr>
+<div class="dual_box d-none" id="apppath">
+    <div class="appro_box_hedr">
+        <label for="fabapprovalpathname">Approval Path Name :</label>
+        <input type="text" class="form-control" id="fabapprovalpathname" autocomplete="off">
+        <input type="hidden" id="fabpathid" value="">
+       @*  <i class="fa-solid fa-xmark" id="closeapppatharea"></i> *@
+    </div>
+    <div class="apppath">
+        <div class="option-area select-area">
+            <label for="" class="form-label">Options</label>
+            <select multiple size="5" class="form-select" id="selectFrom" style="height:202px">
+                @foreach (var item in Model.FabGroupOnPathListData)
+                {
+                    <option data-levelid="@item.LevelID" value="@item.FLID" style="cursor:pointer" class="demogrpname1">@item.GroupName</option>
+                }
+            </select>
+        </div>
+        <div class="vertical-btn">
+            <button type="button" id="btnAdd">
+                <i class="fa fa-angle-right"></i>
+            </button>
+            <button type="button" id="btnRemove">
+                <i class="fa fa-angle-left"></i>
+            </button>
+        </div>
+        <div class="select-area select-area">
+            <label for="" class="form-label">Options</label>
+            <select multiple size="5" class="form-select" id="selectTo" style="height:202px">
+                
+            </select>
+        </div>
+        <div class="vertical-btn">
+            <button type="button" id="btnUp">
+                <i class="fa fa-angle-up"></i>
+            </button>
+            <button type="button" id="btnDown">
+                <i class="fa fa-angle-down"></i>
+            </button>
+        </div>
+    </div>
+</div>

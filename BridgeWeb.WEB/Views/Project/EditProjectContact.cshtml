@@ -1,0 +1,230 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model BridgeWeb.Domain.Model.MultipleModel
+
+
+<!-- breadcrumb -->
+<input type="hidden" value="@Model.ProjectDetails.ProjectID" id="projectIdHidden"/>
+<input type="hidden" value="@Model.ProjectDetails.ProjectContact_ID" id="projectContactIdHidden" />
+
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Projectlist", "Project")">Projects</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>ADD PROJECT CONTACTS</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<!-- edit project list-->
+<section class="master_wrap add-projectContact">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6">
+                <h2 class="section_header">ADD PROJECT CONTACTS</h2>
+                <button type="button" class="gray_checkbtn" onclick="window.location.href='@Url.Action("EditProject", "Project", new { ProjectId = @Model.ProjectDetails.ProjectID })'">Go to Project Page</button>
+                <div class="row custom_gutter5-x">
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Contact Type<span class="req">*</span></label>
+                            <select id="user_type" class="form-select">
+                                <option >--Select ContactType--</option>
+                               @foreach(var items in Model.contactTypesList)
+                                {
+                                    if (items.ContactTypeID == Model.ProjectDetails.ContactType_ID)
+                                    {
+                                        <option value="@items.ContactTypeID" selected>@items.ContactType</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@items.ContactTypeID" >@items.ContactType</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Contact Name<span class="req">*</span></label>
+                            <input type="text" class="form-control" value="@Model.ProjectDetails.ContactName" id="contactName">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Email Address</label>
+                            @if (Model.ProjectDetails.Email != null)
+                            {
+                                <input type="email" class="form-control" value="@Model.ProjectDetails.Email" id="contactEmail">
+                            }
+                            else
+                            {
+                                <input type="email" class="form-control" id="contactEmail">
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Phone</label>
+                            @if (Model.ProjectDetails.Telephone != null)
+                            {
+                                <input type="text" class="form-control" value="@Model.ProjectDetails.Telephone" id="telephone">
+                            }
+                            else
+                            {
+                                <input type="text" class="form-control" id="telephone">
+                            }
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Phone Extension</label>
+                            @if (Model.ProjectDetails.Extension != null)
+                            {
+                                <input type="text" class="form-control" value="@Model.ProjectDetails.Extension" id="extension">
+                            }
+                            else
+                            {
+                                <input type="text" class="form-control" id="extension">
+                            }
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Mobile</label>
+                            @if (Model.ProjectDetails.MobilePhone != null)
+                            {
+                                <input type="text" class="form-control" value="@Model.ProjectDetails.MobilePhone" id="phone">
+                            }
+                            else
+                            {
+                                <input type="text" class="form-control" id="phone">
+                            }
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Fax</label>
+                            @if (Model.ProjectDetails.Fax != null)
+                            {
+                                <input type="text" class="form-control" value="@Model.ProjectDetails.Fax" id="fax">
+                            }
+                            else
+                            {
+                                <input type="text" class="form-control" id="fax">
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="frm_fld_wrp">
+                            <label for="address" class="form-label">Address</label>
+                            @if (Model.ProjectDetails.Address != null)
+                            {
+                                <textarea class="form-control" id="address" rows="4" style="height: 90px;">@Model.ProjectDetails.Address</textarea>
+                            }
+                            else
+                            {
+                                <textarea class="form-control" id="address" rows="4" style="height: 90px;"></textarea>
+                            }
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">City</label>
+                            @if(Model.ProjectDetails.City != null)
+                            {
+                                <input type="text" class="form-control" value="@Model.ProjectDetails.City" id="contactCity">
+                            }
+                            else
+                            {
+                                <input type="text" class="form-control" id="contactCity">
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Country</label>
+                            <select id="country" class="form-select">
+                                <option value="0">--Select Country--</option>
+                                    @foreach (var country in Model.CountryList)
+                                    {
+                                        @if (Model.ProjectDetails.Country != null)
+                                        {
+                                            if (Model.ProjectDetails.Country == country.CountryID)
+                                            {
+                                                <option value="@country.CountryID" selected>@country.Country</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@country.CountryID">@country.Country</option>
+                                            }
+                                        }
+                                    else
+                                    {
+                                        <option value="@country.CountryID">@country.Country</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">State</label>
+                            <input type="hidden" value="@Model.ProjectDetails.State" id="hiddenStateVal"/>
+                            <select id="state" class="form-select">
+                                <option >--Select State--</option>
+                                @if (Model.StateList != null && Model.StateList.Any())
+                                {
+                                    @foreach (var state in Model.StateList)
+                                    {
+                                        if (Model.ProjectDetails.State == state.StateID)
+                                        {
+                                            <option value="@state.StateID" selected>@state.State</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@state.StateID">@state.State</option>
+                                        }
+                                    }
+                                }
+
+                            </select>
+                        </div>
+
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Postal/Zip Code</label>
+                            @if (Model.ProjectDetails.ZIPCode != null)
+                            {
+                                <input type="text" class="form-control" value="@Model.ProjectDetails.ZIPCode" id="zipcode">
+                            }
+                            else
+                            {
+                                <input type="text" class="form-control" id="zipcode">
+                            }
+                        </div>
+                    </div>
+
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- edit project list-->
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="#" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover"
+               data-bs-content="Save Contact" id="UpdateProjectContactBtn">
+                <i class="fa-regular fa-floppy-disk"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->

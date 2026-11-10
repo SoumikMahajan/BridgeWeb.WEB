@@ -1,0 +1,514 @@
+﻿@{
+    ViewData["Title"] = "Create Project";
+}
+
+@model BridgeWeb.Domain.Model.MultipleModel
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Projectlist", "Project")">Projects</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>Create Project</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<!-- create projects -->
+<section class="master_wrap create_project_sec">
+    <div class="container-fluid">
+        <div class="frm_wrp">
+            <form action="#" id="create_project_form">
+                @Html.AntiForgeryToken()
+                <div class="creat_project_wrp">
+                    <div class="first_row">
+                        <h2 class="section_header">CREATE PROJECT</h2>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="row custom_gutter5-x">
+                                    <div class="col-lg-6">
+                                        <div class="frm_fld_wrp">
+                                            <label for="txt_ProjectName" class="form-label">Project Name<span class="req">*</span></label>
+                                            <input type="text" class="form-control" id="txt_ProjectName" aria-label="Project Name" style="text-transform:uppercase">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="frm_fld_wrp">
+                                            <label for="txt_LegalName" class="form-label">Legal Name</label>
+                                            <input type="text" class="form-control" id="txt_LegalName" aria-label="Legal Name" style="text-transform:uppercase">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" class="other_vendor" id="vendorlistBtn">
+                                    <i class="fa-solid fa-bars mr-5"></i> Alternative C/O Vendors
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="support_project">
+                                    <input type="checkbox" id="bridgesupporter" checked>
+                                    <label for="bridgesupporter">Bridge Supporter Project</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="second_row">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="hotel">
+                                    <h2 class="section_header">HOTEL</h2>
+                                    <div class="row custom_gutter5-x">
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp add_fld">
+                                                <label for="">Address</label>
+                                                <textarea class="form-control" id="txt_HotelAddr"></textarea>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Country</label>
+                                                <select class="form-select ddlCountry" id="Ddl_HotelCountry">
+                                                    <!option value="0">--Select Country--</!option>
+                                                    @foreach (var item in Model.CountryList)
+                                                    {
+                                                        <!option value="@item.CountryID">@item.Country</!option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="frm_fld_wrp">
+                                                <label for="">State/Prov</label>
+                                                <select class="form-select ddlState" id="Ddl_HotelState">
+                                                    <!option value="0">--Select State--</!option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">City</label>
+                                                <input type="text" id="txt_HotelCity" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Postal/Zip Code</label>
+                                                <input type="text" class="form-control" id="txt_HotelZipCode" style="text-transform: uppercase;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="owner">
+                                    <h2 class="section_header">OWNER</h2>
+                                    <div class="row custom_gutter5-x">
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp add_fld">
+                                                <label for="">Address</label>
+                                                <textarea class="form-control" id="txt_OwnerAddr"></textarea>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Country</label>
+                                                <select class="form-select ddlCountry" id="Ddl_OwnerCountry">
+                                                    <!option value="0">--Select Country--</!option>
+                                                    @foreach (var item in Model.CountryList)
+                                                    {
+                                                        <!option value="@item.CountryID">@item.Country</!option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="frm_fld_wrp">
+                                                <label for="">State/Prov</label>
+                                                <select class="form-select ddlState" id="Ddl_OwnerState">
+                                                    <option value="--Select State--">--Select State--</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">City</label>
+                                                <input type="text" class="form-control" id="txt_OwnerCity">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Postal/Zip Code</label>
+                                                <input type="text" class="form-control" id="txt_OwnerZipCode" style="text-transform: uppercase;">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Telephone</label>
+                                                <input type="text" class="form-control phonenumber" id="txt_OwnerMobile">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Ext.</label>
+                                                <input type="text" class="form-control" id="txt_OwnerPhoneExtension">
+                                            </div>
+                                        </div>
+                                        @* <div class="col-lg-5">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Fax</label>
+                                                <input type="text" class="form-control" id="txt_OwnerFax">
+                                            </div>
+                                        </div> *@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="key_dates">
+                                    <h2 class="section_header">KEY DATES</h2>
+                                    <div class="row custom_gutter5-x">
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">WareHouse Required Date</label>
+                                                <input type="text" class="form-control datepicker" placeholder="YYYY.MM.DD" id="txt_WareHouseReqDate">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Install Date</label>
+                                                <input type="text" class="form-control datepicker" placeholder="YYYY.MM.DD" id="txt_InstallDate">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Completion Date</label>
+                                                <input type="text" class="form-control datepicker" placeholder="YYYY.MM.DD" id="txt_CompletionDate">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Opening Date</label>
+                                                <input type="text" class="form-control datepicker" placeholder="YYYY.MM.DD" id="txt_OpeningDate">
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Reporting Requirements</label>
+                                                <input type="text" class="form-control" id="txt_OwnerReqmnt">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="third_row">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="inv">
+                                    <h2 class="section_header">INVOICE</h2>
+                                    <div class="row custom_gutter5-x">
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp add_fld">
+                                                <label for="">Address</label>
+                                                <textarea class="form-control" id="txt_InvAddr">@Model.invoiceAddressesList[0].InvoiceAddress</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Country</label>
+                                                <select class="form-select ddlCountry" id="Ddl_InvCountry">
+                                                    <!option value="0">--Select Country--</!option>
+                                                    @foreach (var item in Model.CountryList)
+                                                    {
+                                                        <!option value="@item.CountryID" @(item.CountryID == 2 ? "selected" : "")>@item.Country</!option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="frm_fld_wrp">
+                                                <label for="">State/Prov</label>
+                                                <select class="form-select ddlState" id="Ddl_InvState">
+                                                    <!option value="0">--Select State--</!option>
+                                                    @foreach (var item in Model.StateList)
+                                                    {
+                                                        <!option value="@item.StateID" @(@item.StateID == 59 ? "selected" : "")>@item.State</!option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">City</label>
+                                                <input type="text" class="form-control" id="txt_InvCity" value="@Model.invoiceAddressesList[0].City">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Postal/Zip Code</label>
+                                                <input type="text" class="form-control" id="txt_InvZipCode" value="@Model.invoiceAddressesList[0].PostalCode" style="text-transform: uppercase;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="account">
+                                    <h2 class="section_header">ACCOUNTING</h2>
+                                    <div class="row custom_gutter5-x">
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Contact</label>
+                                                <input type="text" class="form-control" id="txt_AccountingContact">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Email</label>
+                                                <input type="email" class="form-control" id="txt_AccountingEmail">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Telephone</label>
+                                                <input type="text" class="form-control phonenumber" id="txt_AccountingPhone">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Ext.</label>
+                                                <input type="text" class="form-control" id="txt_AccountingPhoneExtension">
+                                            </div>
+                                        </div>
+                                        @* <div class="col-lg-5">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Fax</label>
+                                                <input type="text" class="form-control" id="txt_AccountingFax">
+                                            </div>
+                                        </div> *@
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Federal ID</label>
+                                                <input type="text" class="form-control" id="txt_FederalID">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Currency Code</label>
+                                                <select class="form-select ddl_CurrencyCode">
+                                                    <!option value="0">--Select Currency--</!option>
+                                                    @foreach (var item in Model.currencyList)
+                                                    {
+                                                        <!option value="@item.CurrencyID">@item.Currency</!option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="taxes">
+                                    <h2 class="section_header">TAXES</h2>
+                                    <div class="row custom_gutter5-x">
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Name</label>
+                                                <input type="text" class="form-control" id="txt_GSTLblShw" maxlength="12">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Rate (%)</label>
+                                                <input type="text" class="form-control right-txt floatonly" id="txt_GST">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Name</label>
+                                                <input type="text" class="form-control" id="txt_PSTLblShw" maxlength="12">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Rate (%)</label>
+                                                <input type="text" class="form-control right-txt floatonly" id="txt_PST">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Name</label>
+                                                <input type="text" class="form-control" id="txt_StateTxLblShw" maxlength="12">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label for="">Rate (%)</label>
+                                                <input type="text" class="form-control right-txt floatonly" id="txt_StateTax">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fourth_row">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="pcomment">
+                                    <h2 class="section_header">PURCHASE ORDER COMMENTS</h2>
+                                    <div class="frm_fld_wrp add_fld">
+                                        <label for="">
+                                            Comment <a href="#" id="POCommentBtn" data-bs-toggle="modal" data-bs-target="#polist">
+                                            PO Comment
+                                            List
+                                        </a>
+                                    </label>
+                                    <textarea class="form-control" placeholder="Purchase Order Comments" id="txt_PrchsOrdrCmmnts"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="pfiles">
+                                <h2 class="section_header">PROJECT FILES</h2>
+                                <div class="Install_sche_file">
+                                    <fieldset>
+                                        <legend>Installation Schedule File</legend>
+                                        <div class="fileinput-button">
+                                            Drop a file or click here to upload!
+                                            <input type="file" id="scheduleFileUpload" names="files[]" multiple>
+                                        </div>
+                                        <div class="files_selected">
+                                            <p>Files selected :</p>
+                                            <ul class="filelist">
+                                                @* <li class="filesul">FabricationStatus.pdf<input type="button" class="delfile" onclick="delobject3(&quot;fileupload0&quot;,this)"></li>
+                                                    <li class="filesul">FabricationStatus.pdf<input type="button" class="delfile" onclick="delobject3(&quot;fileupload0&quot;,this)"></li> *@
+                                            </ul>
+                                        </div>
+                                        <div class="files_prevselected">
+                                            <p>Files previously selected :</p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <div class="project_attach">
+                                    <fieldset>
+                                        <legend>Project Attachments</legend>
+                                        <div class="fileinput-button">
+                                            Drop a file or click here to upload!
+                                            <input type="file" id="atachmentFileUpload" names="files[]" multiple>
+                                        </div>
+                                        <div class="files_selected">
+                                            <p>Files selected :</p>
+                                            <ul class="filelist">
+                                            </ul>
+                                        </div>
+                                        <div class="files_prevselected">
+                                            <p>Files previously selected :</p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <p class="default_term">
+                                    Default Terms and Conditions File will be Uploaded. That can be changed
+                                    during editing the project.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+</section>
+<!-- add client form end -->
+<!-- flote icon -->
+<ul class="flote_icon">
+    <li>
+        <a href="#" id="btn_CreateProject" style="cursor:pointer;" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Save Project"><i class="fa fa-save"></i></a>
+    </li>
+</ul>
+<!-- flote icon -->
+<!-- Modal -->
+<div class="modal fade" id="orderVendor" tabindex="-1" aria-labelledby="orderVendor" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Order Vendors</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="table-responsive" id="vendorTableForProject">
+                </div>
+
+                @* <div class="pagination_wrp">
+                    <div class="dataTables_info">Showing 1 - 50 out of 4,959 entries</div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item"><a class="page-link disabled" href="#">Previous</a></li>
+                            <li class="page-item"><a class="page-link current-page" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">4</a></li>
+                            <li class="page-item"><a class="page-link" href="#">5</a></li>
+                            <li class="page-item"><span>...</span></li>
+                            <li class="page-item"><a class="page-link" href="#">8</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div> *@
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="polist" tabindex="-1" aria-labelledby="polist" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">PO Comment List</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+
+               
+                <div class="" id="POCommentList">
+                </div>
+
+                @* <div class="pagination_wrp">
+                    <div class="dataTables_info">Showing 1 - 50 out of 82 entries</div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item"><a class="page-link disabled" href="#">Previous</a></li>
+                            <li class="page-item"><a class="page-link current-page" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div> *@
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+

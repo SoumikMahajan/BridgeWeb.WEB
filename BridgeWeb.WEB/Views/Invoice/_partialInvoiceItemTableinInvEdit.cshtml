@@ -1,0 +1,220 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+
+    var totalamntc = 0.00m;
+
+    string FormatNumber(decimal? number)
+    {
+        if (!number.HasValue)
+        {
+            return "0.00";  // Return default value for null
+        }
+
+        // Round the number to 2 decimal places
+        decimal roundedNumber = Math.Round(number.Value, 2);
+
+        // Format with commas and two decimal places
+        return roundedNumber.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+}
+
+<table id="invoice_items" class="table table-striped table-hover invoice_items_table" style="width:100%">
+    <thead>
+        <tr class="theader">
+            <th style="width: 6%">%</th>@* 0*@
+            <th style="width: 9%">PO#</th>@*1*@
+            <th style="width: 9%">Item #</th>@*2*@
+            <th style="width: 34%; text-align: center;">Description</th>@*3*@
+            <th style="width: 9%">Qty</th>@*4*@
+            <th style="width: 9%">Amount</th>@*5*@
+            <th style="width: 9%">Sub Total</th>@*6*@
+            <th style="width: 9%">Line Item Total</th>@*7*@
+            <th class="d-none">Tax1</th>@* 8 *@
+            <th class="d-none">Tax2</th> @* 9 *@
+            <th class="d-none">Tax3</th> @* 10 *@
+            <td class="d-none">ProjectAccount</td>@*11*@
+            <td class="d-none">SpecNum</td>@*12*@
+
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.InvoiceItemsonLoad.Count() > 0)
+        {
+            foreach (var item in Model.InvoiceItemsonLoad)
+            {
+                var percent = item.Percent;
+                var percentlocal = percent;
+                {
+                    totalamntc = item.Amount.Value * item.Quantity.Value;
+                    var totremainingc = item.Total;
+
+                    // percentlocal = (totalamntc * percent / 100) > totremainingc ? totremainingc / totalamntc * 100 : 100;
+                    if (totalamntc * percent / 100 > totremainingc)
+                    {
+                        percentlocal = totremainingc / totalamntc * 100;
+                    }
+                    else if (percent == 100)
+                    {
+                        percentlocal = 100;
+                    }
+                }
+                <tr data-poli="@item.POLineItemID" data-poid="@item.POID" data-tax1="@item.Tax1" data-tax2="@item.Tax2" data-tax3="@item.Tax3"
+                    data-tax1val="@item.Tax1Val" data-tax2val="@item.Tax2Val" data-tax3val="@item.Tax3Val"
+                    data-Tax1type="@item.Tax1type" data-Tax2type="@item.Tax2type" data-Tax3type="@item.Tax3type" data-remaining="@item.TotalR"
+                    data-total="@FormatNumber(Math.Round(item.Amount.Value * item.Quantity.Value, 2))">
+
+                    <td><input type="text" class="form-control percentChange" value="@percentlocal"></td>
+
+                    <td class="selectable">@item.TotalPOID</td>
+
+                    <td class="selectable">@item.TotalItemNumber</td>
+
+                    <td class="selectable">@item.ItemDescription</td>
+
+                    <td><input type="text" class="form-control setQty" value="@item.Quantity"></td> @*4*@
+                    <td><input type="text" class="form-control setQty" value="@FormatNumber(item.Amount)"></td>
+                    <td class="selectable">@FormatNumber(Math.Round(item.Amount.Value * item.Quantity.Value, 2))</td>
+                    <td class="selectable">@FormatNumber(item.Total)</td>
+                    @{
+                        var tmptot = totalamntc * percentlocal / 100;//total
+                    }
+                    <td class="d-none">
+                        @{
+                            //var tmptot = totalamntc * percentlocal / 100;//total
+                            var totalTax1 = 0.00m;
+                            if (item.IsApplicableTax1 == false)
+                            {
+                                if (item.Tax1type == "%")
+                                {
+                                    totalTax1 = ((decimal)tmptot * (decimal)item.Tax1Val) / 100;
+                                }
+                                else
+                                {
+                                    totalTax1 = item.Tax1Val.Value;
+                                }
+                            }
+                        }
+                        @if (item.IsApplicableTax1 == false && totalTax1 != 0)
+                        {
+
+                            <div class='col-sm-12'>
+                                <p style="color:@(string.IsNullOrEmpty(item.Tax1Name) ? "red" : "black")">
+                                    @(string.IsNullOrEmpty(item.Tax1Name) ? "Tax1" : item.Tax1Name)
+                                </p>
+                                <input style='width:50%;float:left;' class='taxablefield mrg5T TAX1' type='text' value="@Math.Round(totalTax1, 2)" />
+
+                            </div>
+                        }
+                        else
+                        {
+                            <input style='width:50%;float:left;' class='taxablefield mrg5T TAX1' type='text' value="0.00" />
+                        }
+
+                    </td>
+
+                    <td class="d-none">
+                        @{
+                            var totalTax2 = 0.00m;
+                            if (item.IsApplicableTax2 == false)
+                            {
+                                if (item.Tax2type == "%")
+                                {
+                                    totalTax2 = ((decimal)tmptot * (decimal)item.Tax2Val) / 100;
+                                }
+                                else
+                                {
+                                    totalTax2 = item.Tax2Val.Value;
+                                }
+                            }
+                        }
+                        @if (item.IsApplicableTax2 == false && totalTax2 != 0)
+                        {
+
+                            <div class='col-sm-12'>
+                                <p style="color:@(string.IsNullOrEmpty(item.Tax2Name) ? "red" : "black")">
+                                    @(string.IsNullOrEmpty(item.Tax2Name) ? "Tax2" : item.Tax2Name)
+                                </p>
+                                <input style='width:50%;float:left;' class='taxablefield mrg5T TAX2' type='text' value="@Math.Round(totalTax2, 2)" />
+
+                            </div>
+                        }
+                        else
+                        {
+                            <input style='width:50%;float:left;' class='taxablefield mrg5T TAX2' type='text' value="0.00" />
+
+                        }
+                    </td>
+
+                    <td class="d-none">
+                        @{
+                            var totalTax3 = 0.00m;
+                            if (item.IsApplicableTax3 == false)
+                            {
+                                if (item.Tax3type == "%")
+                                {
+                                    totalTax3 = ((decimal)tmptot * (decimal)item.Tax3Val) / 100;
+                                }
+                                else
+                                {
+                                    totalTax3 = item.Tax3Val.Value;
+                                }
+                            }
+
+                        }
+                        @if (item.IsApplicableTax3 == false && totalTax3 != 0)
+                        {
+                            <div class='col-sm-12'>
+                                <p style="color:@(string.IsNullOrEmpty(item.Tax3Name) ? "red" : "black");">
+                                    @(string.IsNullOrEmpty(item.Tax3Name) ? "Tax3" : item.Tax3Name)
+                                </p>
+                                <input style='width:50%;float:left;' class='taxablefield mrg5T TAX3' type='text' value="@Math.Round(totalTax3, 2)" />
+
+                            </div>
+                        }
+                        else
+                        {
+                            <input style='width:50%;float:left;' class='taxablefield mrg5T TAX3' type='text' value="@Math.Round(totalTax3, 2)" />
+                        }
+                    </td>
+
+                    <td class="d-none">
+                        @{
+                            var projectAccountList = !string.IsNullOrEmpty(item.ProjectAccounts) || !string.IsNullOrWhiteSpace(item.ProjectAccounts) ?
+                            item.ProjectAccounts.Split(",").ToList() : new List<string>();
+                        }
+                        <select>
+                            @if (projectAccountList.Count() > 0)
+                            {
+                                foreach (var pa in projectAccountList)
+                                {
+                                    @* @pa.Split(",")[1]  accountnumber *@
+                                    var parts = pa.Split("-");
+                                    var accountNumber = parts.Length > 1 ? parts[1] : "No Account";
+                                    var value = parts.Length > 0 ? parts[0] : "0";
+                                    <option value="@value"> @accountNumber </option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="0">No Project Account</option>
+                            }
+
+                        </select>
+
+                    </td>
+
+                    <td class="d-none">@item.SpecNum</td>
+                </tr>
+            }
+
+        }
+        else
+        {
+            <tr>
+                <td colspan="10">No Data Available</td>
+
+            </tr>
+        }
+    </tbody>
+</table>

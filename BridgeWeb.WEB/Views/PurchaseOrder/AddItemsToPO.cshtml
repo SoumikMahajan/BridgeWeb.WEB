@@ -1,0 +1,193 @@
+﻿ @model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var projectId = Model.ProjectID;
+}
+<style>
+    .right-txt {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: end;
+    }
+</style>
+<input type="hidden" id="Hdn_PurchaseOrderID" value="@ViewBag.POID" />
+<input type="hidden" id="Hdn_ProjectID" value="@projectId" />
+
+<!-- flote icon -->
+<div class="flote_icon  ">
+    <ul>
+        <li id="btn_AddLnItmToPONStay">
+            <a href="javascript:void(0)" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Save Item">
+                <i class="fa-regular fa-floppy-disk" aria-hidden="true"></i>
+            </a>
+        </li>
+        <li id="btn_AddLnItmToPO">
+            <a href="javascript:void(0)" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Save/ADD">
+                <i class="fa fa-plus-square" aria-hidden="true"></i>
+            </a>
+        </li>
+        <li id="btn_CnclLnItmToPO">
+            <a href="javascript:void(0)" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Cancel">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon end -->
+@* 
+section start *@
+<section class="master_wrap poedit">
+    <div class="container-fluid">
+        <div class="add_itmes_to_po">
+            <div class="row custom_gutter5-x">
+                <div class="col-lg-6">
+                    <h2 class="section_header">Add Items To PO(USD)</h2>
+                    <h3 class="teal_subheading">@Html.Raw(ViewData["POIDTOSHOW"])</h3>
+                    <div class="row custom_gutter5-x">
+                        <div class="col-lg-5">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Select Section</label>
+                                <select class="form-select" id="Ddl_SecPOLI">
+                                    @if (Model.SectionListInAddPOLI.Count() > 0)
+                                    {
+                                        foreach (var item in Model.SectionListInAddPOLI)
+                                        {
+                                            <!option value="@item.SectionID" @(item.Selected)>@item.SectionNumber-@item.SectionName</!option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <!option value="0">--select project section--</!option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Select Line Items</label>
+                              
+                                <select class="form-select" id="Ddl_LineItems">
+                                    <option value="1">1002-002-0001-CPT-01 -Carpet  Guestroom -Durkan</option>
+                                    <option value="2">1002-002-0002-CPT-01.Sp-Carpet - Spare-Durkan</option>
+                                    <option value="3">1002-002-0003-CPT-01.O-Carpet - Overage-Durkan</option>
+                                    <option value="4">1002-002-0004-CPT-01A-Carpet Underpad-Sponge Cushion</option>
+                                    <option value="6">1002-002-0005-GR-101-BE '"-Custom King Headboard 6' x 7" x  & -Artco'"</option>
+                                    <option value="7">1002-002-0006-GR-601-FA-Fabric  Headboard-Valley Forge</option>
+                                    <option value="8">1002-002-0007-GR-601-FA.S-Fabric Bed - Spare-Valley Forge</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Model</label>
+                                <input type="text" class="form-control" disabled id="txt_LineItemModel">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Qty.</label>
+                                <input type="text" class="form-control" id="txt_LineItemQty">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">UOM</label>
+                                <select class="form-select" id="Ddl_LineItemUnt">
+                                    <!option value="0">--Select UOM--</!option>
+                                    @if (Model.AllOUMDetailsListInBudgetDetails.Count() > 0)
+                                    {
+                                        foreach (var uom in Model.AllOUMDetailsListInBudgetDetails)
+                                        {
+                                            <!option value="@uom.UOM_ID" @* @(uom.UOM_ID ==56?"selected":string.Empty) *@>@uom.UOM</!option>
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Cost</label>
+                                <input type="text" class="form-control" id="txt_LineItemCosts">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 ">
+                            <label class="mb-2"><input type="checkbox" class="mt-1" id="chk_ActvTg"> Active tag </label>
+                            <textarea class="form-control d-none" style="min-height: 90px;font-weight: bold;" id="txt_LineItemAutoTagg" readonly></textarea>
+                        </div>
+
+                        <div class="col-lg-6 right-txt">
+                            @if (Model.TaxDataFromPO is not null)
+                            {
+                                <label id="lbl_GSTHSTTx" class="@(Model.TaxDataFromPO.GSTHST =="0"?"d-none":"")"><input type="checkbox" id="chk_GSTHSTTx" @(Model.TaxDataFromPO.GSTHST != "0" ? "checked" : string.Empty)>@Model.TaxDataFromPO.GSTHST</label>
+                                <label id="lbl_PSTTx" class="@(Model.TaxDataFromPO.PST =="0"?"d-none":"")" style="align-items:end"><input type="checkbox" id="chk_PSTTx" @(Model.TaxDataFromPO.PST != "0" ? "checked" : string.Empty)> @Model.TaxDataFromPO.PST</label>
+                                <label id="lbl_StateTx" class="@(Model.TaxDataFromPO.StateTax == "0" ? "d-none" : "")" style="align-items:end"><input type="checkbox" id="chk_StateTx" @(Model.TaxDataFromPO.StateTax != "0" ? "checked" : string.Empty)>@Model.TaxDataFromPO.StateTax</label>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <h2 class="section_header">Item Details Description</h2>
+                    <textarea class="ckeditor" name="" id="txt_LineItemDtldDesc"></textarea>
+                </div>
+            </div>
+
+
+            <div class="row gy-2 custom_gutter5-x">
+                <div class="col-lg-12">
+                    <button class="gray_checkbtn collapsed my-2" data-bs-toggle="collapse" data-bs-target="#itemapprovaladd"
+                            aria-expanded="true" aria-controls="collapseOne" id="itemapproval_btn">
+                        <i class="fa-solid fa-square-plus me-2"></i>Item
+                        Approvals
+                    </button>
+
+                    <div id="itemapprovaladd" class="accordion-collapse po_exp_note_body collapse"
+                         data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <div class="row custom_gutter5-x">
+                                <div class="col-lg-6">
+                                    <div class="frm_fld_wrp">
+                                        <label class="form-label">Select Fabrication Approval Type</label>
+                                        <select class="form-select" name="" id="ddlItemApprovalType">
+                                            <option value="0" selected>--Select--</option>
+                                            
+                                        </select>
+                                    </div>
+
+                                    <div class="frm_fld_wrp">
+                                        <label class="form-label">Description</label>
+                                        <input type="text" class="form-control" name="" id="">
+                                    </div>
+
+                                    <button class="gray_checkbtn mt-3">Select Fabrication Approval</button>
+                                </div>
+
+                                <div class="col-lg-4" id="expeditenotelist">
+                                    <ul class="comment_list mt-3" id="listExpNote">
+                                        <li>
+                                            <span>Account Number----Account Description</span>
+                                            <a href="#" title="Remove this account" class="remove_bar">
+                                                <i class="fa-solid fa-xmark"
+                                                   aria-hidden="true"></i>
+                                            </a>
+                                        </li>
+                                        
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@* 
+section end  *@

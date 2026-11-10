@@ -1,0 +1,130 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var groupedMainMenu = Model.menuBuildList.GroupBy(m => m.MainMenu).ToList();
+}
+
+
+
+<li class="nav-item">
+    <a class="nav-link active" aria-current="page" asp-controller="Home" asp-action="Dashboard">Home</a>
+</li>
+
+@foreach (var group in groupedMainMenu)
+{
+    string parentUrl = "javascript:void(0)";
+
+    switch (group.Key)
+    {
+        case "Projects":
+            parentUrl = Url.Content("~/Project/ProjectList");
+            break;
+        case "Vendors":
+            parentUrl = Url.Content("~/Vendors/ContactList");
+            break;
+        case "Budgets":
+            parentUrl = Url.Content("~/Budget/Lineitems");
+            break;
+        case "Purchase Orders":
+            parentUrl = Url.Content("~/PurchaseOrder/POList");
+            break;
+        case "Invoice":
+            parentUrl = Url.Content("~/Invoice/invoicesearch");
+            break;        
+    }
+
+    if (group.Key == "Projects" || group.Key == "Budgets" || group.Key == "Purchase Orders" ||
+        group.Key == "System Admin")
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle master_gotourl" data-hrefurl="@parentUrl" role="button" data-bs-toggle="dropdown"
+               aria-expanded="false">
+                @group.Key.ToUpper()
+            </a>
+            <ul class="dropdown-menu">
+                @foreach (var item in group)
+                {
+                    if (item.PageUrl == "Budget/ReadBudget")
+                    {
+                        <li><a class="dropdown-item" href="javascript:void(0)">@item.SubMenu.ToUpper()</a></li>
+                    }
+                    else
+                    {
+                        <li><a class="dropdown-item" href="@Url.Content("~/" + item.PageUrl)">@item.SubMenu.ToUpper()</a></li>
+                    }
+                }
+            </ul>
+        </li>
+    }
+
+    else if (group.Key == "Vendors")
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle master_gotourl" data-hrefurl="@parentUrl" role="button" data-bs-toggle="dropdown"
+               aria-expanded="false">
+                @group.Key.ToUpper()
+            </a>
+            <ul class="dropdown-menu">
+                @foreach (var item in group)
+                {
+                    <li>
+                        <a class="dropdown-item" href="@Url.Content("~/" + item.PageUrl)">@item.SubMenu.ToUpper()</a>
+                    </li>
+                    if (item.SubMenu == "Contacts" && item.PageUrl == "Vendors/ContactList")
+                    {
+                        <li><a class="dropdown-item" href="@Url.Content("~/Vendors/VendorList")">VENDORS</a></li>
+                    }
+                }
+            </ul>
+        </li>
+    }
+    else if (group.Key == "Expedite")
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Content("~/Expedite/Home")">@group.Key.ToUpper()</a>
+            @* <a class="nav-link" href="javascript:void(0);">@group.Key.ToUpper()</a> *@
+        </li>
+    }
+    else if (group.Key == "Reports")
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Content("~/Reports/Report")">@group.Key.ToUpper()</a>
+            @* <a class="nav-link" href="javascript:void(0);">@group.Key.ToUpper()</a> *@
+        </li>
+    }
+    else if (group.Key == "Invoice")
+    {
+       
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle master_gotourl" data-hrefurl="@parentUrl" role="button" data-bs-toggle="dropdown"
+               aria-expanded="false">
+                @group.Key.ToUpper()
+            </a>
+            <ul class="dropdown-menu">
+                @foreach (var item in group)
+                {
+                    <li>
+                        @if (item.SubMenu == "Create Invoice" && item.PageUrl == "Invoice/InvoiceEntry")
+                        {
+                            <a class="dropdown-item" href="@Url.Content("~/" + item.PageUrl)">ENTER INVOICE</a>
+                            <a class="dropdown-item" href="@Url.Content("~/Invoice/CreditNoteEntry")">ENTER CREDIT NOTE</a>
+                        }
+
+                        @if (item.SubMenu == "Search")
+                        {
+                            <a class="dropdown-item" href="@Url.Content("~/" + item.PageUrl)">SEARCH INVOICE/CREDIT NOTE</a>
+                        }
+                        @if (item.SubMenu == "Payment")
+                        {
+                            <a class="dropdown-item" href="@Url.Content("~/" + item.PageUrl)">ENTER PAYMENT</a>
+                        }
+                        @if (item.SubMenu == "Search Payment")
+                        {
+                            <a class="dropdown-item" href="@Url.Content("~/"+item.PageUrl)">@item.SubMenu</a>
+                        }
+                    </li>
+                }
+            </ul>
+        </li>
+    }
+}
+

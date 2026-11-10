@@ -1,0 +1,142 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Budget
+@model MultipleModel
+
+@{
+    var ChangedLIlist = Model.ChangedLIlist ?? new List<ChangedLIDTO>();
+}
+
+
+<table class="budget_hist_table table table-striped table-hover" id="changedLItable" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Field</th>
+            <th>Old Value</th>
+            <th>New Value</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (ChangedLIlist.Any())
+        {
+
+            @if (ChangedLIlist[0].ItemOrder != ChangedLIlist[1].ItemOrder)
+            {
+                <tr>
+                    <td>ItemOrder</td>
+                    <td>@ChangedLIlist[0].ItemOrder</td>
+                    <td>@ChangedLIlist[1].ItemOrder</td>
+                </tr>
+            }
+            @if (ChangedLIlist[0].ItemDescription != ChangedLIlist[1].ItemDescription)
+            {
+                <tr>
+                    <td>ItemDescription</td>
+                    <td>@ChangedLIlist[0].ItemDescription</td>
+                    <td>@ChangedLIlist[1].ItemDescription</td>
+                </tr>
+            }
+
+            @if (ChangedLIlist[0].model != ChangedLIlist[1].model)
+            {
+                <tr>
+                    <td>Model</td>
+                    <td>@ChangedLIlist[0].model</td>
+                    <td>@ChangedLIlist[1].model</td>
+                </tr>
+            }
+            @if (ChangedLIlist[0].SpecNum != ChangedLIlist[1].SpecNum)
+            {
+                <tr>
+                    <td>Spec Num</td>
+                    <td>@ChangedLIlist[0].SpecNum</td>
+                    <td>@ChangedLIlist[1].SpecNum</td>
+                </tr>
+            }
+            @if (ChangedLIlist[0].Vendor != ChangedLIlist[1].Vendor)
+            {
+                <tr>
+                    <td>Vendor</td>
+                    <td>@ChangedLIlist[0].Vendor</td>
+                    <td>@ChangedLIlist[1].Vendor</td>
+                </tr>
+            }
+            @if (ChangedLIlist[0].Quantity != ChangedLIlist[1].Quantity)
+            {
+                <tr>
+                    <td>Quantity</td>
+                    <td>@ChangedLIlist[0].Quantity</td>
+                    <td>@ChangedLIlist[1].Quantity</td>
+                </tr>
+
+            }
+            @if (ChangedLIlist[0].UOM != ChangedLIlist[1].UOM)
+            {
+                <tr>
+                    <td>UOM</td>
+                    <td>@ChangedLIlist[0].UOM</td>
+                    <td>@ChangedLIlist[1].UOM</td>
+                </tr>
+            }
+            @if (ChangedLIlist[0].Cost != ChangedLIlist[1].Cost)
+            {
+                <tr>
+                    <td>Cost</td>
+                    <td>@ChangedLIlist[0].Cost</td>
+                    <td>@ChangedLIlist[1].Cost</td>
+                </tr>
+            }
+            @if (ChangedLIlist[0].Note != ChangedLIlist[1].Note)
+            {
+                <tr>
+                    <td>Note</td>
+                    <td>@ChangedLIlist[0].Note</td>
+                    <td>@ChangedLIlist[1].Note</td>
+                </tr>
+            }
+            @if (ChangedLIlist[0].Spacing != ChangedLIlist[1].Spacing)
+            {
+                <tr>
+                    <td>Spacing</td>
+                    <td>@ChangedLIlist[0].Spacing</td>
+                    <td>@ChangedLIlist[1].Spacing</td>
+                </tr>
+            }
+            @if (ChangedLIlist[0].Header != ChangedLIlist[1].Header)
+            {
+                <tr>
+                    <td>Category</td>
+                    <td>@ChangedLIlist[0].Header</td>
+                    <td>@ChangedLIlist[1].Header</td>
+                </tr>
+            }
+            @if (ChangedLIlist[0].Adjust != ChangedLIlist[1].Adjust)
+            {
+                <tr>
+                    <td>Adjust</td>
+                    <td>@ChangedLIlist[0].Adjust</td>
+                    <td>@ChangedLIlist[1].Adjust</td>
+                </tr>
+            }
+            @if (ChangedLIlist[0].Taxable != ChangedLIlist[1].Taxable)
+            {
+                <tr>
+                    <td>Taxable</td>
+                    <td>@(ChangedLIlist[0].Taxable == true ? "YES" : "NO")</td>
+                    <td>@(ChangedLIlist[1].Taxable == true ? "YES" : "NO")</td>
+                </tr>
+
+            }
+            @if (ChangedLIlist[0].nonfreight != ChangedLIlist[1].nonfreight)
+            {
+                <tr>
+                    <td>nonfreight</td>
+                    <td>@(ChangedLIlist[0].nonfreight == true ? "YES" : "NO")</td>
+                    <td>@(ChangedLIlist[1].nonfreight == true ? "YES" : "NO")</td>
+                </tr>
+
+            }
+
+        }
+
+    </tbody>
+</table>

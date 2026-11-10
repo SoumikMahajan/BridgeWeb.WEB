@@ -1,0 +1,367 @@
+﻿@{
+    ViewData["Title"] = "Edit Vendor";
+}
+
+@model BridgeWeb.Domain.Model.MultipleModel
+@{
+
+    var fromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("yyyy.MM.dd");
+    var isactive = (Model.parentVendorDto.IsActive);
+    string FormatNumber(decimal? number)
+    {
+        if (!number.HasValue)
+            return "0.00";
+        // Round the number to 2 decimal places first
+        number = Math.Round(number.Value, 2);
+
+        // Format number with commas and ensure it's a string
+        return number.Value.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+
+}
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("ContactList", "Vendors")">Vendors</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>EDIT VENDOR INFORMATION</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<!-- contact list-->
+<section class="master_wrap edit_vendor_info">
+    <input type="hidden" id="stateCode" value="@Model.parentVendorDto.State" />
+    <input type="hidden" id="parentVendorid" value="@Model.parentVendorDto.ParentVendor_ID" />
+    <input type="hidden" id="parentvendorname" value="@Model.parentVendorDto.ParentVendorName" />
+    <div class="container-fluid">
+        <div class="edit_ven_row row custom_gutter5-x">
+            <div class="col-lg-3">
+                <label class="tdy_purchase pointer" id="YTDModal">
+                    <u>YTD Purchases:</u>
+                    <span><span id="Totvals"> @(Model.YTDPurchaseOrderWithCurrCodeDTO.Total == 0 ? "0.00" : FormatNumber(Model.YTDPurchaseOrderWithCurrCodeDTO.Total)) </span><span class="currshow">@Model.YTDPurchaseOrderWithCurrCodeDTO.CurrencyCode</span></span>
+                </label>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="inline_input">
+                    <label for="form-label">Invoice Terms:</label>
+                    <select class="form-select" id="invTerm">
+                        <option value="0">--Select Terms--</option>
+                        @foreach (var item in Model.vendorTermsList)
+                        {
+                            if (Model.parentVendorDto.Terms_ID.ToString() == item.TermID.ToString())
+                            {
+                                <option value="@item.TermID" data-id="@item.TermID" selected>@item.Terms</option>
+                            }
+                            else
+                            {
+                                <option value="@item.TermID" data-id="@item.TermID">@item.Terms</option>
+                            }
+
+                        }
+
+
+                    </select>
+                    <p class="created_by" style="margin-left:50px;"><strong>Created By:-</strong> @(Model.parentVendorDto is not null ? Model.parentVendorDto.CreatedByName : string.Empty)</p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 right-txt">
+                <label>
+                    <input type="checkbox" id="isBridgeSupport" @(Model.parentVendorDto!.BridgeSupporter == true ? "checked" : "")>
+                    Bridge Supporter
+                </label>
+            </div>
+
+        </div>
+
+
+        <h2 class="section_header">EDIT VENDOR INFORMATION</h2>
+        <form class="row custom_gutter5-x" id="edit_vendor_form">
+            @Html.AntiForgeryToken()
+            <div class="col-lg-4">
+                <div class="row custom_gutter5-x">
+                    <div class="col-lg-6">
+                        <input type="text" class="form-control d-none" id="txt_Actv" value="@(Model.parentVendorDto.IsActive.ToString())">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Legal Name<span class="req">*</span></label>
+                            <input type="text" class="form-control text-uppercase" id="txt_LegalName" value="@Model.parentVendorDto.LegalName">
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Address</label>
+                            <textarea class="form-control" style="height: 85px;" id="txt_Addr" value="@Model.parentVendorDto.Address1">@Model.parentVendorDto.Address1</textarea>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">City</label>
+                            <input type="text" class="form-control" value="@Model.parentVendorDto.City" id="txt_City">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Common Name<span class="req">*</span></label>
+                            <input type="text" class="form-control text-uppercase" value="" id="txt_Name">
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Country</label>
+                            <select class="form-select" id="ddlCountry">
+                                <option value="0">--Select Country--</option>
+                                @foreach (var country in Model.CountryList)
+                                {
+                                    if (@Model.parentVendorDto.Country == country.CountryID)
+                                    {
+                                        <option value="@country.CountryID" data-name="ddlCrntry_@country.CountryID" name="ddlCrntry_@country.CountryID" selected>@country.Country</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@country.CountryID" data-name="ddlCrntry_@country.CountryID" name="ddlCrntry_@country.CountryID">@country.Country</option>
+                                    }
+
+                                }
+
+                            </select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">State/Prov</label>
+                            <select class="form-select" id="ddlState">
+                                <option value="0">--Select State--</option>
+                                @if (Model.StateList != null)
+                                {
+                                    foreach (var state in Model.StateList)
+                                    {
+                                        if (@Model.parentVendorDto.State.ToString() == state.StateID.ToString())
+                                        {
+                                            <option value="@state.StateID" selected>@state.State (@state.StateCode)</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@state.StateID">@state.State (@state.StateCode)</option>
+                                        }
+
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Postal/Zip Code</label>
+                            <input type="text" class="form-control pincode" value="@Model.parentVendorDto.ZipCode" id="txt_ZipCode">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row custom_gutter5-x">
+                    <div class="col-lg-8">
+                        <div class="frm_fld_wrp">
+                            <label>
+                                Remit To address different than Main address
+                                <input type="checkbox" id="remit_chk" @(Model.parentVendorDto.R_Flag == true ? "checked" : "") />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row custom_gutter5-x" id="r_div" style="@(Model.parentVendorDto.R_Flag == true ? "" : "display:none");">
+                    <div class="col-lg-6">
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Address</label>
+                            <textarea class="form-control" style="height: 85px;" id="Rtxt_Addr">@Model.parentVendorDto.R_Address</textarea>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">City</label>
+                            <input type="text" class="form-control" id="Rtxt_City" value="@Model.parentVendorDto.R_City">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Country</label>
+                            <select class="form-select" id="RDdl_Country">
+                                <option value="0">--Select Country--</option>
+                                @foreach (var country in Model.CountryList)
+                                {
+                                    if (@Model.parentVendorDto.R_Country.ToString() == country.CountryID.ToString())
+                                    {
+                                        <option value="@country.CountryID" data-name="ddlCrntry_@country.CountryID" name="ddlCrntry_@country.CountryID" selected>@country.Country</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@country.CountryID" data-name="ddlCrntry_@country.CountryID" name="ddlCrntry_@country.CountryID">@country.Country</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">State/Prov</label>
+                            <select class="form-select" id="RDdl_State">
+                                <option value="0">--Select State--</option>
+                                @if (Model.Remit_StateList != null)
+                                {
+                                    foreach (var state in Model.Remit_StateList)
+                                    {
+                                        if (Model.parentVendorDto.R_State.ToString() == state.StateID.ToString())
+                                        {
+                                            <option value="@state.StateID" selected>@state.State (@state.StateCode)</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@state.StateID">@state.State (@state.StateCode)</option>
+                                        }
+
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Postal/Zip Code</label>
+                            <input type="text" class="form-control" value="@Model.parentVendorDto.R_ZipCode" id="Rtxt_ZipCode">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row custom_gutter5-x">
+                    <div class="col-lg-6">
+                        <div class="frm_fld_wrp">
+                            <label>
+                                Minority Owned Business
+                                <input type="checkbox" id="minor_owner" @(Model.parentVendorDto.Minority_own_business == "1" ? "checked" : string.Empty)>
+
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row custom_gutter5-x">
+                    <div class="col-lg-6">
+                        <div class="frm_fld_wrp">
+                            <label>
+                                Women Owned Business
+                                <input type="checkbox" id="women_owner" @(Model.parentVendorDto.Woman_own_business == "1" ? "checked" : string.Empty)>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="row custom_gutter5-x">
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label>Currency<span class="req">*</span></label>
+                            <select class="form-select" id="Ddl_Currency">
+                                <option value="0">--Select Currency--</option>
+                                @foreach (var item in Model.currencyList)
+                                {
+                                    if (Model.parentVendorDto.CurrCode == item.CurrencyID)
+                                    {
+                                        <option value="@item.CurrencyID" data-currencycode="@item.CurrencyCode" name="ddlCurr_@item.CurrencyID" selected>@item.Currency</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.CurrencyID" data-currencycode="@item.CurrencyCode" name="ddlCurr_@item.CurrencyID">@item.Currency</option>
+                                    }
+
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="multi_slc_wrp">
+                            <label for="" class="form-label">Classification</label>
+                            <select multiple="multiple" class="multislct" data-width="100%" id="Ddl_Clftion">
+                                @foreach (var item in Model.classificationsList)
+                                {
+                                    if (item.Status == "TRUE")
+                                    {
+                                        <option value="@item.Classification_ID" name="ddlClfc_@item.Classification_ID" selected>@item.Classification</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Classification_ID" name="ddlClfc_@item.Classification_ID">@item.Classification</option>
+                                    }
+
+                                }
+
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Internal Notes</label>
+                            <textarea class="form-control" style="height: 150px;" id="txt_VndrNotes">@Model.parentVendorDto.Note</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+
+        <div class="edti_vendor_info_table_wrap">
+            <h2 class="section_header">@Model.parentVendorDto.ParentVendorName</h2>
+            <div id="partialEditVendorContact"></div>
+        </div>
+    </div>
+</section>
+<!-- contact list-->
+<!--  Modal for YTD Purchase Order -->
+<div class="modal fade ytd_breakdown" id="ytd_breakdown" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="ytdtitle"></h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row custom_gutter5-x" id="YTDData">
+                    <div class="col-md-6">
+                        <div class="frm_fld_wrp">
+                            <label for="">From</label>
+                            <input type="text" class="datepicker form-control" id="fromDateYTD" value="@fromDate" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="frm_fld_wrp">
+                            <label for="">To</label>
+                            <input type="text" class="datepicker form-control" id="toDateYTD" value="@DateTime.Now.ToString("yyyy.MM.dd")">
+                        </div>
+                    </div>
+                </div>
+                <div id="ytdlist">
+                </div>
+
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="#" data-bs-content="Save Vendors" id="btn_UpdtPrntVndr" data-bs-toggle="tooltip" data-bs-placement="left" title="Save Vendor">
+                <i class="fa fa-save"></i>
+            </a>
+        </li>
+        <li>
+            <a href="@Url.Content("~/Vendors/AddNewVendorContact?ParentVendorid=" + Model.parentVendorDto.ParentVendor_ID)" data-bs-toggle="tooltip" data-bs-placement="left" title="New Contact"><i class="fa-solid fa-square-plus"></i></a>
+        </li>
+        <li>
+            <a href="#" id="mergeVendor" data-bs-toggle="tooltip" data-bs-placement="left" title="Merge Vendors">
+                <i class="fa-solid fa-bars"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->

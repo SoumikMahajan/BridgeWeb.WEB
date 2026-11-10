@@ -1,0 +1,53 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    string FormatNumber(decimal? number)
+    {
+        if (!number.HasValue)
+        {
+            return "0.00";  // Return default value for null
+        }
+
+        // Round the number to 2 decimal places
+        decimal roundedNumber = Math.Round(number.Value, 2);
+
+        // Format with commas and two decimal places
+        return roundedNumber.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+}
+
+<table id="invoice_items" class="table table-striped table-hover invoice_items_table" style="width:100%">
+    <thead class="theader">
+        <tr>
+            <th style="width: 20%">PO#</th>
+            <th style="width: 20%">Item #</th>
+            <th style="width: 40%;">Description</th>
+            <th style="width: 20%;">Amount</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @if (Model.ItemDetailsinCNList.Count() > 0)
+        {
+
+            foreach (var items in Model.ItemDetailsinCNList)
+            {
+                <tr data-poid="@items.PurchaseOrderID" data-GSTHST="@items.GSTHST" data-GSTHSTType="@items.GSTHSTType"
+                    data-PST="@items.PST" data-PSTType="@items.PSTType" data-StateTax="@items.StateTax" data-StateTaxType="@items.StateTaxType"
+                    data-poli="@items.POLineItemID">
+
+                    <td class="selectable">@items.PONumber</td>
+                    <td class="selectable">@items.POLineItemNumber</td>
+                    <td class="selectable">@items.Description</td>
+                    <td><input type="text" class="form-control right-txt setQty floatonly" data-maxvalcheck="@items.total" value="@FormatNumber(items.total)"></td>
+
+
+                </tr>
+
+            }
+        }
+
+
+    </tbody>
+</table>

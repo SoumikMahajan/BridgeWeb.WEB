@@ -1,0 +1,18 @@
+﻿@model Dictionary<string, List<string>>
+
+@foreach(var group in Model)
+{
+    var parts = @group.Key.Split("~");
+
+    <div class="sample_grp_hdng pointer">
+        <i class="fa-regular fa-pen-to-square" data-bs-toggle="modal"
+           data-bs-target="#edit_approval_grp" data-groupid="@parts[0]" id="editGroupModalId"></i>
+           @parts[1]
+    </div>
+    <ul class="sampl_grp_list">
+        @foreach (var s in group.Value)
+        {
+            <li>@s</li>
+        }
+    </ul>
+}

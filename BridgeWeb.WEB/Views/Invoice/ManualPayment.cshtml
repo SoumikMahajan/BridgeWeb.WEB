@@ -1,0 +1,234 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    ViewData["Title"] = "Enter Payment";
+}
+
+
+<!-- bredcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("invoicesearch", "Invoice")">Invoice</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>Enter Payment</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- bredcrumb -->
+<!-- enter payment section -->
+<section class="master_wrap search_pyment_wrp right_float_space">
+    <div class="container-fluid">
+        <form class="enter_payment_wrp" id="manual_payment_form">
+            @Html.AntiForgeryToken()
+            <h2 class="section_header">ENTER PAYMENT</h2>
+            <div class="row custom_gutter5-x">
+                <div class="col-sm-3">
+                    <div class="multi_slc_wrp">
+                        <label for="" class="form-label">Project</label>
+                        <select multiple="multiple" class="multislct" data-width="100%" id="PrjtDdl">
+                            <!option value="0" selected>Select Project</!option>
+                            @if (Model.ProjectListinMP.Count() > 0)
+                            {
+                                foreach (var items in Model.ProjectListinMP)
+                                {
+
+                                    <!option value="@items.ProjectID" data-pn="@items.ProjectNumber">@items.ProjectName</!option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-1">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Currency</label>
+                        <select class="form-select" id="CurrDdl">
+                            <option value="1">USD</option>
+                            <option value="2">EUR</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-1">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Payment Date</label>
+                        <input type="text" class="form-control datepicker" placeholder="Enter Payment Number" id="txt_PaymentDate">
+                    </div>
+                </div>
+
+                <div class="col-sm-1">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Payment Type</label>
+                        <select class="form-select" id="Ddl_PaymentType">
+                            @if (Model.PaymentTypeList.Count() > 0)
+                            {
+                                foreach (var items in Model.PaymentTypeList)
+                                {
+                                    if (items.FldID != 8)
+                                    {
+                                        if (items.FldID == 6 || items.FldID == 7)
+                                        {
+
+                                            <!option value="@items.FldID" @(items.IsDefault == true ? "selected" : "") data-code="@items.PaymentCode" disabled>@items.PaymentTypeName</!option>
+                                        }
+                                        else
+                                        {
+                                            <!option value="@items.FldID" @(items.IsDefault == true ? "selected" : "") data-code="@items.PaymentCode" >@items.PaymentTypeName</!option>
+
+                                        }
+                                    }
+
+                                }
+                            }
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="frm_fld_wrp nsaqbo">
+                        <label for="" class="form-label">
+                            <span>Bank Account</span> <span id="bnkbalance">
+                            Not such Account in
+                            QBO
+                        </span>
+                    </label>
+                    <select class="form-select" id="DDl_Bank">
+                        <option value="13" data-val="All">USD Bank Account-Descr(USD)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm-1">
+                <div class="frm_fld_wrp">
+                    <label for="" class="form-label">Start #</label>
+                    <input type="text" class="form-control" id="txtPaymentNumber" value="CH-">
+                </div>
+            </div>
+
+            <div class="col-sm-1">
+                <div class="frm_fld_wrp">
+                    <label for="" class="form-label">I-B Fx Rate</label>
+                    <input type="number" class="form-control right-txt" placeholder="Enter exchange rate" id="txtconvrate" data-edited="false">
+                </div>
+            </div>
+
+            <div class="col-sm-1">
+                <div class="frm_fld_wrp">
+                    <label for="" class="form-label">P-A Fx Rate</label>
+                    <input type="number" class="form-control right-txt" placeholder="Enter exchange rate" id="txtconvrate1" value="1.0000">
+                </div>
+            </div>
+
+            <div class="col-sm-1">
+                <div class="frm_fld_wrp">
+                    <label for="" class="form-label">Memo</label>
+                    <input type="text" class="form-control" id="txtMemo">
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="inv_selector_list">
+        <h2 class="section_header">INVOICE SELECTOR</h2>
+        <div id="invselectorbind"></div>
+
+
+        <div class="tpamt">
+            <div class="frm_fld_wrp">
+                <label for="">Total Payment Amount</label>
+                <input type="text" class="form-control" id="txtTotalAmount" value="0.00" disabled>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+<!-- enter payment section -->
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="javascript:void(0);" tabindex="0" class="global-popover" role="button" data-bs-toggle="popover" data-bs-trigger="hover"
+               data-bs-content="Save and Send Payment to QBO" id="btn_SavePaymentWithQBO">
+                <i class="fa-regular fa-share-from-square"></i>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" tabindex="0" class="global-popover" role="button" data-bs-toggle="popover" data-bs-trigger="hover" id="btn_SavePayment"
+               data-bs-content="Save Payment"><i class="fa fa-save"></i></a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" tabindex="0" class="global-popover" role="button" data-bs-toggle="popover" data-bs-trigger="hover"
+               data-bs-content="Cancel"><i class="fa-solid fa-xmark"></i></a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->
+<!-- Modal -->
+<div class="modal fade" id="sync_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">QBO Payment Lookup</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Fetching information from QBO for WR-11360. Please wait <i class="fa-solid fa-rotate spin_anim"></i></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editPaymentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit Payment</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="editPaymentModalBody">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="btnUpdatePayment">Update Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="qbmodal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">QBO Validating</h4>
+            </div>
+            <div class="modal-body">
+                <div id="qbchecker"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="qbgeratemodal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="qbgeratemodalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">QBO Sending Data</h4>
+            </div>
+            <div class="modal-body">
+                <div id="qbsendinfo"></div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

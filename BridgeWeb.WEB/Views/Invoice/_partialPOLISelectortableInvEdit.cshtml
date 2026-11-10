@@ -1,0 +1,46 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var clicked = ViewBag.Clicked;
+}
+<table id="item_selector" class="table table-striped table-hover item_selector_table" style="width:100%">
+    <thead class="theader">
+        <tr>
+            <th>Item#</th> @* 0 *@
+            <th>PO#</th> @* 1 *@
+            <th>Description</th> @* 2 *@
+            <th>Qty</th> @* 3 *@
+            <th>Curr</th> @* 4 *@
+            <th>PO Cost</th> @* 5 *@
+            <th>Total</th> @* 6 *@
+            <th>Rem</th> @* 7 *@
+            <th>%</th> @* 8 *@
+            <th class="d-none">index</th>@*9*@
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.POItemSelectorinvEdit.Count() > 0)
+        {
+            var index = 1;
+            @foreach (var item in Model.POItemSelectorinvEdit)
+            {
+                <tr class="@(clicked == false && item.Selected == "selected" ? "noselect" : string.Empty)" data-poliid="@item.POLineItemID" data-pid="@item.PurchaseOrderID">
+                    <td><a href="javascript:void(0)" class="getotherinvoice underline" data-itemid="@item.POLineItemID" data-bs-target="#previnvoice">@item.TotalID</a></td>
+                    <td>@item.PONumber</td>
+                    <td>@item.ItemDescription</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.CurrencyCode</td>
+                    <td>@(Convert.ToDecimal(item.Amount) / item.Quantity)</td>
+                    <td>@item.Amount</td>
+                    <td>@item.AmountRemaining</td>
+                    <td>@item.PercentPaid</td>
+                    <td class="d-none">@index</td>
+                </tr>
+                index++;
+            }
+        }
+
+
+    </tbody>
+</table>

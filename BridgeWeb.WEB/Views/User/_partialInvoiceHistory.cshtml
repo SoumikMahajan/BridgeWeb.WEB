@@ -1,0 +1,24 @@
+﻿@model MultipleModel
+
+<table class="table table-striped table-hover invoice_data_table_history" id="invoice_data_table_history" style="width:100%">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Event</th>
+            <th>Time</th>
+        </tr>        
+    </thead>
+    <tbody>
+        @if(Model.invoiceHistoryDtos!=null)
+        {
+            foreach(var item in Model.invoiceHistoryDtos)
+            {
+                <tr>
+                    <td>@item.UserName</td>
+                    <td>@item.EventName</td>
+                    <td>@item.Date.ToString("yyyy.MM.dd") at @item.Time.ToString("hh:mm:ss")</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

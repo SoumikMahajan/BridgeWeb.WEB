@@ -1,0 +1,1000 @@
+﻿@using BridgeWeb.Domain.Model.Dto
+@using BridgeWeb.Domain.Model.Dto.Project
+@{
+    ViewData["Title"] = "Edit Project";
+}
+
+@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var project = Model.ProjectEdit
+        ?? throw new InvalidOperationException("ProjectEdit is null");
+
+    var ReportAccessPermissionDto = Model.ReportAccessPermissionDto
+        ?? throw new InvalidOperationException("ReportAccessPermissionDto is null");
+
+    var currencyList = Model.currencyList
+        ?? throw new InvalidOperationException("currencyList is null");
+
+    var countries = Model.CountryList ?? Enumerable.Empty<CountryDto>();
+
+    var states = Model.StateList ?? Enumerable.Empty<StateDto>();
+
+    long selectedStateId = 0;
+    if (project.InvoiceState.HasValue)
+    {
+        selectedStateId = project.InvoiceState.Value;
+    }
+
+    long selectedCountryId = 0;
+
+    if (!string.IsNullOrWhiteSpace(project.HotelCountry))
+    {
+        long.TryParse(project.HotelCountry, out selectedCountryId);
+    }
+
+    long selectedOwnerCountryId = 0;
+    if (!string.IsNullOrWhiteSpace(project.OwnerCountry))
+    {
+        long.TryParse(project.OwnerCountry, out selectedOwnerCountryId);
+    }
+
+    var poFiles = Model.POfilestoShowList ?? Enumerable.Empty<POFilesToshowDTO>();
+
+    string FormatNumber(decimal? number)
+    {
+        // Round the number to 2 decimal places first
+        var value = Math.Round(number ?? 0m, 2);
+
+        // Format number with commas and ensure it's a string
+        return value.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+    ;
+
+    string TrimText(string? str)
+    {
+        if (string.IsNullOrEmpty(str))
+            return string.Empty;
+
+        if (str.Length > 30)
+        {
+            return str.Substring(0, 15) + "..." + str.Substring(str.Length - 10);
+        }
+
+        return str;
+    }
+}
+<!-- breadcrumb -->
+<input type="hidden" value="@Model.ProjectEdit.ProjectID" id="hiddenProjectId" />
+<input type="hidden" value="@Model.ProjectEdit.ProjectNumber" id="hiddenProjectNumber" />
+
+
+
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Projectlist", "Project")">Projects</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>EDIT PROJECT</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<!-- edit project list-->
+<section class="master_wrap edit_project">
+    <div class="container-fluid">
+        <h2 class="section_header">EDIT PROJECT</h2>
+        <form action="#" id="edit_project_form">
+            @Html.AntiForgeryToken()
+            <div class="project_name">
+                <p id="txt_ProjectNumber" data-id="@Model.ProjectEdit.ProjectNumber">Project Number :@Model.ProjectEdit.ProjectNumber</p>
+                <div class="pdt_purchase" id="PTDModal">
+                    <u>PTD Purchases:</u>
+                    @if (@Model.PODetails != null)
+                    {
+                        <span id="PODetails"> @(FormatNumber(Model.PODetails.Total)) @(Model.PODetails.CurrCode is null ? string.Empty : Model.PODetails.CurrCode)</span>
+                    }
+                    else
+                    {
+                        <span id="PODetails">No Data Found</span>
+                    }
+
+                </div>
+            </div>
+
+            <div class="row custom_gutter5-x gy-2">
+                <div class="col-xl-4">
+                    <div class="row custom_gutter5-x">
+                        <div class="col-md-6">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label uppercase">Project Name<span class="req">*</span></label>
+                                <input type="text" class="form-control text-uppercase" id="txt_ProjectName" value="@Model.ProjectEdit.ProjectName">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label uppercase">Legal Name</label>
+                                <input type="text" class="form-control text-uppercase" id="txt_LegalName" value="@Model.ProjectEdit.LegalName">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-xl-4">
+                    <div class="project_term_btn_wrp">
+                        <div class="project_team">
+                            <button type="button" class="solid_teal_btn openProjectTeam">
+                                <i class="fa-regular fa-user"></i> Project
+                                Team
+                            </button>
+                        </div>
+                        <div class="ship_to-vendor">
+                            <button type="button" class="solid_teal_btn" id="shipTovendorBtn"><i class="fa-solid fa-bars"></i> Ship To Vendors</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-xl-4">
+                    @if (Model.ProjectEdit.IsSupporter == true)
+                    {
+                        <label class="bridge_sp"><input type="checkbox" id="bridgesupporter" checked> Bridge Supporter Project</label>
+                    }
+                    else
+                    {
+                        <label class="bridge_sp"><input type="checkbox" id="bridgesupporter"> Bridge Supporter Project</label>
+                    }
+                    @if (Model.ProjectEdit.IsClosed == true)
+                    {
+                        <label class="bridge_sp"><input type="checkbox" id="bridgeIsClosed" checked> Close</label>
+                    }
+                    else
+                    {
+                        <label class="bridge_sp"><input type="checkbox" id="bridgeIsClosed"> Close</label>
+                    }
+                </div>
+
+            </div>
+
+            <div class="row custom_gutter5-x gy-2">
+                <div class="col-xl-4">
+                    <div class="hotel_details">
+                        <h2 class="section_header">HOTEL</h2>
+                        <div class="row custom_gutter5-x">
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Address</label>
+                                    <textarea name="" id="txt_hotelAdd" class="form-control" style="min-height: 90px;">@Model.ProjectEdit.HotelAddress</textarea>
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="">City</label>
+                                    <input type="text" id="txt_hotelCity" class="form-control" value="@Model.ProjectEdit.HotelCity">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Country</label>
+                                    <select name="" id="hotelCountry" class="form-select">
+                                        <!option value="0">--Select Country--</!option>
+                                        @foreach (var item in countries)
+                                        {
+                                            <!option value="@item.CountryID" @(item.CountryID == selectedCountryId ? "selected" : "")>
+                                            @item.Country
+                                            </!option>
+
+                                        }
+                                    </select>
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="">State/Prov</label>
+                                    <input type="hidden" value="@Model.ProjectEdit.HotelState" id="hiddenHotelStateVal" />
+                                    <select name="" id="hoteState" class="form-select">
+                                        <!option value="0">--Select State--</!option>
+                                            @foreach(var item in states)
+                                            {
+                                            <!option value="@item.StateID" @(item.StateID == selectedStateId ? "selected" : "")>
+                                            @item.State
+                                            </!option>
+                                            }
+                                        </select>
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="">Postal/Zip Code</label>
+                                    <input type="text" class="form-control" id="hotelPostalCode" value="@Model.ProjectEdit.HotelPostalCode" style="text-transform: uppercase;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-xl-4">
+                    <div class="owner_details">
+                        <h2 class="section_header">OWNER</h2>
+                        <div class="row custom_gutter5-x">
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Address</label>
+                                    <textarea name="" id="OwnerAddress" class="form-control" style="min-height: 90px;">@Model.ProjectEdit.OwnerAddress</textarea>
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="">City</label>
+                                    <input type="text" class="form-control" id="ownerCity" value="@Model.ProjectEdit.OwnerCity">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Country</label>
+                                    <select name="" id="OwnerCountry" class="form-select">
+                                        <!option value="0">--Select Country--</!option>
+                                        @foreach (var item in countries)
+                                        {
+                                            <!option value="@item.CountryID" @(item.CountryID == selectedOwnerCountryId ? "selected" : "")>@item.Country</!option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="">State/Prov</label>
+                                    <input type="hidden" value="@Model.ProjectEdit.OwnerState" id="hiddenOwnerState" />
+                                    <select name="" id="OwnerState" class="form-select">
+                                        <!option value="0">--Select State--</!option>
+
+                                    </select>
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="">Postal/Zip Code</label>
+                                    <input type="text" class="form-control" id="OwnerPostalCode" value="@Model.ProjectEdit.OwnerPostalCode" style="text-transform: uppercase;">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Telephone</label>
+                                    <input type="text" class="form-control phonenumber" id="OwnerMobile" value="@Model.ProjectEdit.OwnerMobile">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Ext.</label>
+                                    <input type="text" class="form-control" id="OwnerPhoneExtension" value="@Model.ProjectEdit.OwnerPhoneExtension">
+                                </div>
+                            </div>
+                            @* <div class="col-md-5">
+                            <div class="frm_fld_wrp">
+                                <label for="">Fax</label>
+                                <input type="text" class="form-control" id="OwnerFax" value="@Model.ProjectEdit.OwnerFax">
+                            </div>
+                        </div> *@
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-xl-4">
+                    <div class="key_details">
+                        <h2 class="section_header">KEY DATES</h2>
+                        <div class="row custom_gutter5-x">
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Warehouse Required Date</label>
+                                    <input type="text" class="form-control datepicker" id="txt_WareHouseReqDate" value="@Model.ProjectEdit.WarehouseRequiredDate.ToString("yyyy.MM.dd")">
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="">Completion Date</label>
+                                    <input type="text" class="form-control datepicker" id="txt_CompletionDate" value="@Model.ProjectEdit.ProjectCompletionDate.ToString("yyyy.MM.dd")">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Install Date</label>
+                                    <input type="text" class="form-control datepicker" id="txt_InstallDate" value="@Model.ProjectEdit.InstallDate.ToString("yyyy.MM.dd")">
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="">Opening Date</label>
+                                    <input type="text" class="form-control datepicker" id="txt_OpeningDate" value="@Model.ProjectEdit.OpeningDate.ToString("yyyy.MM.dd")">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="client_reports">
+                        <h2 class="section_header">CLIENT REPORTS</h2>
+                        <div class="report_check">
+                            @if (Model.ReportAccessPermissionDto.IsBudgetReportActive == true)
+                            {
+                                <label>Budget <input type="checkbox" id="BudgetReport" checked></label>
+
+                            }
+                            else
+                            {
+                                <label>Budget <input type="checkbox" id="BudgetReport"></label>
+                            }
+                            @if (Model.ReportAccessPermissionDto.IsPurchaseReportActive == true)
+                            {
+                                <label>Purchase <input type="checkbox" id="PurchaseReportActive" checked></label>
+                            }
+                            else
+                            {
+                                <label>Purchase <input type="checkbox" id="PurchaseReportActive"></label>
+                            }
+                            @if (Model.ReportAccessPermissionDto.IsStatusReportActive == true)
+                            {
+                                <label>Status <input type="checkbox" id="StatusReportActive" checked></label>
+                            }
+                            else
+                            {
+                                <label>Status <input type="checkbox" id="StatusReportActive"></label>
+                            }
+                            @if (Model.ReportAccessPermissionDto.IsAccountReportActive == true)
+                            {
+                                <label>Accounting <input type="checkbox" id="AccountReportActive" checked></label>
+                            }
+                            else
+                            {
+                                <label>Accounting <input type="checkbox" id="AccountReportActive"></label>
+                            }
+
+
+
+                        </div>
+                        <div class="reporting_require">
+                            <label for="">Reporting Requirements:</label>
+                            <input type="text" class="form-control" id="ownerReportingRequirement" value="@Model.ProjectEdit.OwnerReportingRequirement">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row custom_gutter5-x gy-2">
+                <div class="col-xl-4">
+                    <div class="invoice_dtls">
+                        <h2 class="section_header">INVOICE</h2>
+                        <div class="row custom_gutter5-x">
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Address</label>
+                                    <textarea name="" id="invAddress" class="form-control" style="min-height: 90px;">@Model.ProjectEdit.InvoiceAddress</textarea>
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="">City</label>
+                                    <input type="text" class="form-control" id="invCity" value="@Model.ProjectEdit.InvoiceCity">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Country</label>
+                                    <select name="" id="InvoiceCountry" class="form-select">
+                                        <!option value="0">--Select Country--</!option>
+                                        @foreach (var item in countries)
+                                        {
+                                            <!option value="@item.CountryID" @(item.CountryID == Model.ProjectEdit.InvoiceCountry ? "selected" : "")>@item.Country</!option>
+                                        }
+
+                                    </select>
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="">State/Prov</label>
+                                    <input type="hidden" value="@Model.ProjectEdit.InvoiceState" id="hiddenInvoiceState" />
+                                    <select name="" id="InvoiceState" class="form-select">
+                                        <!option value="0">--Select Country--</!option>
+                                        @foreach (var item in states)
+                                        {
+                                            <!option value="@item.StateID" @(@item.StateID == Model.ProjectEdit.InvoiceState ? "selected" : "")>@item.State</!option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="">Postal/Zip Code</label>
+                                    <input type="text" class="form-control" id="InvoicePostalCode" value="@Model.ProjectEdit.InvoicePostalCode" style="text-transform: uppercase;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-xl-4">
+                    <div class="accounting_detail">
+                        <h2 class="section_header">ACCOUNTING</h2>
+                        <div class="row custom_gutter5-x">
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Contact</label>
+                                    <input type="text" class="form-control" id="AccountingContact" value="@Model.ProjectEdit.AccountingContact">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Email</label>
+                                    <input type="email" class="form-control" id="AccountingEmail" value="@Model.ProjectEdit.AccountingEmail">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Telephone</label>
+                                    <input type="text" class="form-control phonenumber" id="AccountingTelephone" value="@Model.ProjectEdit.AccountingTelephone">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Ext.</label>
+                                    <input type="text" class="form-control" id="AccountPhoneExtension" value="@Model.ProjectEdit.AccountPhoneExtension">
+                                </div>
+                            </div>
+                            @* <div class="col-md-5">
+                            <div class="frm_fld_wrp">
+                                <label for="">Fax</label>
+                                <input type="text" class="form-control" id="AccountingFax" value="@Model.ProjectEdit.AccountingFax">
+                            </div>
+                        </div> *@
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Federal ID</label>
+                                    <input type="text" class="form-control" id="accFederalID" value="@Model.ProjectEdit.FederalID">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Currency Code</label>
+                                    <select name="" id="accCurrCode" class="form-select">
+                                        <!option value="0">--Select Currency--</!option>
+                                        @foreach (var item in currencyList)
+                                        {
+                                            <!option value="@item.CurrencyID" @(item.CurrencyID == Model.ProjectEdit.CurrCode ? "selected" : "")>@item.Currency</!option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-xl-4">
+                    <div class="taxes_detail">
+                        <h2 class="section_header">TAXES</h2>
+                        <div class="row custom_gutter5-x">
+                            <div class="col-lg-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Name</label>
+                                    <input type="text" class="form-control" id="txt_GSTLblShw" maxlength="12" value="@Model.ProjectEdit.GSTHSTTYPE">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Rate (%)</label>
+                                    <input type="text" class="form-control right-txt floatonly" id="txt_GST" value="@Model.ProjectEdit.GSTHST">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Name</label>
+                                    <input type="text" class="form-control" id="txt_PSTLblShw" maxlength="12" value="@Model.ProjectEdit.PSTTYPE">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Rate (%)</label>
+                                    <input type="text" class="form-control right-txt floatonly" id="txt_PST" value="@Model.ProjectEdit.PST">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Name</label>
+                                    <input type="text" class="form-control" id="txt_StateTxLblShw" maxlength="12" value="@Model.ProjectEdit.STATETAXTYPE">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Rate (%)</label>
+                                    <input type="text" class="form-control right-txt floatonly" id="txt_StateTax" value="@Model.ProjectEdit.StateTax">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row custom_gutter5-x gy-2">
+                <div class="col-xl-4">
+                    <div class="tab_container project_account">
+                        <ul class="nav nav-tabs" role="tablist" id="myTab">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#proj_acc1" type="button"
+                                        role="tab" aria-selected="true" id="ProjectAccountDetails">
+                                    Project Accounts
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#proj_acc2" type="button" role="tab"
+                                        aria-selected="false" id="bankAccountTabBtn">
+                                    Bank Accounts
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="proj_acc1" role="tabpanel" tabindex="0">
+                                <div class="row custom_gutter5-x">
+                                    <div class="col-lg-6">
+                                        <div class="frm_fld_wrp">
+                                            <label for="">Account Number:</label>
+                                            <input type="text" class="form-control" id="createAccountNum">
+                                        </div>
+                                        <div class="frm_fld_wrp">
+                                            <label for="">Account Description:</label>
+                                            <input type="text" class="form-control" id="createAccountDesc">
+                                        </div>
+                                        <div class="acount_btn_wrp">
+                                            <button class="solid_teal_btn" id="AddnewProjectAccount" type="button">Add New</button>
+                                            <button class="solid_teal_btn" id="updateProjectAccountBalance" type="button">Update Account Balance</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <ul class="@(Model.ProjectAccountDetailsList?.Count > 0 ? "comment_list" : "")">
+                                            @if (Model.ProjectAccountDetailsList?.Count > 0)
+                                            {
+                                                @foreach (var items in Model.ProjectAccountDetailsList)
+                                                {
+                                                    <li>
+                                                        <i class="fa-regular fa-pen-to-square editProjectAccount" data-bs-toggle="modal"
+                                                           data-bs-target="#edit_projacc" data-id="@items.FldID" data-accountnumber="@items.AccountNumber"></i>
+                                                        <span>@items.AccountNumber----@items.Description</span>
+                                                        <a href="javascript:void(0);" title="Remove this account" class="remove_bar deleteProjectAcc" data-id="@items.FldID"><i class="fa-solid fa-xmark"></i></a>
+                                                    </li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li></li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="proj_acc2" role="tabpanel" tabindex="0">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="bank_acc_detail" id="BankDetails">
+                                            @* partial View Div *@
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-xl-4">
+                    <div class="conversiron_rate">
+                        <h2 class="section_header">CONVERSION RATES</h2>
+                        <div class="row custom_gutter5-x gy-2">
+                            <div class="col-lg-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="" class="form-label">Currency</label>
+                                    <select name="" id="ddl_cnvcurrency" class="form-select">
+                                        <!option value="0">--Select Currency--</!option>
+                                        @foreach (var item in Model.currencyList)
+                                        {
+                                            <!option value="@item.CurrencyID">@item.Currency</!option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="" class="form-label">Exchange Rate</label>
+                                    <input type="text" class="form-control right-txt" id="txt_convrate">
+                                </div>
+                                <button type="button" class="solid_teal_btn inline_solid_btn" id="btn_excRate">Add New</button>
+                            </div>
+                            <div class="col-lg-6">
+                                @if (Model.ProjectConversionRatesList?.Count > 0)
+                                {
+                                    <ul class="comment_list">
+
+                                        @foreach (var items in Model.ProjectConversionRatesList)
+                                        {
+                                            <li>
+                                                <span>@items.Currcode <i class="fa fa-arrow-circle-right"></i> @items.ConversionRate</span>
+                                                <a href="#" class="remove_bar deleteConverRate" title="Remove this Conv Rate" data-id="@items.FldID"><i class="fa-solid fa-xmark"></i></a>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <div></div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-xl-4">
+                    <div class="project_files">
+                        <h2 class="section_header">PROJECT FILES</h2>
+                        <div class="project-files-wrap">
+                            <fieldset>
+                                <legend>Installation Schedule File</legend>
+                                <div class="file_drop_area">
+                                    <div class="fileinput-button transparent_file">
+                                        <p>
+                                            Drop a file or click
+                                            here to upload!
+                                        </p>
+                                        <input type="file" id="scheduleFileUpload" names="files[]" multiple>
+                                    </div>
+                                    <div class="files_selected">
+                                        @*  <p>Files selected :</p> *@
+                                        <ul class="filelist">
+                                            @* <li class="filesul">FabricationStatus.pdf<input type="button" class="delfile" onclick="delobject3(&quot;fileupload0&quot;,this)"></li>
+                                        <li class="filesul">FabricationStatus.pdf<input type="button" class="delfile" onclick="delobject3(&quot;fileupload0&quot;,this)"></li> *@
+                                        </ul>
+                                    </div>
+                                    <div class="files_list">
+                                        <p>Attached Files :</p>
+                                        @{
+                                            var ISFfile = (project.InstallationScheduleFile ?? string.Empty)
+                                            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                            .Select(x => x.Trim())
+                                            .ToList();
+                                        }
+                                        <input id="installedFileCount" value="@ISFfile.Count" hidden />
+                                        <ul>
+                                            @if (ISFfile.Count > 0)
+                                            {
+                                                foreach (var items in ISFfile)
+                                                {
+                                                    <li id="InstallationScheduleFiledata"><a href="@Url.Content("~/Assets/InstallationScheduleFiles/" + items)" target="_blank">@items</a> <i class="fa-solid fa-trash-can deleteISF" style="cursor:pointer;" data-fldid="0" data-filename="@items"></i></li>
+                                                }
+
+                                            }
+                                            @* else
+                                        {
+                                            <li id="InstallationScheduleFiledata"><a href="" target="_blank"></a> <i class="fa-solid fa-trash-can"></i></li>
+                                        } *@
+
+                                        </ul>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Terms Files</legend>
+                                <div class="file_drop_area">
+                                    <div class="fileinput-button transparent_file">
+                                        <p>
+                                            Drop a file or click
+                                            here to upload!
+                                        </p>
+                                        <input type="file" id="TermsFileUpload" names="files[]" multiple>
+                                    </div>
+                                    <div class="files_selected TermsFiles">
+                                        @*  <p>Files selected :</p> *@
+                                        <ul class="filelist">
+                                            @* <li class="filesul">FabricationStatus.pdf<input type="button" class="delfile" onclick="delobject3(&quot;fileupload0&quot;,this)"></li>
+                                        <li class="filesul">FabricationStatus.pdf<input type="button" class="delfile" onclick="delobject3(&quot;fileupload0&quot;,this)"></li> *@
+                                        </ul>
+                                    </div>
+                                    <div class="files_list">
+                                        <p>Attached Files :</p>
+                                        @{
+                                            var termsFile = (Model.ProjectEdit.TermsFile ?? string.Empty).Split(",").Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                                            var defaultTermsFile = Model.ProjectEdit.DefaultTermsFile;
+                                        }
+                                        <input id="totalTermsFileCount" value="@termsFile.Count" hidden />
+                                        <ul>
+                                            @if (termsFile.Count > 0)
+                                            {
+                                                @foreach (var items in termsFile)
+                                                {
+                                                    <li id="TermsFiledata">
+                                                        <a href="@Url.Content("~/Assets/TermsConditionFiles/" + items)" target="_blank" data-filename="@items">@items</a> <i class="fa-solid fa-trash-can deleteTermsFile" style="cursor:pointer;" data-filename="@items" data-fldid="0"></i>
+                                                    </li>
+
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <li id="TermsFiledata">
+                                                    <a href="@Url.Content("~/Assets/SystemTermsFiles/" + defaultTermsFile)" target="_blank">@TrimText(defaultTermsFile)</a>
+                                                </li>
+                                            }
+
+
+                                        </ul>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row custom_gutter5-x">
+                <div class="col-12">
+                    <h2 class="section_header">PROJECT ATTACHMENTS (SELECT TO MAKE AVAILABLE AS PO ATTACHMENT)</h2>
+                    <div class="row custom_gutter5-x">
+                        <div class="col-lg-6">
+                            <div class="project_attachments">
+                                <fieldset>
+                                    <legend>Project Attachments</legend>
+                                    <div class="fileinput-button transparent_file">
+                                        <p>Drop a file or click here to upload!</p>
+                                        <input type="file" id="ProjectAttachmentFileUpload" names="files[]" multiple>
+                                    </div>
+                                    <div class="files_selected">
+                                        <p>Files selected :</p>
+                                        <ul class="filelist">
+                                            @* <li class="filesul">FabricationStatus.pdf<input type="button" class="delfile" onclick="delobject3(&quot;fileupload0&quot;,this)"></li>
+                                        <li class="filesul">FabricationStatus.pdf<input type="button" class="delfile" onclick="delobject3(&quot;fileupload0&quot;,this)"></li> *@
+                                        </ul>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="search_attactment" id="projectfilelistdiv">
+                                <input type="text" class="form-control" id="searchFiles" placeholder="search attachments">
+                                @{
+                                    var poFileNames = new List<string>(
+                                    (Model.POfilestoShowList ?? Enumerable.Empty<POFilesToshowDTO>())
+                                    .Select(p => p.FileName)
+                                    .Where(f => !string.IsNullOrWhiteSpace(f))!
+                                    );
+                                    var projectFiles = (Model.ProjectEdit.ProjectFile ?? string.Empty).Split(",").Where(x => !string.IsNullOrWhiteSpace(x) && !poFileNames.Contains(x)).ToList();
+                                }
+                                <input id="projectFilesCount" value="@projectFiles.Count" hidden />
+                                <ul class="previousfilelist">
+
+                                    @if (projectFiles.Count > 0)
+                                    {
+
+                                        @foreach (var files in projectFiles)
+                                        {
+                                            <li>
+                                                <input type="checkbox" name="fileCheckbox" id="previous)">
+                                                <a href="@Url.Content("~/Assets/ProjectFiles/" + files)" target="_blank">@files</a>
+                                                <i class="fa fa-trash-o mrg5L deleteFile" style="cursor:pointer;" data-filename="@files" data-fldid=""></i>
+                                            </li>
+
+                                        }
+                                        @if (poFiles.Any())
+                                        {
+                                            @foreach (var item in poFiles)
+                                            {
+                                                <li>
+                                                    <input type="checkbox" checked>
+                                                    <a href="@Url.Content("~/Assets/ProjectFiles/" + item)" target="_blank">@item.FileName</a>
+                                                    <i class="fa fa-trash-o mrg5L deleteFile" style="cursor:pointer;" data-filename="@item.FileName" data-fldid="@item.FldID"></i>
+                                                </li>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <li></li>
+                                        }
+                                    }
+                                    else if (projectFiles.Count == 0 && poFiles.Any())
+                                    {
+                                        @foreach (var item in poFiles)
+                                        {
+                                            <li>
+                                                <input type="checkbox" checked>
+                                                <a href="@Url.Content(" ~/Assets/ProjectFiles/" + item)" target="_blank">@item.FileName</a>
+                                                <i class="fa fa-trash-o mrg5L deleteFile" style="cursor:pointer;" data-filename="@item.FileName" data-fldid="@item.FldID"></i>
+                                            </li>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <li></li>
+                                    }
+
+
+
+
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row custom_gutter5-x gy-2">
+                <div class="col-lg-6">
+                    <div class="pcomment">
+                        <h2 class="section_header">PURCHASE ORDER COMMENTS</h2>
+                        <div class="frm_fld_wrp add_fld">
+                            <label for="">
+                                Comment <a href="#" id="POModal">
+                                    PO Comment
+                                    List
+                                </a>
+                            </label>
+                            <textarea class="form-control" placeholder="Purchase Order Comments" id="txt_PrchsOrdrCmmnts">@Model.ProjectEdit.PurchaseOrderComment</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="project_comments">
+                        <h2 class="section_header">PROJECT COMMENTS</h2>
+                        <div class="row custom_gutter5-x gy-2">
+                            <div class="col-xl-6">
+                                <div class="frm_fld_wrp add_fld">
+                                    <label for="">Enter Comment</label>
+                                    <textarea class="form-control" placeholder="Enter Comment" id="newcomment"></textarea>
+                                </div>
+                                <button type="button" class="solid_teal_btn inline_solid_btn" id="AddProjectcomment">Add New</button>
+                            </div>
+                            <div class="col-xl-6">
+                                @if (Model.ProjectCommentByProjectIdList != null && Model.ProjectCommentByProjectIdList.Any())
+                                {
+                                    <ul class="comment_list">
+
+
+                                        @foreach (var item in Model.ProjectCommentByProjectIdList)
+                                        {
+                                            <li>
+                                                <span>@item.Comment ( @item.CreatedDate )</span>
+                                                <a href="#" class="remove_bar deleteProjectcommetInEditP" title="Remove this comment " data-id="@item.CommentId"><i class="fa-solid fa-xmark"></i></a>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <div></div>
+
+                                }
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project_contact_list">
+                <h2 class="section_header">PROJECT CONTACT LIST</h2>
+
+
+
+                <div class="table-responsive" id="ProjectContactListTable">
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+    <div class="modal fade po_comment_list" id="po_comment_list" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title">PO Comment List</h1>
+                    <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="" id="POComment">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Modal -->
+<div class="modal fade pdt_modal" id="pdt_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">PTD Breakdown</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row custom_gutter5-x" id="PTDData">
+                    <div class="col-md-6">
+                        <div class="frm_fld_wrp">
+                            <label for="">From</label>
+                            <input type="text" class="datepicker form-control" id="fromDate" value="@Model.ProjectEdit.ProjectCreatedDate?.ToString("yyyy.MM.dd")"
+                                   data-project-created-date="@Model.ProjectEdit.ProjectCreatedDate?.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="frm_fld_wrp">
+                            <label for="">To</label>
+                            <input type="text" class="datepicker form-control" id="toDate" value="@DateTime.Now.ToString("yyyy.MM.dd")">
+                        </div>
+                    </div>
+                </div>
+                <div id="ptdDatatable">
+                </div>
+
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* modal for vendorlist *@
+<div class="modal fade" id="shiptoVendorlistmodal" tabindex="-1" aria-labelledby="Ship To Vendors" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Order Vendors</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="table-responsive" id="vendorListinEditProject">
+                </div>
+
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade edit_projacc" id="edit_projacc" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit Project Account</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="ProjectDetails"></div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" id="saveProjectAccountDetails">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- edit project list-->
+<!-- flote icon -->
+<ul class="flote_icon">
+    <li>
+        <a href="javascript:void(0);" data-bs-toggle="popover" data-bs-content="Update Project" data-bs-trigger="hover" id="UpdateProjectBtn">
+            <i class="fa fa-save"></i>
+        </a>
+    </li>
+    <li>
+        <a href="javascript:void(0);" data-bs-toggle="popover" data-bs-content="Add Contact" data-bs-trigger="hover" id="addProjectContactBtn">
+            <i class="fa fa-plus-square"></i>
+        </a>
+    </li>
+    <li>
+        <a href="javascript:void(0);" data-bs-toggle="popover" data-bs-content="Cancel" data-bs-trigger="hover" id="cancelbtn">
+            <i class="fa fa-remove"></i>
+        </a>
+    </li>
+</ul>
+<!-- flote icon -->

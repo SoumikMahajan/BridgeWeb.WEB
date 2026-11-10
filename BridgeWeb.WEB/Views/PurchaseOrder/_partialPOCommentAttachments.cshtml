@@ -1,0 +1,79 @@
+﻿ @model BridgeWeb.Domain.Model.MultipleModel
+
+<div class="row custom_gutter5-x gy-2">
+    <div class="col-lg-12">
+        <div class="frm_fld_wrp">
+            <textarea class="form-control makedisable " style="height: 240px;" name="" id="txt_comments">@Model.POcomments.Comment</textarea>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <div class="section_header @(Model.POFIles.Count()>0 ?"d-block":"d-none")">Attachments</div>
+         @* <div id="pofiletoshowlist"></div> *@
+        <ul class="@(Model.POFIles.Count() > 0?"attachment_list" :"")" >
+
+            @if (Model.POFIles.Count() > 0)
+            {
+                foreach (var items in Model.POFIles)
+                {
+                    <li>
+                        <input type="checkbox" name="" class="downloadablefile " id="" data-fldid=@items.FldId @(items.IsExposed ? "checked" : "")>
+                        <a target='_blank' href="@Url.Content("~/Assets/ProjectFiles/"+items.Filename)">@items.Filename</a>
+                    </li>
+                }
+
+
+            }
+            else
+            {
+                <li></li>
+
+            }
+
+        </ul>
+
+    </div>
+    <div class="col-lg-12 divbind">
+        <div class="section_header">PO ATTACHMENTS</div>
+        <div class="fileinput-button transparent_file mw-100 my-3">
+            <p>Drop a file or click here to upload!</p>
+            <input type="file" class="fileuploadmulti" id="polevelfileupload" multiple>
+        </div>
+        <div class="files_selected">
+            <p>Files selected :</p>
+            <ul class="filelist">
+            </ul>
+        </div>
+        <input type="text" class="form-control my-2" placeholder="Search file by name" id="searchPOFile">
+        <div class="reasult">
+           @*  <div id="polevelFilelistdiv"></div> *@
+            <b id="filesofpolevelnumber">@Model.POLevelFileList.Count() File(s) found</b>
+            <ul class="@(Model.POLevelFileList.Count() > 0?"attachment_list fileUpload" :"fileUpload")">
+
+                @if (Model.POLevelFileList.Count() > 0)
+                {
+                    foreach (var items in Model.POLevelFileList)
+                    {
+                        <li>
+                            <input type="checkbox" name="" class="filelistforpo " id="" data-checkid=@items.FldID @(items.isExposed == true ? "checked" : "")>
+                            <a target='_blank' href="@Url.Content($"~/Assets/ProjectFiles/{items.Filename}")">@items.ActualFileName
+                               
+                            </a>
+                            <i class="fa-solid fa-trash-can mrg5L deletePOLevelFileList" data-fileid="@items.FldID" data-filename="@items.Filename"></i>
+
+                        </li>
+                    }
+
+
+                }
+                else
+                {
+                    <li></li>
+
+                }
+
+            </ul>
+
+
+        </div>
+    </div>
+</div>

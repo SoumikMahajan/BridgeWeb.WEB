@@ -1,0 +1,17 @@
+﻿@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "TheBridgeByTCG";
+}
+
+<div class="cong_msg">
+    @if (ViewBag.Error == null)
+    {
+        <h4>Congratulation <span class="usr_nam">@ViewBag.Fullname</span></h4>
+    }
+    else
+    {
+        <h4>@ViewBag.Error</h4>
+    }
+    <p>Please Proceed to login with your account</p>
+    <button type="button" class="solid_teal_btn" id="proceedToLogin">Proceed to login</button>
+</div>

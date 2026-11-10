@@ -1,0 +1,43 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+<input data-id="@Model."hidden />
+
+<h2 class="section_header">Security Permission</h2>
+<form action="#" class="row security_frm custom_gutter5-x" id="sP">
+    <div class="col-12 check_uncheck_all">
+        <input type="button" class="gray_checkbtn" value="Uncheck All" id="uncheck"></input>
+        <input type="button" class="gray_checkbtn" value="Check All" id="check"></input>
+    </div>
+
+    @foreach (var item in Model.systemPermissionLists)
+    {
+        int key = 0;
+        <div class="col-lg-3">
+            <div class="check_wrp">
+                <div class="check_hdng">
+                    <h3>@item.SystemPermission</h3>
+                    <input type="checkbox" value="project" id="@item.SystemPermission" class="headerCheckbox">
+                </div>
+                <ul class="check_list">
+                    @foreach (var option in item.SystemPermissionOption)
+                    {
+                        <li>
+                            <label for="creat">@option.description</label>
+                            @if (option.is_selected == 1)
+                            {
+                                <input type="checkbox" id="@item.SystemPermission@key" data-spid="@option.fldid" class="project_check securityoption" checked>
+                            }
+                            else
+                            {
+                                <input type="checkbox" id="@item.SystemPermission@key" data-spid="@option.fldid" class="project_check securityoption">
+                            }
+
+                        </li>
+                        key++;
+                    }
+
+                </ul>
+            </div>
+        </div>
+    }
+</form>

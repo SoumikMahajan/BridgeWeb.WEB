@@ -1,0 +1,82 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@* <div class="modal-header">
+    <h1 class="modal-title"></h1>
+    <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>
+<div class="modal-body  approval_history_progress">
+    <div id="partailPoApprovalHistory">
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" data-bs-dismiss="modal" class="offwhite_btn">Close</button>
+</div> *@
+
+
+@if (Model.incompletePOOverCommitedDTO.Count > 0)
+{
+    foreach (var item in Model.incompletePOOverCommitedDTO)
+    {
+        var PO = (item.CommitedCost * item.Rate);
+        var varience = (item.BudgetAmount - PO);
+        <div class="modal-header">
+            <table class="table heading_table">
+                <thead>
+                    <tr>
+                        <th>Item #</th>
+                        <th>Description</th>
+                        <th>Committed</th>
+                        <th>Budget</th>
+                        <th>Variance</th>
+                    </tr>
+                </thead>
+
+                <tbody id="header_tablebody">
+                    <tr>
+                        <td>@item.ItemNumber</td>
+                        <td>@item.Description</td>
+                        <td>@PO.Value.ToString("#,##0") @item.Currency</td>
+                        <td>@item.BudgetAmount.Value.ToString("#,##0")</td>
+                        <td>@varience.Value.ToString("#,##0")</td>
+                    </tr>
+                </tbody>
+            </table>           
+        </div>
+
+        <div class="modal-body">
+            <div class="col-lg-12">
+                <table class="table table-striped Committedlist" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th>PO Number</th>
+                            <th>Committed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (item.commitedPO.Count > 0)
+                        {
+                            foreach (var commitPo in item.commitedPO)
+                            {
+                                <tr>
+                                    <td>@commitPo.PurchaseOrderID</td>
+                                    <td>@commitPo.POCost.Value.ToString("#,##0")</td>
+                                </tr>
+                            }
+                        }                        
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    }
+}
+
+
+
+
+
+<div class="modal-footer">   
+    <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+</div>

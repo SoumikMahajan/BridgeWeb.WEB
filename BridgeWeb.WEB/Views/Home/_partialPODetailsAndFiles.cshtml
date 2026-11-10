@@ -1,0 +1,67 @@
+﻿@model MultipleModel
+<div class="col-lg-6">
+
+    <h2 class="section_header"><input type="checkbox" checked>PURCHASE ORDER PDF(S)</h2>
+    <div class="po_pdf">
+        <div class="po_pdf_list" id="popdfstodownload">
+            @if (Model.PODetailsandPOFilesDTO.PODetailsList.Count() > 0)
+            {
+                foreach (var item in Model.PODetailsandPOFilesDTO.PODetailsList)
+                {
+                    <input checked data-poid="@item.PurchaseOrderID" type="checkbox" class="downloadablepopdfs">
+                    // <span>@($"{item.PONumber}-{item.ParentVendorName}-{item.ContactName}{string.IsNullOrWhiteSpace(item.Remarks) ?string.Empty:-+ }}")</span>
+                    <span>@($"{item.PONumber}-{item.ParentVendorName}-{item.ContactName}{(string.IsNullOrWhiteSpace(item.Remarks) ? string.Empty : "- " + item.Remarks)}")</span>
+                    @* <span> *@
+                    @*     1002-0005B - ARTCO INTERNATIONAL *@
+                    @*     INC. (USD) - DENNIS DESAULNIER - PLACE EXCEPTIONALLY LONG REMARKS REFERENCE HERE *@
+                    @* </span> *@
+                }
+
+            }
+            else
+            {
+                <span></span>
+            }
+
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-6">
+    <h2 class="section_header"><input type="checkbox" checked>ATTACHMENTS</h2>
+    <div class="down_attact">
+        <div class="down_attact_list" id="poattachmentstodownload">
+            @if (Model.PODetailsandPOFilesDTO.FilesToshowList.Count() > 0)
+            {
+                foreach (var items in Model.PODetailsandPOFilesDTO.FilesToshowList)
+                {
+
+                    <input checked type="checkbox" class="downloadabletermsfiles" style="margin-top:1px;" data-filename="@items.FileName">
+                    <a target="_blank" href="@Url.Content($"~/Assests/ProjectFiles/{items.FileName}")" title="Download this file">
+                        @items.FileName
+                    </a>
+                }
+            }
+            else if (Model.ChecktermsDTOList.Count() > 0)
+            {
+                foreach (var items in Model.ChecktermsDTOList)
+                {
+                    <input checked type="checkbox" class="downloadabletermsfiles" style="margin-top:1px;" data-filename="@items.TermsFile">
+
+                    <a target="_blank" href="@Url.Content($"~/Assests/TermsConditionFiles/{items.TermsFile}")" title="Download this file" data-projectid="@items.ProjectID">
+                        @items.filename1
+                    </a>
+                    
+                }
+               
+                
+            }
+            else if (Model.ChecktermsDTOList.Count() == 0 && Model.PODetailsandPOFilesDTO.FilesToshowList.Count() ==0)
+            {
+                <span>
+                    There are no files selected for download
+                </span>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,5 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@foreach (var item in Model.systemUsersDTOs)
+{
+    <option value="@item.FldID">@item.Firstname @item.Lastname</option>
+}

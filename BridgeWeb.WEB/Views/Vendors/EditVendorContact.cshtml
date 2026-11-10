@@ -1,0 +1,255 @@
+﻿@{
+    ViewData["Title"] = "Edit Vendor Contact";
+}
+
+@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    //int index = 0;
+    var groupedPermissions = Model.venndorSystemPermissionList.GroupBy(p => p.GroupType).ToList();
+}
+
+
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("ContactList", "Vendors")">Vendors</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>Edit Vendor Contacts</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="master_wrap edt_ven_contact_wrp has_floteIcon">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+
+                @if (Model.systemUsersDTOs.Any())
+                {
+                    <p class="created_by">Created By:- @Model.systemUsersDTOs[0].Firstname @Model.systemUsersDTOs[0].Lastname</p>
+                }
+                else
+                {
+                    <p class="created_by">Created By:- </p>
+                }
+            </div>
+            <div class="col-lg-5">
+                <div class="edt_conct">
+                    <h2 class="section_header">Edit Contact → @Model.VendorDto.ContactFirstname @Model.VendorDto.ContactLastname</h2>
+                    <div class="edit_ven_btnholder">
+                        <a href="@Url.Action("EditVendor", "Vendors", new { vendorid = Model.VendorDto.ParentVendor_ID })" class="solid_teal_btn">Go back</a>
+                        <a href="#" class="solid_teal_btn" id="CreateVCard">Create VCard</a>
+                    </div>
+                    <div class="col-sm-6" style="margin-top: 4px; min-height: 20px;margin-bottom: 3px;" id="vcardlink">
+                    </div>
+                    <form class="row custom_gutter5-x" id="edit_vendor_contact">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" id="hiddenVId" value="@Model.VendorDto.Vendor_ID" />
+                        <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                <label class="form-label">First Name<span class="req">*</span></label>
+                                <input type="text" class="form-control" style="text-transform:uppercase" id="vendorFN" value="@Model.VendorDto.ContactFirstname">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" style="text-transform:uppercase" id="vendorLN" value="@Model.VendorDto.ContactLastname">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                @if (Model.VendorDto.IsSystemUser == 1)
+                                {
+                                    <label class="form-label">Email address<span class="req">*</span></label>
+                                }
+                                else
+                                {
+                                    <label class="form-label">Email address</label>
+                                }                               
+                                <input type="email" class="form-control" id="vendorEmail" value="@Model.VendorDto.Email" @(string.IsNullOrEmpty(Model.VendorDto.Email) ? "" : "disabled")>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                <label class="form-label">Website</label>
+                                <input type="text" class="form-control" id="vendorWebsite" value="@Model.VendorDto.Website">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                <label class="form-label">Contact Title</label>
+                                <input type="text" class="form-control" id="contactTitleVendor" value="@Model.VendorDto.ContactTitle">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="VendorPhone" value="@Model.VendorDto.Phone">
+                            </div>
+                        </div>
+                        @* <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                <label class="form-label">Fax</label>
+                                <input type="text" class="form-control" id="vendorFax" value="@Model.VendorDto.Fax">
+                            </div>
+                        </div> *@
+                        <div class="col-lg-2">
+                            <div class="frm_fld_wrp">
+                                <label class="form-label">Ext</label>
+                                <input type="text" class="form-control" id="vendorExt" value="@Model.VendorDto.Extension">
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="frm_fld_wrp">
+                                <label class="form-label">Mobile</label>
+                                <input type="text" class="form-control phonenumber" id="vendorMob" value="@Model.VendorDto.Mobile">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="d-inline-flex algn-items-ceter gap-3">
+                                System User
+                                <input type="checkbox" class="form-check-inline" id="vendorSuser" @(Model.VendorDto.IsSystemUser == 1 ? "checked" : "")>
+                            </label>
+
+                            <label class="d-inline-flex algn-items-ceter gap-3">
+                                Hidden
+                                <input type="checkbox" class="form-check-inline" id="vendorH" @(Model.VendorDto.IsHidden == 1 ? "checked" : "")>
+                            </label>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="edt_ven_address">
+                    <h2 class="section_header">Addresses</h2>
+                    <div class="tab_container" id="partialAddressLoad">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="edit_ven_cont_permiss">
+                    <div class="row custom_gutter5-x">
+                        <div class="col-12 @(Model.VendorDto.IsSystemUser == 0 ? "d-none" : "")" id="vendorUpPermissionShowHide">
+                            <h2 class="section_header">Permissions</h2>
+                            <form action="#" class="row gy-2 custom_gutter5-x" id="edit_contact_permission">
+                                <div class="col-12 check_uncheck_all">
+                                    <input type="button" class="gray_checkbtn" value="Uncheck All" id="uncheck">
+                                    <input type="button" class="gray_checkbtn" value="Check All" id="check">
+                                </div>
+                                @foreach (var group in groupedPermissions)
+                                {
+                                    if (group.Key.ToUpper() != "PROJECT" && group.Key.ToUpper() != "USER" && group.Key.ToUpper() != "VENDOR")
+                                    {
+                                        <div class="col-lg-3">
+                                            <div class="check_wrp">
+                                                <div class="check_hdng">
+                                                    <h3>@group.Key</h3>
+                                                    <input type="checkbox" id="@group.Key.ToLower()_header" value="@group.Key.ToLower()" class="headerCheckbox">
+                                                </div>
+                                                <ul class="check_list">
+                                                    @foreach (var permission in group)
+                                                    {
+                                                        <li>
+                                                            <label for="@permission.priority_name">@permission.priority_name</label>
+                                                            <input type="checkbox" data-sysid="@permission.security_id"
+                                                                   id="@permission.priority_name"
+                                                                   class="@group.Key.ToLower()_check project_check systemoption"
+                                                                   @(permission.is_selected == 1 ? "checked" : "")>
+                                                        </li>
+                                                    }
+
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    }
+
+                                }
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- edit vendor contact list-->
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="#" data-bs-content="Update" data-bs-trigger="hover" data-bs-toggle="popover" id="updateVContact">
+                <i class="fa fa-save"
+                   aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->
+<!-- modal -->
+<div class="modal fade" id="add_new_address" tabindex="-1" aria-labelledby="add_new_address" aria-modal="true"
+     role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Add New Address</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row custom_gutter5-x">
+                    <div class="col-12">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Address Title</label>
+                            <input type="text" class="form-control" id="cnHeader" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="frm_fld_wrp">
+                            <label for="address" class="form-label">Address(Press Enter for multiple lines)</label>
+                            <textarea class="form-control" id="cnAddress" rows="4" style="height: 90px;" autocomplete="off"></textarea>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="cncity" aria-label="City" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="frm_fld_wrp">
+                            <label for="Country" class="form-label">Country</label>
+                            <select id="cnDdlCountry" class="form-select">
+                                <option value="0">--Select Country--</option>
+                                @foreach (var item in Model.CountryList)
+                                {
+                                    <option value="@item.CountryID">@item.Country</option>
+
+                                }
+                            </select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="state" class="form-label">State/Prov</label>
+                            <select id="cnDdlstate" class="form-select">
+                            </select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="cnzipcode" class="form-label">Postal/Zip Code</label>
+                                <input type="text" class="form-control pincode" id="cnzipcode" aria-label="Postal/Zip Code" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label>
+                            <input type="checkbox" id="cnIsDefault"> Is Default Address?
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-target="modal" id="addNewAddress">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

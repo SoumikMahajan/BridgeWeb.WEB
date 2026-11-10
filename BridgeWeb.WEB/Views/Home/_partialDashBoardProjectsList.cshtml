@@ -1,0 +1,22 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@foreach (var item in Model.dashBoardHeaderDTO)
+{
+    <div class="accordion taskList" id="acc_@item.ProjectID">
+        <div class="accordion-item">
+            <button class="accordion-button collapsed projectHeaderList" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#acc_lev_@item.ProjectID" aria-expanded="false" data-pid="@item.ProjectID">
+                @item.ProjectName (@item.ProjectNumber)
+
+               @*  <i class="fa fa-refresh" aria-hidden="true"></i> *@
+            </button>
+
+            <div id="acc_lev_@item.ProjectID" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    @* Partial Page _partialDashBoardProjectTaskList *@
+                </div>               
+            </div>
+        </div>
+    </div>
+}
+

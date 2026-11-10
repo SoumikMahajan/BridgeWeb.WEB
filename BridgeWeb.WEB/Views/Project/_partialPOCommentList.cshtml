@@ -1,0 +1,36 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var index = 0;
+}
+
+<table class="display poCommentList" style="width:100%" id="poCommentList">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Project Number</th>
+            <th>Project Name</th>
+            <th>Comment</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var items in Model.ProjectCommentsList)
+        {
+            <tr>
+                <td>
+                    <i class="fa fa-hand-o-right addComment" style="cursor:pointer;" data-index="@index" title="Select this Comment"></i>
+                  @*   <input type="hidden" class="hiddenPOComment" data-index="@index" value="@items.PurchaseOrderComment" style="display: none; margin: 0; padding: 0;" /> *@
+                </td>
+                <td>@items.ProjectNumber</td>
+                <td>@items.ProjectName</td>
+                <td>
+                    <textarea class="form-control commentArea" style="height: 60px; width:100%; min-width: 375px; resize: none;">@items.PurchaseOrderComment</textarea>
+                </td>
+            </tr>
+            index++;
+            
+        }
+       
+      
+    </tbody>
+</table>

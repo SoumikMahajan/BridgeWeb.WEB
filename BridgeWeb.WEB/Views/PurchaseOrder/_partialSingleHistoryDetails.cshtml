@@ -1,0 +1,123 @@
+﻿@using System.Web
+@model MultipleModel
+
+<table class="table table-striped table-hover" id="history_details_table" style="width:100%">
+    <thead>
+        <tr>
+            <th>Field</th>
+            <th>Old Value</th>
+            <th>New Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.POSingleHistoryDetails.Count>0)
+        {
+            @if (Model.POSingleHistoryDetails[0].ItemDtldDesc != Model.POSingleHistoryDetails[1].ItemDtldDesc)
+            {
+                <tr>
+                    <td>Item Description</td>
+                    <td>
+                        @(
+                            Html.Raw(HttpUtility.UrlDecode(Model.POSingleHistoryDetails[0].ItemDtldDesc))
+                            )
+                    </td>
+                    <td>
+                        @(
+                            Html.Raw(HttpUtility.UrlDecode(Model.POSingleHistoryDetails[1].ItemDtldDesc))
+                            )
+                    </td>
+                </tr>
+            }
+
+            @if (Model.POSingleHistoryDetails[0].SpecNum != Model.POSingleHistoryDetails[1].SpecNum)
+            {
+                <tr>
+                    <td>Spec Num</td>
+                    <td>@Model.POSingleHistoryDetails[0].SpecNum</td>
+                    <td>@Model.POSingleHistoryDetails[1].SpecNum</td>
+                </tr>
+            }
+
+            @if (Model.POSingleHistoryDetails[0].SpecNum != Model.POSingleHistoryDetails[1].SpecNum)
+            {
+                <tr>
+                    <td>Spec Num</td>
+                    <td>@Model.POSingleHistoryDetails[0].SpecNum</td>
+                    <td>@Model.POSingleHistoryDetails[1].SpecNum</td>
+                </tr>
+            }
+
+            @if (Model.POSingleHistoryDetails[0].Vendor != Model.POSingleHistoryDetails[1].Vendor)
+            {
+                <tr>
+                    <td>Vendor</td>
+                    <td>@Model.POSingleHistoryDetails[0].Vendor</td>
+                    <td>@Model.POSingleHistoryDetails[1].Vendor</td>
+                </tr>
+            }
+
+            @if (Model.POSingleHistoryDetails[0].Quantity != Model.POSingleHistoryDetails[1].Quantity)
+            {
+                <tr>
+                    <td>Quantity</td>
+                    <td>@Model.POSingleHistoryDetails[0].Quantity</td>
+                    <td>@Model.POSingleHistoryDetails[1].Quantity</td>
+                </tr>
+            }
+
+            @if (Model.POSingleHistoryDetails[0].Cost != Model.POSingleHistoryDetails[1].Cost)
+            {
+                <tr>
+                    <td>Cost</td>
+                    <td>@Model.POSingleHistoryDetails[0].Cost</td>
+                    <td>@Model.POSingleHistoryDetails[1].Cost</td>
+                </tr>
+            }
+
+            @if (Model.POSingleHistoryDetails[0].Note != Model.POSingleHistoryDetails[1].Note)
+            {
+                <tr>
+                    <td>Note</td>
+                    <td>@Model.POSingleHistoryDetails[0].Note</td>
+                    <td>@Model.POSingleHistoryDetails[1].Note</td>
+                </tr>
+            }
+
+            @if (Model.POSingleHistoryDetails[0].Tagging != Model.POSingleHistoryDetails[1].Tagging)
+            {
+                <tr>
+                    <td>Tagging</td>
+                    <td>@Model.POSingleHistoryDetails[0].Tagging</td>
+                    <td>@Model.POSingleHistoryDetails[1].Tagging</td>
+                </tr>
+            }
+
+@*             @if (Model.POSingleHistoryDetails[0].ItemDtldDesc != Model.POSingleHistoryDetails[1].ItemDtldDesc)
+            {
+                <tr>
+                    <td>Item Detailed Description</td>
+                    <td>
+                        @(
+                            Html.Raw(HttpUtility.UrlDecode(Model.POSingleHistoryDetails[0].ItemDtldDesc))
+                            )
+                    </td>
+                    <td>
+                        @(
+                            Html.Raw(HttpUtility.UrlDecode(Model.POSingleHistoryDetails[0].ItemDtldDesc))
+                            )
+                    </td>
+                </tr>
+            } *@
+
+            @if (Model.POSingleHistoryDetails[0].UOM != Model.POSingleHistoryDetails[1].UOM)
+            {
+                <tr>
+                    <td>UOM</td>
+                    <td>@Model.POSingleHistoryDetails[0].UOM</td>
+                    <td>@Model.POSingleHistoryDetails[1].UOM</td>
+                </tr>
+            }
+
+        }  
+    </tbody>
+</table>

@@ -1,0 +1,1661 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var UserRoleId = Model.UserRoleid;
+    var UserId = Model.UserId;
+    var UserName = Model.UserName;
+    var IsPoEditAccessPermission = @ViewBag.IsEditable ?? "0";
+}
+
+@{
+    if (Model.DashboardActionName == "buildIncompletePONew")
+    {
+        if (Model.incompletePoDTO.Count > 0)
+        {
+            var firstItem = Model.incompletePoDTO.First();
+            var ItemCount = Model.incompletePoDTO.Count;
+            var SelectedProjectId = firstItem.ProjectID ?? 0;
+
+            <input type="hidden" id=@($"INCINFO_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            foreach (var item in Model.incompletePoDTO)
+            {
+                <div class="accspan">
+                    PO Number :
+                    @if (IsPoEditAccessPermission == "0")
+                    {
+                        <a style="cursor:pointer;" href="javascript:void(0)" data-poid="@item.PurchaseOrderID" class="green_link ProffPO">
+                            @item.PONumber
+                        </a>                                                           
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("POEdit", "PurchaseOrder", new { POId = item.PurchaseOrderID })" data-po="@item.PurchaseOrderID" target="_blank" class="green_link">@item.PONumber</a>
+                    }                   
+                    Missing :
+                    @foreach (var missingItem in item.Items.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <span class="label label-danger">@missingItem.Trim()</span>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+    }
+    if (Model.DashboardActionName == "buildIncompleteProjectNew")
+    {
+        if (Model.incompleteProjectDTO.Count > 0)
+        {
+            var firstItem = Model.incompleteProjectDTO.First();
+            var ItemCount = Model.incompleteProjectDTO.Count;
+            var SelectedProjectId = firstItem.ProjectId ?? 0;
+
+            <input type="hidden" id=@($"INCINFOP_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            foreach (var item in Model.incompleteProjectDTO)
+            {
+                <div class="accspan">
+                    Missing :
+                    @foreach (var missingItem in item.Items.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <span class="label label-danger">@missingItem.Trim()</span>
+                        <a href="@Url.Action("EditProject", "Project", new { ProjectId = item.ProjectId })" target="_blank"><i class="fas fa-edit"></i></a>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+    }
+    if (Model.DashboardActionName == "buildIncompleteVendorNew")
+    {
+        if (Model.imcompleteVendorDTO.Count > 0)
+        {
+            var firstItem = Model.imcompleteVendorDTO.First();
+            var ItemCount = Model.imcompleteVendorDTO.Count;
+            var SelectedProjectId = firstItem.ProjectID ?? 0;
+
+            <input type="hidden" id=@($"INCINFOV_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            foreach (var item in Model.imcompleteVendorDTO)
+            {
+                <div class="accspan">
+                    Contact :
+                    <a href="@Url.Action("EditVendorContact", "Vendors", new { vendorId = item.VendorId })" target="_blank">@item.VContactName</a>
+                    Missing :
+                    @foreach (var missingItem in item.Items.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <span class="label label-danger">@missingItem.Trim()</span>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+    }
+    if (Model.DashboardActionName == "buildBudgetApprovalsNew")
+    {
+        if (Model.incompleteBudgetDTO.Count > 0)
+        {
+            var firstItem = Model.incompleteBudgetDTO.First();
+            var ItemCount = Model.incompleteBudgetDTO.Count;
+            var SelectedProjectId = firstItem.ProjectId ?? 0;
+
+            <input type="hidden" id=@($"BDGTAPPR_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            <div class="table-responsive task_list_table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Action</td>
+                            <td>Budget Group</td>
+                            <td>Status</td>
+                            <td>Comment</td>
+                            <td>On Behalf of</td>
+                            <td></td>
+                            <td> </td>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    @{
+                        bool hasPending = Model.incompleteBudgetDTO.Any(x =>!x.HistoryList!.Any(h => h.Rejected == 1 && h.resend == 0)&& x.Bissent == 1);
+                    }
+                        @foreach (var item in Model.incompleteBudgetDTO)
+                        {
+                            var latestHistory = item.HistoryList.OrderByDescending(x => x.FldID).FirstOrDefault();
+
+                            bool isRejected = latestHistory != null && latestHistory.Rejected == 1 && latestHistory.resend == 0;                 
+                            if (isRejected && hasPending)
+                            {
+                                continue;
+                            }
+                            string ITEMNEW = "0" ?? string.Empty;
+                            if (item.CheckingDate == "")
+                            {
+                                ITEMNEW = "1";
+                            }
+                            if (item.CheckingDate != "" && item.DateofInsert != "" && (DateTime.Parse(item.CheckingDate) < DateTime.Parse(item.DateofInsert)))
+                            {
+                                ITEMNEW = "1";
+                            }
+
+                            <tr>
+                                                                
+                                @if (item.Bissent == 1)
+                                {
+                                    <td>
+                                    <div class="action_icons">
+                                        <a style="cursor:pointer;"><i title="View Budget" class="fa fa-file-pdf-o viewBudgetReport" data-projectid="@item.ProjectId" data-sectionids="@item.sectionID"></i></a>
+
+                                        @if (item.HistoryList!.Any())
+                                        {
+                                            <i title="Approval History" class="fa fa-info-circle openBudgetApprovalhistory" data-bs-toggle="modal"
+                                               data-bs-target="#approval_history_new" style="cursor:pointer;" data-projectid="@item.ProjectId" data-groupid="@item.GroupID" data-sectionids="@item.sectionID"></i>
+                                        }
+
+                                    </div>
+                                    </td>
+                                    <td><a href="javascript:void(0);" class="openbudgetgroup" data-itemid="@item.GroupID">@item.groupname</a></td>
+                                    if (item.AlreadyApproved < item.NumOfUserToAprv_Budget)
+                                    {
+                                        <td>@item.AlreadyApproved/@item.NumOfUserToAprv_Budget</td>
+                                        <td><input type="text" class="form-control"></td>
+                                        <td>
+                                            @if (item.Budget_Is_Manager == "1")
+                                            {
+                                                <select class="form-select" style="max-width: 300px;" id='@("userddl_budget_" + item.ProjectId + "_" + item.GroupID)'>
+                                                    <option value="0">--Select--</option>
+                                                    @foreach (var user in item.BudgetUserList)
+                                                    {
+                                                        <option value="@user.Id">@user.Name</option>
+                                                    }
+                                                </select>
+                                                <input type="hidden" value="1" id='@("ismanager_budget_" + item.ProjectId + "_" + item.GroupID)' />
+                                            }
+                                            else
+                                            {
+                                                <input type="hidden" value="0" id='@("ismanager_budget_" + item.ProjectId + "_" + item.GroupID)' />
+                                            }
+                                        </td>
+                                        <td>
+                                            <input type="button" value="Approve" data-groupid="@item.GroupID" data-projectid="@item.ProjectId" class="gray_checkbtn approveBudget">
+                                            <input type="button" value="Reject" data-groupid="@item.GroupID" data-projectid="@item.ProjectId" class="gray_checkbtn rejectBudget">
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>Approved</td>
+                                        <td><input type="text" disabled class="form-control"></td>
+                                        <td>
+                                            @if (item.Budget_Is_Manager == "1")
+                                            {
+                                                <select class="form-select" style="max-width: 300px;" id='@("userddl_budget_" + item.ProjectId + "_" + item.GroupID)' disabled>
+                                                </select>
+                                                <input type="hidden" value="1" id='@("ismanager_budget_" + item.ProjectId + "_" + item.GroupID)' />
+                                            }
+                                        </td>
+                                        <td>
+                                        </td>
+                                    }
+                                }                                
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+
+    }
+    if (Model.DashboardActionName == "buildPOApprovalsNew")
+    {
+        if (Model.incompleteTaskPoDTO.Count > 0)
+        {
+            var projectfirstItem = Model.incompleteTaskPoDTO.First();
+            var SelectedProjectId = projectfirstItem.projectid ?? 0;
+            var ItemCount = Model.incompleteTaskPoDTO.Count;
+            var parentVendorGroup = Model.incompleteTaskPoDTO.GroupBy(p => p.vendor_id).ToList();
+
+            <input type="hidden" id=@($"POAPPR_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            <div class="accordion taskList" id="">
+                @foreach (var group in parentVendorGroup)
+                {
+                    var firstItem = group.First();
+                    var vendorId = firstItem.vendor_id;
+                    var projectid = firstItem.projectid;
+                    var Vcount = group.Count();
+                    var uniqueId = "POAPPR_Indv_" + firstItem.vendor_id;
+                    int NEW = string.IsNullOrEmpty(firstItem.CheckingDate) ||
+                    (!string.IsNullOrEmpty(firstItem.LatestDate) &&
+                    Convert.ToDateTime(firstItem.CheckingDate) < Convert.ToDateTime(firstItem.LatestDate))
+                    ? 1 : 1;
+
+                    <div class="accordion-item">
+                        <div class="accordion-button collapsed ChangViewStatus" role="button" data-bs-toggle="collapse"
+                                data-bs-target="#@uniqueId" aria-expanded="false" data-id="@vendorId" data-projectid="@projectid" data-vcount="@Vcount" data-mode="POAPPR">
+                            <div class="task_name">@firstItem.parentvendorname</div>
+                            <div class="task_cont"><span>Contact :</span><a href="@Url.Action("EditVendorContact", "Vendors", new { vendorId = firstItem.vendor_id })">@firstItem.ContactName</a></div>
+                            <div class="task_phone">Phone : <span>@firstItem.phone</span></div>
+                            <div class="task_email">
+                                <span>Email :</span><a href="#">@firstItem.email</a>
+                            </div>
+                            <div class="task_badge">
+                                <span class="badge">@Vcount</span>
+                                @if (NEW == 1)
+                                {
+                                    <span class="badge">NEW</span>
+                                }
+                            </div>
+
+                        </div>
+
+                        <div id="@uniqueId" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <div class="table-responsive task_list_table">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td>Action</td>
+                                                <td>PO #</td>
+                                                <td>Remarks</td>
+                                                <td class="text-end">Pre-tax Amount</td>
+                                                <td>Status</td>
+                                                <td>Sending Date</td>
+                                                <td>File</td>
+                                                <td>Comment</td>
+                                                <td>On Behalf Of</td>
+                                                <td>Approve</td>
+                                                <td>Reject</td>
+                                                @*<td>Comment</td>*@
+
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            @foreach (var po in group)
+                                            {
+                                                var lhtml = string.IsNullOrEmpty(po.LevelStatus)
+                                                ? "(Level 0/1)"
+                                                : $"(Level {po.LevelStatus.Split('^')[1]}/{po.LevelStatus.Split('^')[0]})";
+
+                                                var T1 = "";
+
+                                                @if (po.OverCommitedList.Count > 0)
+                                                {
+                                                    foreach (var item2 in po.OverCommitedList)
+                                                    {
+                                                        var PO = (item2.CommitedCost * item2.Rate);
+                                                        T1 += $"Section:-{item2.Sectionnumber}-{item2.NAME} \r\nItem:-{item2.ItemNumber} {item2.Description} \r\nPO cost/Budget Cost:- {PO.Value.ToString("#,##0")}/{item2.BudgetAmount.Value.ToString("#,##0")} {item2.Currency} \r\n";
+                                                    }
+                                                }
+
+                                                <tr>
+                                                    <td>
+                                                        @if (UserRoleId == 3 || UserRoleId == 2 || UserRoleId == 1)
+                                                        {
+                                                            <a data-poid="@po.purchaseorderid" class="ProffPO" style="color:#000000"><i title="View PO" class="fa fa-file-pdf-o" style="cursor:pointer;"></i></a>
+                                                            <i title="PO Download" class="fa fa-download download_btn" data-poid="@po.purchaseorderid" data-showid="@po.POID" style="cursor:pointer;"></i>
+                                                            <i title="PO History" class="fa fa-info-circle pohistoryredirect" data-poid="@po.purchaseorderid" style="cursor:pointer;"></i>
+                                                            <a class="openpohistory" data-levelstatus="@po.LevelStatus" data-poid="@po.purchaseorderid" data-bs-toggle="modal" data-bs-target="#po_Approval_history" style="color:#000000"><i title="PO Approval History" class="fa fa-history" style="cursor:pointer;"></i></a>
+                                                            if (po.OverCommitedList.Count > 0)
+                                                            {
+                                                                <a style="cursor:pointer;color: #e85b5b;" class="openOverCommited" data-projectid="@po.projectid" data-poid="@po.purchaseorderid" data-bs-toggle="modal" data-bs-target="#po_over_commited_history"><i title="@Html.Raw(T1)" class="fa fa-exclamation-circle"></i></a>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <a data-poid="@po.purchaseorderid" class="ProffPO" style="color:#000000"><i title="View PO" class="fa fa-file-pdf-o" style="cursor:pointer;"></i></a>
+                                                            <i title="PO Download" class="fa fa-download download_btn" data-poid="@po.purchaseorderid" data-showid="@po.POID" style="cursor:pointer;"></i>
+                                                            <i title="PO History" class="fa fa-info-circle pohistoryredirect" data-poid="@po.purchaseorderid" style="cursor:pointer;"></i>
+                                                            <a class="openpohistory" style="color:#000000" data-levelstatus="@po.LevelStatus" data-poid="@po.purchaseorderid" data-bs-toggle="modal" data-bs-target="#po_Approval_history"><i title="PO Approval History" class="fa fa-history" style="cursor:pointer;"></i></a>
+                                                            if (po.OverCommitedList.Count > 0)
+                                                            {
+                                                                <a style="cursor:pointer;color: #e85b5b;" class="openOverCommited" data-projectid="@po.projectid" data-poid="@po.purchaseorderid" data-bs-toggle="modal" data-bs-target="#po_over_commited_history"><i title="@Html.Raw(T1)" class="fa fa-exclamation-circle"></i></a>
+                                                            }
+                                                        }
+
+                                                    </td>
+                                                    <td>
+                                                        @*@if (po.clientorvendorCount == 0)
+                                                        {
+                                                            <a href="@Url.Action("POEdit", "PurchaseOrder", new { POId = po.purchaseorderid })" data-po="@po.purchaseorderid" target="_blank" class="green_link">@po.POID</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a style="cursor:pointer;" data-poid="@po.purchaseorderid" class="green_link ProffPO">@po.POID</a>
+                                                        }*@
+
+                                                        @if (IsPoEditAccessPermission == "0")
+                                                        {
+                                                            <a style="cursor:pointer;" href="javascript:void(0)" data-poid="@po.purchaseorderid" class="green_link ProffPO">
+                                                                @po.POID
+                                                            </a>                                                           
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.Action("POEdit", "PurchaseOrder", new { POId = po.purchaseorderid })" data-po="@po.purchaseorderid" target="_blank" class="green_link">@po.POID</a>
+                                                        }              
+
+                                                    </td>
+                                                    <td>@po.remarks</td>
+                                                    <td class="text-end">@(po.PTA.HasValue? po.PTA.Value.ToString("#,##0") : "0")(@po.Currency)</td>
+                                                    <td>@po.LevelApprovalStatus.Split("^")[0]/@po.LevelApprovalStatus.Split("^")[1] @lhtml</td>
+                                                    <td>@po.ArrivedDate</td>
+                                                    <td><input type="file" name="" class="form-control" multiple></td>
+                                                    <td>
+                                                        <input data-id="@po.purchaseorderid" style="width:100%;" type="text" class="form-control poapproverejectchk2">
+                                                    </td>
+                                                    <td>
+                                                        @if (po.onbehalfof.Any())
+                                                        {
+                                                            var Count = 0;
+                                                            <select class="form-select" data-id="@po.purchaseorderid" id="userddl_@po.purchaseorderid">
+                                                                @foreach (var userList in po.onbehalfof)
+                                                                {
+
+                                                                    if (UserName.ToUpper() == userList.Name.ToUpper())
+                                                                    {
+                                                                        Count++;
+                                                                        <option value="@UserId" selected>@UserName</option>
+                                                                    }
+                                                                }
+                                                                @if (Count == 0)
+                                                                {
+                                                                    <option value="0" selected>---Select---</option>
+                                                                }
+                                                                @foreach (var userList in po.onbehalfof)
+                                                                {
+                                                                    if (Count == 0 && (UserRoleId != 4 || UserRoleId != 5))
+                                                                    {
+                                                                        <option value="@userList.Id">@userList.Name</option>
+                                                                    }
+                                                                }
+                                                            </select>
+                                                            <input type="hidden" value="1" id="ismanager_@po.purchaseorderid" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="hidden" value="0" id="ismanager_@po.purchaseorderid" />
+                                                        }
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <input type="checkbox" data-id="@po.purchaseorderid" class="poapproverejectchk approve" id="poapprove_@po.purchaseorderid">
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <input type="checkbox" data-id="@po.purchaseorderid" class="poapproverejectchk reject" id="poreject_@po.purchaseorderid">
+                                                    </td>
+
+                                                    @* Block Because Client Said to remove Comment Check box 19-11-2025 *@
+                                                    @*<td class="text-center">
+                                                        <input type="checkbox" data-id="@po.purchaseorderid" class="poapproverejectchk comment" id="pocomment_@po.purchaseorderid">
+                                                    </td>*@
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+
+    }
+    if (Model.DashboardActionName == "buildFabApprovalsNew")
+    {
+        if (Model.incompleteFabDTO.Count > 0)
+        {
+            var projectfirstItem = Model.incompleteFabDTO.First();
+            var ItemCount = Model.incompleteFabDTO.Count;
+            var SelectedProjectId = projectfirstItem.Project_ID ?? 0;
+            var parentVendorGroup = Model.incompleteFabDTO.GroupBy(p => p.Vendor_ID).ToList();
+
+            <input type="hidden" id=@($"POITEMAPPR_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+
+            <div class="accordion taskList" id="">
+                @foreach (var group in parentVendorGroup)
+                {
+                    var firstItem = group.First();
+                    var vendorId = firstItem.Vendor_ID;
+                    var projectid = firstItem.Project_ID;
+                    var Vcount = group.Count();
+                    var uniqueId = "POITEMAPPR_Indv_" + firstItem.Vendor_ID;
+
+                    var IsManager = firstItem.IsManager;
+                    var hideOnBehalfOf = (UserRoleId == 3 || UserRoleId == 2) ? "" : "display:none;";
+                    var disableFabpath = (UserRoleId == 3 || UserRoleId == 3 || IsManager == "1") ? "" : "disabled";
+
+                    <div class="accordion-item">
+                        <div class="accordion-button collapsed ChangViewStatus" role="button" data-bs-toggle="collapse"
+                                data-bs-target="#@uniqueId" aria-expanded="false" data-id="@vendorId" data-projectid="@projectid" data-vcount="@Vcount" data-mode="POITEMAPPR">
+                            <div class="task_name">@firstItem.ParentVendorName</div>
+                            <div class="task_cont"><span>Contact :</span><a href="@Url.Action("EditVendorContact", "Vendors", new { vendorId = firstItem.Vendor_ID })">@firstItem.ContactName</a></div>
+                            <div class="task_phone">Phone : <span>@firstItem.Phone</span></div>
+                            <div class="task_email">
+                                <span>Email :</span><a href="#">@firstItem.Email</a>
+                            </div>
+                            <div class="task_badge"><span class="badge">@Vcount</span></div>
+                        </div>
+
+                        <div id="@uniqueId" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <div class="table-responsive task_list_table">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td>Action</td>
+                                                <td>Type</td>
+                                                <td>Status</td>
+                                                <td>Approval Description</td>
+                                                <td>PO #</td>
+                                                <td>Item Description</td>
+                                                <td>Spec</td>
+                                                <td style="@hideOnBehalfOf">On behalf of</td>
+                                                <td>Comment</td>
+                                                <td>Attachments</td>
+                                                <td>Approval path</td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            @foreach (var fab in group)
+                                            {
+                                                var id = fab.ItemApprovalID;
+                                                var approvedby = fab.TotalNumberOfApproval;
+                                                var requiredby = fab.NumberToApprovPO;
+                                                var alreadyapproved = fab.TotalNumberOfLevelApproval;
+                                                var TotallevelApprover = fab.NumberToApprovedLevel;
+                                                var latestStatus = string.IsNullOrEmpty(fab.LatestStatus) || fab.LatestStatus == "Added" ? "Required" : fab.LatestStatus;
+                                                int ItemNew = string.IsNullOrEmpty(fab.CheckingDate)
+                                                || (!string.IsNullOrEmpty(fab.InserttDate)
+                                                && DateTime.TryParse(fab.CheckingDate, out var checkDate)
+                                                && DateTime.TryParse(fab.InserttDate, out var insertDate)
+                                                && checkDate < insertDate)
+                                                ? 1 : 0;
+
+                                                // Determine lhtm status
+                                                var lhtm = (approvedby == "0" && requiredby == "0" && latestStatus == "Approved") ?
+                                                "(All Approved)" :
+                                                (latestStatus == "Required" && !string.IsNullOrEmpty(TotallevelApprover)) ?
+                                                $" (0/1) ({latestStatus})" :
+                                                $" ({approvedby}/{requiredby}) ({latestStatus})";
+
+                                                // Determine lhtm1 status
+                                                var lhtm1 = (string.IsNullOrEmpty(TotallevelApprover) && (latestStatus == "Required" || latestStatus == "Rejected")) ?
+                                                $" (Level 0/{alreadyapproved})" :
+                                                (latestStatus == "Approved" && string.IsNullOrEmpty(TotallevelApprover)) ?
+                                                $" (Level {alreadyapproved}/{alreadyapproved})" :
+                                                $" (Level {TotallevelApprover}/{alreadyapproved})";
+
+                                                <tr>
+                                                    <td>
+                                                        <select class="form-select ddl_actiontype_change" id="ddl_actiontype_@id" data-polineiteam="@id" data-projectid="@fab.Project_ID">
+                                                            <option value="0" selected>---Select</option>
+                                                            @foreach (var allowdAction in fab.AllowdAction)
+                                                            {
+                                                                <option value="@allowdAction.fldid">@allowdAction.actiontype</option>
+                                                            }
+                                                        </select>
+                                                        <input style="display:none;" autocomplete="off" type="text" name="name" value="" class="form-control fabdate mt-2" placeholder="YYYY.MM.DD" id="datepicker_@id" />
+                                                    </td>
+                                                    <td>@fab.ItemName</td>
+                                                    <td>@lhtm@lhtm1</td>
+                                                    <td>@fab.Description</td>
+                                                    <td>
+                                                        @if (IsPoEditAccessPermission == "0")
+                                                        {
+                                                            <a style="cursor:pointer;" href="javascript:void(0)" data-poid="@fab.PurchaseOrderID" class="green_link ProffPO">
+                                                                @fab.TotalPOID
+                                                            </a>                                                           
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.Action("POEdit", "PurchaseOrder", new { POId = fab.PurchaseOrderID })" data-po="@fab.PurchaseOrderID" target="_blank" class="green_link">@fab.TotalPOID</a>
+                                                        }                                                  
+                                                    </td>
+                                                    <td>@fab.Remarks</td>
+                                                    <td>@fab.SpecNum</td>
+                                                    <td style="@hideOnBehalfOf">
+                                                        @if (IsManager == "1")
+                                                        {
+                                                            <select class="form-select selectuser" id="ddl_selectuser_@id">
+                                                                <option value="0">---Select User---</option>
+                                                            </select>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" id="textarea_@id" autocomplete="off">
+                                                    </td>
+                                                    <td>
+                                                        <input type="file" multiple name="" id="file_@id">
+                                                    </td>
+                                                    <td>
+                                                        <select class="form-select ddl_approvalpath_change" id="ddl_grpname_@id" data-id="@id" data-item="@fab.POLineItemID" data-projectid="@fab.Project_ID" @disableFabpath>
+                                                            <!option value="0">---Select Action---</!option>
+                                                            @foreach (var FabPath in fab.FabPathList)
+                                                            {
+                                                                <!option value="@FabPath.Id" selected="@(fab.FabPathId.ToString() == FabPath.Id.ToString() ? "selected" : null)">@FabPath.Name</!option>
+                                                            }
+                                                        </select>
+                                                    </td>
+                                                    <td class="adj_width">
+                                                        <button type="button" class="gray_checkbtn saveData" data-ismanager="@IsManager" data-approval="@id" data-item="@fab.POLineItemID" data-projectid="@fab.Project_ID">Save</button>
+                                                        <i class="fa fa-info-circle pointer openindvfabhistory" data-bs-toggle="modal"
+                                                           data-bs-target="#Fab_Approe_History" style="font-size: 18px;" data-approval="@id"></i>
+                                                        @if (ItemNew == 1)
+                                                        {
+                                                            <span class="badge">NEW</span>
+                                                        }
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+
+
+    }
+    if (Model.DashboardActionName == "buildapprovedpotasknew")
+    {
+        if (Model.incompleteApproveVendorPO.Count > 0)
+        {
+            var projectfirstItem = Model.incompleteApproveVendorPO.First();
+            var ItemCount = Model.incompleteApproveVendorPO.Count;
+            var SelectedProjectId = projectfirstItem.ProjectID ?? 0;
+            var parentVendorGroup = Model.incompleteApproveVendorPO.GroupBy(p => p.ContactID).ToList();
+
+            <input type="hidden" id=@($"APPRSNDTOVNDRS_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            <div class="accordion taskList" id="">
+                @foreach (var group in parentVendorGroup)
+                {
+                    var firstItem = group.First();
+                    var Vcount = group.Count();
+                    var uniqueId = "APPRSNDTOVNDRS_Indv_" + firstItem.ContactID;
+                    var color = "";
+                    if (firstItem.IsSystemUser != 1)
+                    {
+                        color = "fbd1d1";
+                    }
+
+                    <div class="accordion-item">
+                        <div class="accordion-button collapsed ChangViewStatus" style="background: #@color;" role="button" data-bs-toggle="collapse" data-issystemuser="@firstItem.IsSystemUser"
+                                data-bs-target="#@uniqueId" aria-expanded="false" aria-controls="collapseOne" data-id="@firstItem.ContactID" data-projectid="@firstItem.ProjectID" data-vcount="@Vcount" data-mode="APPRSNDTOVNDRS">
+                            <div class="task_name">@firstItem.ParentVendorName</div>
+                            <div class="task_cont"><span>Contact :</span><a href="@Url.Action("EditVendorContact", "Vendors", new { vendorId = firstItem.ContactID })">@firstItem.Contactname</a></div>
+                            <div class="task_phone">Phone : <span>@firstItem.Phone</span></div>
+                            <div class="task_email">
+                                <span>Email :</span><a href="#">@firstItem.Email</a>
+                            </div>
+                            <div>
+                                <input type="checkbox" class="preventclick vendorcheck_Sendvndrs insidevendorcheckItems" data-vendorid="@firstItem.ContactID" data-vcount="@Vcount" />
+                            </div>
+                            <div class="task_badge"><span class="badge">@Vcount</span></div>
+                            <div class="">
+                            </div>
+                        </div>
+
+                        <div id="@uniqueId" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <div class="table-responsive task_list_table">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td>Action</td>
+                                                <td>PO #</td>
+                                                <td>Remarks</td>
+                                                <td>Approvel Date</td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            @foreach (var poVendor in group)
+                                            {
+                                                int ItemNew = string.IsNullOrEmpty(poVendor.CheckingDate)
+                                                || (!string.IsNullOrEmpty(poVendor.LatestDate)
+                                                && DateTime.TryParse(poVendor.CheckingDate, out var checkDate)
+                                                && DateTime.TryParse(poVendor.LatestDate, out var insertDate)
+                                                && checkDate < insertDate)
+                                                ? 1 : 0;
+
+                                                var T1 = "";
+                                                @if (poVendor.OverCommitedList.Count > 0)
+                                                {
+                                                    foreach (var item2 in poVendor.OverCommitedList)
+                                                    {
+                                                        var PO = (item2.CommitedCost * item2.Rate);
+                                                        T1 += $"Section:-{item2.Sectionnumber}-{item2.NAME} \r\nItem:-{item2.ItemNumber} {item2.Description} \r\nPO cost/Budget Cost:- {PO.Value.ToString("#,##0")}/{item2.BudgetAmount.Value.ToString("#,##0")} {item2.Currency} \r\n";
+                                                    }
+                                                }
+                                                <tr>
+                                                    <td>
+                                                        <a data-poid="@poVendor.PurchaseOrderID" class="ProffPO" style="color:#000000"><i title="View PO" class="fa fa-file-pdf-o" style="cursor:pointer;"></i></a>
+                                                        <i title="PO Download" class="fa fa-download download_btn" data-poid="@poVendor.PurchaseOrderID" data-showid="@poVendor.Totalid" style="cursor:pointer;" aria-hidden="true"></i>
+                                                        <i title="PO History" class="fa fa-info-circle pohistoryredirect" style="cursor:pointer;" data-poid="@poVendor.PurchaseOrderID"></i>
+                                                        @if (poVendor.OverCommitedList.Count > 0)
+                                                        {
+                                                            <a style="cursor:pointer;color: #e85b5b;" class="openOverCommited" data-projectid="@poVendor.ProjectID" data-poid="@poVendor.PurchaseOrderID" data-bs-toggle="modal" data-bs-target="#po_over_commited_history"><i title="@Html.Raw(T1)" class="fa fa-exclamation-circle"></i></a>
+                                                        }
+
+                                                    </td>
+                                                    <td>
+                                                        @if (IsPoEditAccessPermission == "0")
+                                                        {
+                                                            <a style="cursor:pointer;" href="javascript:void(0)" data-poid="@poVendor.PurchaseOrderID" class="green_link ProffPO">
+                                                                @poVendor.Totalid
+                                                            </a>                                                           
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.Action("POEdit", "PurchaseOrder", new { POId = poVendor.PurchaseOrderID })" data-po="@poVendor.PurchaseOrderID" target="_blank" class="green_link">@poVendor.Totalid</a>
+                                                        }        
+                                                       
+                                                     </td>
+                                                    <td>@poVendor.Remarks</td>
+                                                    <td>@poVendor.ApprovalDate</td>
+                                                    <td>
+                                                        <input type="checkbox" class="vendormailtochk" data-email="@poVendor.Email" data-contactid="@poVendor.ContactID" data-poid="@poVendor.PurchaseOrderID" data-projectid="@poVendor.ProjectID" />
+                                                        @if (ItemNew == 1)
+                                                        {
+                                                            <span class="badge">NEW</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+
+
+    }
+    if (Model.DashboardActionName == "buildPOAcceptTasknew")
+    {
+        if (Model.dashboardPOAccepted.Count > 0)
+        {
+            var projectfirstItem = Model.dashboardPOAccepted.First();
+            var ItemCount = Model.dashboardPOAccepted.Count;
+            var SelectedProjectId = projectfirstItem.ProjectId ?? 0;
+            var parentVendorGroup = Model.dashboardPOAccepted.GroupBy(p => p.Vendor_ID).ToList();
+
+            <input type="hidden" id=@($"POACCEPT_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            <div class="accordion taskList" id="">
+                @foreach (var group in parentVendorGroup)
+                {
+                    var firstItem = group.First();
+                    var Vcount = group.Count();
+                    var uniqueId = "POACCEPT_Indv_" + firstItem.Vendor_ID;
+                    int New = string.IsNullOrEmpty(firstItem.CheckingDate)
+                    || (!string.IsNullOrEmpty(firstItem.LatestDate)
+                    && DateTime.TryParse(firstItem.CheckingDate, out var checkDate)
+                    && DateTime.TryParse(firstItem.LatestDate, out var insertDate)
+                    && checkDate < insertDate)
+                    ? 1 : 0;
+
+                    <div class="accordion-item">
+                        <div class="accordion-button collapsed ChangViewStatus" role="button" data-bs-toggle="collapse"
+                                data-bs-target="#@uniqueId" aria-expanded="false" data-id="@firstItem.Vendor_ID" data-projectid="@firstItem.ProjectId" data-vcount="@Vcount" data-mode="POACCEPT">
+                            <div class="task_name">@firstItem.ParentVendorName</div>
+                            <div class="task_cont"><span>Contact :</span><a href="@Url.Action("EditVendorContact", "Vendors", new { vendorId = firstItem.Vendor_ID })">@firstItem.Cname</a></div>
+                            <div class="task_phone">Phone : <span>@firstItem.Phone</span></div>
+                            <div class="task_email">
+                                <span>Email :</span><a href="#">@firstItem.Email</a>
+                            </div>
+                            <div>
+                                <input type="checkbox" class="preventclick vendorcheck_Sendvndrs" data-vendorid="@firstItem.Vendor_ID" data-vcount="@Vcount" />
+                            </div>
+                            <div class="task_badge"><span class="badge">@Vcount</span></div>
+                            <div class="">
+                            </div>
+                        </div>
+
+                        <div id="@uniqueId" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <div class="table-responsive task_list_table">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td>Action</td>
+                                                <td>PO #</td>
+                                                <td>Remarks</td>
+                                                <td>Comments</td>
+                                                <td>By</td>
+                                                <td>Date</td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            @foreach (var po in group)
+                                            {
+                                                int ItemNew = string.IsNullOrEmpty(po.CheckingDate)
+                                                || (!string.IsNullOrEmpty(po.LatestDate)
+                                                && DateTime.TryParse(po.CheckingDate, out var checkDate1)
+                                                && DateTime.TryParse(po.LatestDate, out var insertDate1)
+                                                && checkDate1 < insertDate1)
+                                                ? 1 : 0;
+
+                                                var T1 = "";
+                                                @if (po.OverCommitedList.Count > 0)
+                                                {
+                                                    foreach (var item2 in po.OverCommitedList)
+                                                    {
+                                                        var PO = (item2.CommitedCost * item2.Rate);
+                                                        T1 += $"Section:-{item2.Sectionnumber}-{item2.NAME} \r\nItem:-{item2.ItemNumber} {item2.Description} \r\nPO cost/Budget Cost:- {PO.Value.ToString("#,##0")}/{item2.BudgetAmount.Value.ToString("#,##0")} {item2.Currency} \r\n";
+                                                    }
+                                                }
+                                                <tr>
+                                                    <td>
+                                                        <a data-poid="@po.POID" class="ProffPO" style="color:#000000"><i title="View PO" class="fa fa-file-pdf-o" style="cursor:pointer;"></i></a>
+                                                        <i title="PO Download" class="fa fa-download download_btn" data-poid="@po.POID" data-showid="@po.GeneratedPOID" style="cursor:pointer;" aria-hidden="true"></i>
+                                                        <i title="PO History" class="fa fa-info-circle pohistoryredirect" data-poid="@po.POID" style="cursor:pointer;"></i>
+                                                        @if (po.OverCommitedList.Count > 0)
+                                                        {
+                                                            <a style="cursor:pointer;color: #e85b5b;" class="openOverCommited" data-projectid="@po.ProjectId" data-poid="@po.POID" data-bs-toggle="modal" data-bs-target="#po_over_commited_history"><i title="@Html.Raw(T1)" class="fa fa-exclamation-circle"></i></a>
+                                                        }
+
+                                                    </td>
+                                                    <td>
+                                                        @if (IsPoEditAccessPermission == "0")
+                                                        {
+                                                            <a style="cursor:pointer;" href="javascript:void(0)" data-poid="@po.POID" class="green_link ProffPO">
+                                                                @po.GeneratedPOID
+                                                            </a>                                                           
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.Action("POEdit", "PurchaseOrder", new { POId = po.POID })" data-po="@po.POID" target="_blank" class="green_link">@po.GeneratedPOID</a>
+                                                        }                                                    
+                                                    </td>
+                                                    <td>@po.Remarks</td>
+                                                    <td>@po.Comment</td>
+                                                    <td>@po.Insertdate</td>
+                                                    <td class="last_td_width">
+                                                        <input type="checkbox" class="completeaccept" data-contactid="@po.Vendor_ID" data-poid="@po.POID" data-projectid="@po.ProjectId" />
+                                                        @if (ItemNew == 1)
+                                                        {
+                                                            <span class="badge">NEW</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+
+    }
+    if (Model.DashboardActionName == "buildPORejectTasknew")
+    {
+        if (Model.incompletePoReject.Count > 0)
+        {
+            var projectfirstItem = Model.incompletePoReject.First();
+            var ItemCount = Model.incompletePoReject.Count;
+            var SelectedProjectId = projectfirstItem.ProjectID ?? 0;
+            var parentVendorGroup = Model.incompletePoReject.GroupBy(p => p.Vendor_ID).ToList();
+
+            <input type="hidden" id=@($"POREJECT_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            <div class="accordion taskList" id="">
+                @foreach (var group in parentVendorGroup)
+                {
+                    var firstItem = group.First();
+                    var Vcount = group.Count();
+                    var uniqueId = "POREJECT_Indv_" + firstItem.Vendor_ID;
+                    int New = string.IsNullOrEmpty(firstItem.CheckingDate)
+                    || (!string.IsNullOrEmpty(firstItem.LatestDate)
+                    && DateTime.TryParse(firstItem.CheckingDate, out var checkDate)
+                    && DateTime.TryParse(firstItem.LatestDate, out var insertDate)
+                    && checkDate < insertDate)
+                    ? 1 : 0;
+
+                    <div class="accordion-item">
+                        <div class="accordion-button collapsed ChangViewStatus" role="button" data-bs-toggle="collapse"
+                                data-bs-target="#@uniqueId" aria-expanded="false" data-id="@firstItem.Vendor_ID" data-projectid="@firstItem.ProjectID" data-vcount="@Vcount" data-mode="POREJECT">
+                            <div class="task_name">@firstItem.ParentVendorName</div>
+                            <div class="task_cont"><span>Contact :</span><a href="@Url.Action("EditVendorContact", "Vendors", new { vendorId = firstItem.Vendor_ID })">@firstItem.Cname</a></div>
+                            <div class="task_phone">Phone : <span>@firstItem.Phone</span></div>
+                            <div class="task_email">
+                                <span>Email :</span><a href="#">@firstItem.Email</a>
+                            </div>
+                            <div>
+                                <input type="checkbox" class="preventclick vendorcheck_reject" data-vendorid="@firstItem.Vendor_ID" data-vcount="@Vcount" />
+                            </div>
+                            <div class="task_badge"><span class="badge">@Vcount</span></div>
+                            <div class="">
+                            </div>
+                        </div>
+
+                        <div id="@uniqueId" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <div class="table-responsive task_list_table">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td>Action</td>
+                                                <td>PO #</td>
+                                                <td>Remarks</td>
+                                                <td>Comments</td>
+                                                <td>Rejected By</td>
+                                                <td>Rejected Date</td>
+                                                <td>File</td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            @foreach (var po in group)
+                                            {
+                                                int ItemNew = string.IsNullOrEmpty(po.CheckingDate)
+                                                || (!string.IsNullOrEmpty(po.LatestDate)
+                                                && DateTime.TryParse(po.CheckingDate, out var checkDate1)
+                                                && DateTime.TryParse(po.LatestDate, out var insertDate1)
+                                                && checkDate1 < insertDate1)
+                                                ? 1 : 0;
+
+                                                var T1 = "";
+                                                @if (po.OverCommitedList.Count > 0)
+                                                {
+                                                    foreach (var item2 in po.OverCommitedList)
+                                                    {
+                                                        var PO = (item2.CommitedCost * item2.Rate);
+                                                        T1 += $"Section:-{item2.Sectionnumber}-{item2.NAME} \r\nItem:-{item2.ItemNumber} {item2.Description} \r\nPO cost/Budget Cost:- {PO.Value.ToString("#,##0")}/{item2.BudgetAmount.Value.ToString("#,##0")} {item2.Currency} \r\n";
+                                                    }
+                                                }
+                                                <tr>
+                                                    <td>
+                                                        <a data-poid="@po.POID" class="ProffPO" style="color:#000000"><i title="View PO" class="fa fa-file-pdf-o" style="cursor:pointer;"></i></a>
+                                                        <i title="PO Download" class="fa fa-download download_btn" data-poid="@po.POID" data-showid="@po.GeneratedPOID" style="cursor:pointer;"></i>
+                                                        <i title="PO History" class="fa fa-info-circle pohistoryredirect" data-poid="@po.POID" style="cursor:pointer;"></i>
+                                                        @if (po.OverCommitedList.Count > 0)
+                                                        {
+                                                            <a style="cursor:pointer;color: #e85b5b;" class="openOverCommited" data-projectid="@po.ProjectID" data-poid="@po.POID" data-bs-toggle="modal" data-bs-target="#po_over_commited_history"><i title="@Html.Raw(T1)" class="fa fa-exclamation-circle"></i></a>
+                                                        }
+
+                                                    </td>
+                                                    <td>
+                                                        @if (IsPoEditAccessPermission == "0")
+                                                        {
+                                                            <a style="cursor:pointer;" href="javascript:void(0)" data-poid="@po.POID" class="green_link ProffPO">
+                                                                @po.GeneratedPOID
+                                                            </a>                                                           
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.Action("POEdit", "PurchaseOrder", new { POId = po.POID })" data-po="@po.POID" target="_blank" class="green_link">@po.GeneratedPOID</a>
+                                                        } 
+                                                     
+                                                    </td>
+                                                    <td>@po.RemarksNew</td>
+                                                    <td>@po.Comment</td>
+                                                    <td>@po.Username</td>
+                                                    <td>@po.Insertdate</td>
+                                                    <td>
+                                                        @if (!string.IsNullOrWhiteSpace(po.Files))
+                                                        {
+                                                            <a class="openRejectPofilepopup" style="color: green; text-decoration: underline; cursor: pointer;" data-flink="@po.Files">
+                                                                @po.Files.Split("$$$$").Length File(s)
+                                                            </a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>No File.</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <input type="checkbox" class="completereject" data-contactid="@po.Vendor_ID" data-poid="@po.POID" data-projectid="@po.ProjectID" />
+                                                        @if (ItemNew == 1)
+                                                        {
+                                                            <span class="badge">NEW</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+
+    }
+    if(Model.DashboardActionName == "buildBudgetRejectTasknew")
+    {
+        if(Model.incompleteBudgetReject!.Count > 0)
+        {
+            var ItemCount = Model.incompleteBudgetReject.Count;
+            var SelectedProjectId = Model.incompleteBudgetReject.FirstOrDefault()!.ProjectID;            
+
+            var budgetGroup = Model.incompleteBudgetReject
+                .GroupBy(p => p.BudgetID)
+                .ToList();
+            // var budgetGroup = Model.incompleteBudgetReject.GroupBy(p => p.BudgetID).ToList();
+            <input type="hidden" id=@($"REJBUD_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            <div class="accordion taskList" id="">
+                @foreach(var group in budgetGroup)
+                {
+                    var firstItem = group.First();
+                    var Vcount = group.Count();
+                    var uniqueId = "REJBUD_Indv_" + firstItem.BudgetID;
+
+                    int New = string.IsNullOrEmpty(firstItem.CheckingDate)
+                    || (!string.IsNullOrEmpty(firstItem.LatestDate)
+                    && DateTime.TryParse(firstItem.CheckingDate, out var checkDate)
+                    && DateTime.TryParse(firstItem.LatestDate, out var insertDate)
+                    && checkDate < insertDate)
+                    ? 1 : 0;
+
+                    <div class="accordion-item">
+                         <div class="accordion-button collapsed ChangViewStatus" role="button" data-bs-toggle="collapse" data-bs-target="#@uniqueId" aria-expanded="false" data-projectid="@firstItem.ProjectID" data-vcount="@Vcount"
+                            data-mode="REJBUD">
+
+                            <div class="task_name">
+                                Budget Group : @firstItem.BudgetGroupName
+                            </div>
+
+                            <div>
+                                <input type="checkbox" class="preventclick budgetcheck_reject" data-budgetid="@firstItem.BudgetID" data-vcount="@Vcount" />
+                            </div>
+
+                            <div class="task_badge">
+                                <span class="badge">@Vcount</span>
+                            </div>
+                         </div>
+                         <div id="@uniqueId" class="accordion-collapse collapse">
+                              <div class="accordion-body">
+                                  <div class="table-responsive task_list_table">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td>Action</td>                                               
+                                                <td>Comments</td>
+                                                <td>Rejected By</td>
+                                                <td>Rejected Date</td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            @foreach (var bud in group)
+                                            {
+                                                int ItemNew = string.IsNullOrEmpty(bud.CheckingDate)
+                                                    || (!string.IsNullOrEmpty(bud.LatestDate)
+                                                    && DateTime.TryParse(bud.CheckingDate, out var checkDate1)
+                                                    && DateTime.TryParse(bud.LatestDate, out var insertDate1)
+                                                    && checkDate1 < insertDate1)
+                                                    ? 1 : 0;
+
+                                                <tr>
+                                                    <td>
+                                                        <i class="fa fa-info-circle" style="cursor:pointer;" data-bs-target="#approval_history" data-bs-toggle="modal" id="approvalHistory" data-projectid="@bud.ProjectID" data-groupid="@bud.BudgetID" title="View Approval History"></i>
+                                                         <a style="cursor:pointer;"><i title="View Budget" class="fa fa-file-pdf-o viewBudgetReport" data-projectid="@bud.ProjectID" data-sectionids="@bud.SectionID"></i></a>
+                                                    </td>
+                                                    <td>@bud.Comment</td>
+                                                    <td>@bud.RejectedBy</td>
+                                                    <td>@bud.Insertdate</td>
+
+                                                    <td>
+                                                        <input type="checkbox"
+                                                               class="completebudgetreject"
+                                                               data-budgetid="@bud.FldID"
+                                                               data-budgetgroup=@bud.BudgetID
+                                                               data-projectid="@bud.ProjectID" />
+                                                        @if (ItemNew == 1)
+                                                        {
+                                                            <span class="badge">NEW</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                  </div>
+                              </div>
+                         </div>
+
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+    }
+    if (Model.DashboardActionName == "buildPOCheckBackTasknew")
+    {
+        if (Model.incompletePoCheckBack.Count > 0)
+        {
+            var projectfirstItem = Model.incompletePoCheckBack.First();
+            var ItemCount = Model.incompletePoCheckBack.Count;
+            var SelectedProjectId = projectfirstItem.ProjectID ?? 0;
+            var parentVendorGroup = Model.incompletePoCheckBack.GroupBy(p => p.Vendor_ID).ToList();
+
+            <input type="hidden" id=@($"POCHECKBACK_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            <div class="accordion taskList" id="">
+                @foreach (var group in parentVendorGroup)
+                {
+                    var firstItem = group.First();
+                    var Vcount = group.Count();
+                    var uniqueId = "POCHECKBACK_Indv_" + firstItem.Vendor_ID;
+                    int New = string.IsNullOrEmpty(firstItem.CheckingDate)
+                    || (!string.IsNullOrEmpty(firstItem.LatestDate)
+                    && DateTime.TryParse(firstItem.CheckingDate, out var checkDate)
+                    && DateTime.TryParse(firstItem.LatestDate, out var insertDate)
+                    && checkDate < insertDate)
+                    ? 1 : 0;
+
+                    <div class="accordion-item">
+                        <div class="accordion-button collapsed ChangViewStatus" role="button" data-bs-toggle="collapse"
+                                data-bs-target="#@uniqueId" aria-expanded="false" data-id="@firstItem.Vendor_ID" data-projectid="@firstItem.ProjectID" data-vcount="@Vcount" data-mode="POCHECKBACK">
+                            <div class="task_name">@firstItem.ParentVendorName</div>
+                            <div class="task_cont"><span>Contact :</span><a href="@Url.Action("EditVendorContact", "Vendors", new { vendorId = firstItem.Vendor_ID })">@firstItem.Cname</a></div>
+                            <div class="task_phone">Phone : <span>@firstItem.Phone</span></div>
+                            <div class="task_email">
+                                <span>Email :</span><a href="#">@firstItem.Email</a>
+                            </div>
+                            <div>
+                                <input type="checkbox" class="preventclick vendorcheck_chkbck" data-vendorid="@firstItem.Vendor_ID" data-vcount="@Vcount" />
+                            </div>
+                            <div class="task_badge"><span class="badge">@Vcount</span></div>
+                            <div class="">
+                                @if (New == 1)
+                                {
+                                    <span class="badge">NEW</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div id="@uniqueId" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <div class="table-responsive task_list_table">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td>Action</td>
+                                                <td>PO #</td>
+                                                <td>Remarks</td>
+                                                <td>Date</td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            @foreach (var po in group)
+                                            {
+                                                int ItemNew = string.IsNullOrEmpty(po.CheckingDate)
+                                                || (!string.IsNullOrEmpty(po.LatestDate)
+                                                && DateTime.TryParse(po.CheckingDate, out var checkDate1)
+                                                && DateTime.TryParse(po.LatestDate, out var insertDate1)
+                                                && checkDate1 < insertDate1)
+                                                ? 1 : 0;
+
+                                                var T1 = "";
+                                                @if (po.OverCommitedList.Count > 0)
+                                                {
+                                                    foreach (var item2 in po.OverCommitedList)
+                                                    {
+                                                        var PO = (item2.CommitedCost * item2.Rate);
+                                                        T1 += $"Section:-{item2.Sectionnumber}-{item2.NAME} \r\nItem:-{item2.ItemNumber} {item2.Description} \r\nPO cost/Budget Cost:- {PO.Value.ToString("#,##0")}/{item2.BudgetAmount.Value.ToString("#,##0")} {item2.Currency} \r\n";
+                                                    }
+                                                }
+                                                <tr>
+                                                    <td>
+                                                        <a data-poid="@po.POID" class="ProffPO" style="color:#000000"><i title="View PO" class="fa fa-file-pdf-o" style="cursor:pointer;"></i></a>
+                                                        <i title="PO Download" class="fa fa-download download_btn" data-poid="@po.POID" data-showid="@po.GeneratedPOID" style="cursor:pointer;"></i>
+                                                        <i title="PO History" class="fa fa-info-circle pohistoryredirect" data-poid="@po.POID" style="cursor:pointer;"></i>
+                                                        @if (po.OverCommitedList.Count > 0)
+                                                        {
+                                                            <a style="cursor:pointer;color: #e85b5b;" class="openOverCommited" data-projectid="@po.ProjectID" data-poid="@po.POID" data-bs-toggle="modal" data-bs-target="#po_over_commited_history"><i title="@Html.Raw(T1)" class="fa fa-exclamation-circle"></i></a>
+                                                        }
+
+                                                    </td>
+                                                    <td>
+                                                        @if (IsPoEditAccessPermission == "0")
+                                                        {
+                                                            <a style="cursor:pointer;" href="javascript:void(0)" data-poid="@po.POID" class="green_link ProffPO">
+                                                                @po.GeneratedPOID
+                                                            </a>                                                           
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.Action("POEdit", "PurchaseOrder", new { POId = po.POID })" data-po="@po.POID" target="_blank" class="green_link">@po.GeneratedPOID</a>
+                                                        }                                                       
+                                                    </td>
+                                                    <td>@po.Remarks</td>
+                                                    <td>@po.CheckBackDate</td>
+                                                    <td>
+                                                        <input type="checkbox" class="completecheckback" data-contactid="@po.Vendor_ID" data-poid="@po.POID" data-projectid="@po.ProjectID" />
+                                                        @if (ItemNew == 1)
+                                                        {
+                                                            <span class="badge">NEW</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+
+    }
+    if (Model.DashboardActionName == "buildChangeStatustask")
+    {
+        if (Model.fabApprovalStatusDashboard.Count > 0)
+        {
+            var projectfirstItem = Model.fabApprovalStatusDashboard.First();
+            var ItemCount = Model.fabApprovalStatusDashboard.Count;
+            var SelectedProjectId = projectfirstItem.ProjectID ?? 0;
+            var parentVendorGroup = Model.fabApprovalStatusDashboard.GroupBy(p => p.Vendor_ID).ToList();
+
+            <input type="hidden" id=@($"POITEMSTATUSCHANGE_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            <div class="accordion taskList" id="">
+                @foreach (var group in parentVendorGroup)
+                {
+                    var firstItem = group.First();
+                    var Vcount = group.Count();
+                    var uniqueId = "POITEMSTATUSCHANGE_Indv_" + firstItem.Vendor_ID;
+
+
+                    <div class="accordion-item">
+                        <div class="accordion-button collapsed ChangViewStatus" role="button" data-bs-toggle="collapse"
+                                data-bs-target="#@uniqueId" aria-expanded="false" data-id="@firstItem.Vendor_ID" data-projectid="@firstItem.ProjectID" data-vcount="@Vcount" data-mode="POITEMSTATUSCHANGE">
+                            <div class="task_name">@firstItem.ParentVendorName</div>
+                            <div class="task_cont"><span>Contact :</span><a href="@Url.Action("EditVendorContact", "Vendors", new { vendorId = firstItem.Vendor_ID })">@firstItem.Cname</a></div>
+                            <div class="task_phone">Phone : <span>@firstItem.Phone</span></div>
+                            <div class="task_email">
+                                <span>Email :</span><a href="#">@firstItem.Email</a>
+                            </div>
+                            <div>
+                                <input type="checkbox" class="preventclick vendorcheck_fabstatus" data-vendorid="@firstItem.Vendor_ID" data-vcount="@Vcount" />
+                            </div>
+                            <div class="task_badge"><span class="badge">@Vcount</span></div>
+                            <div class="">
+                            </div>
+                        </div>
+
+                        <div id="@uniqueId" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <div class="table-responsive task_list_table">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td>Status</td>
+                                                <td>Item</td>
+                                                <td>LineItem No</td>
+                                                <td>PO#</td>
+                                                <td>Date</td>
+                                                <td>By</td>
+                                                <td>Comment</td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            @foreach (var po in group)
+                                            {
+
+                                                int ItemNew = 0;
+                                                if (Convert.ToDateTime(po.InsertDateWithTime) > Convert.ToDateTime(po.CheckingDate))
+                                                {
+                                                    ItemNew = 1;
+                                                }
+                                                var des = "";
+                                                if (!string.IsNullOrEmpty(po.Description))
+                                                {
+                                                    des = $"{po.ItemName}({po.Description})";
+                                                }
+                                                else
+                                                {
+                                                    des = $"{po.ItemName}";
+                                                }
+                                                var by = po.Username;
+                                                if (!string.IsNullOrEmpty(po.Managername))
+                                                {
+                                                    by = $"{po.Managername} on behalf of {by}";
+                                                }
+                                                <tr>
+                                                    <td>
+                                                        @po.Action
+                                                    </td>
+                                                    <td>@des</td>
+                                                    <td>@po.TotalID</td>
+                                                    <td>
+                                                        @if (IsPoEditAccessPermission == "0")
+                                                        {
+                                                            <a style="cursor:pointer;" href="javascript:void(0)" data-poid="@po.POID" class="green_link ProffPO">
+                                                               @po.GeneratedPOID
+                                                            </a>                                                           
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.Action("POEdit", "PurchaseOrder", new { POId = po.POID })" data-po="@po.POID" target="_blank" class="green_link">@po.GeneratedPOID</a>
+                                                        } 
+                                                       
+                                                    </td>
+                                                    <td>@po.InsertDate</td>
+                                                    <td>@by</td>
+                                                    <td>@po.Comment</td>
+                                                    <td>
+                                                        <input type="checkbox" class="completechangestatus" data-poid="@po.FldID" />
+                                                        @if (ItemNew == 1)
+                                                        {
+                                                            <span class="badge">NEW</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+
+    }
+    if (Model.DashboardActionName == "buildPOACTask")
+    {
+        if (Model.dashBoardPoApprovalComments.Count > 0)
+        {
+            var projectfirstItem = Model.dashBoardPoApprovalComments.First();
+            var ItemCount = Model.dashBoardPoApprovalComments.Count;
+            var SelectedProjectId = projectfirstItem.ProjectID ?? 0;
+            var parentVendorGroup = Model.dashBoardPoApprovalComments.GroupBy(p => p.Vendor_ID).ToList();
+
+            <input type="hidden" id=@($"POAC_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            <div class="accordion taskList" id="">
+                @foreach (var group in parentVendorGroup)
+                {
+                    var firstItem = group.First();
+                    var vendorId = firstItem.Vendor_ID;
+                    var projectid = firstItem.ProjectID;
+                    var Vcount = group.Count();
+                    var uniqueId = "POAC_Indv_" + vendorId;
+                    int NEW = (string.IsNullOrEmpty(firstItem.CheckingDate) ||
+                    (!string.IsNullOrEmpty(firstItem.LatestDate) &&
+                    DateTime.TryParse(firstItem.CheckingDate, out var checkingDate) &&
+                    DateTime.TryParse(firstItem.LatestDate, out var latestDate) &&
+                    checkingDate < latestDate))
+                    ? 1 : 0;
+
+                    <div class="accordion-item">
+                        <div class="accordion-button collapsed ChangViewStatus" role="button" data-bs-toggle="collapse"
+                                data-bs-target="#@uniqueId" aria-expanded="false" data-id="@vendorId" data-projectid="@projectid" data-vcount="@Vcount" data-mode="POAC">
+                            <div class="task_name">@firstItem.ParentVendorName</div>
+                            <div class="task_cont"><span>Contact :</span><a href="@Url.Action("EditVendorContact", "Vendors", new { vendorId = vendorId })">@firstItem.Cname</a></div>
+                            <div class="task_phone">Phone : <span>@firstItem.Phone</span></div>
+                            <div class="task_email">
+                                <span>Email :</span><a href="#">@firstItem.Email</a>
+                            </div>
+                            <div>
+                                <input type="checkbox" class="preventclick vendorcheck_comment" data-vendorid="@vendorId" data-vcount="@Vcount" />
+                            </div>
+                            <div class="task_badge"><span class="badge">@Vcount</span></div>
+                            <div class="">
+                                @if (NEW == 1)
+                                {
+                                    <span class="badge">NEW</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div id="@uniqueId" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <div class="table-responsive task_list_table">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td>Action</td>
+                                                <td>PO #</td>
+                                                <td>Remarks</td>
+                                                <td>Comment</td>
+                                                <td>Status</td>
+                                                <td>Approve By</td>
+                                                <td>Date</td>
+                                                <td>File</td>
+                                                <td></td>
+
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            @foreach (var po in group)
+                                            {
+                                                int ItemNew = string.IsNullOrEmpty(po.CheckingDate)
+                                                || (!string.IsNullOrEmpty(po.LatestDate)
+                                                && DateTime.TryParse(po.CheckingDate, out var checkDate1)
+                                                && DateTime.TryParse(po.LatestDate, out var insertDate1)
+                                                && checkDate1 < insertDate1)
+                                                ? 1 : 0;
+
+                                                var T1 = "";
+                                                @if (po.OverCommitedList.Count > 0)
+                                                {
+                                                    foreach (var item2 in po.OverCommitedList)
+                                                    {
+                                                        var PO = (item2.CommitedCost * item2.Rate);
+                                                        T1 += $"Section:-{item2.Sectionnumber}-{item2.NAME} \r\nItem:-{item2.ItemNumber} {item2.Description} \r\nPO cost/Budget Cost:- {PO.Value.ToString("#,##0")}/{item2.BudgetAmount.Value.ToString("#,##0")} {item2.Currency} \r\n";
+                                                    }
+                                                }
+
+                                                var lhtm = "";
+                                                var LevelStatus = po.LevelStatus;
+                                                var LevelApprovalStatus = po.LevelApprovalStatus;
+                                                if (LevelStatus == "")
+                                                {
+                                                    lhtm = $"(Level 0/1)";
+                                                }
+                                                else
+                                                {
+                                                    lhtm = $" (Level {LevelStatus.Split("^")[1]} / {LevelStatus.Split("^")[0]}";
+                                                }
+
+                                                var by = po.Username;
+                                                if(po.Username == po.Managername)
+                                                {
+                                                    by = $"Approved by {po.Managername}";
+                                                }
+                                                else
+                                                {
+                                                   if (!string.IsNullOrEmpty(po.Managername))
+                                                      {
+                                                         by = $"{po.Managername} on behalf of {by}";
+                                                      }
+                                                }
+
+                                                <tr>
+                                                    <td>
+                                                        <a data-poid="@po.POID" class="ProffPO" style="color:#000000"><i title="View PO" class="fa fa-file-pdf-o" style="cursor:pointer;"></i></a>
+                                                        <i title="PO Download" class="fa fa-download download_btn" data-poid="@po.POID" data-showid="@po.GeneratedPOID" style="cursor:pointer;"></i>
+                                                        <i title="PO History" class="fa fa-info-circle pohistoryredirect" data-poid="@po.POID" style="cursor:pointer;"></i>
+                                                        @if (po.OverCommitedList.Count > 0)
+                                                        {
+                                                            <a style="cursor:pointer;color: #e85b5b;" class="openOverCommited" data-projectid="@po.ProjectID" data-poid="@po.POID" data-bs-toggle="modal" data-bs-target="#po_over_commited_history"><i title="@Html.Raw(T1)" class="fa fa-exclamation-circle"></i></a>
+                                                        }
+
+                                                    </td>
+                                                    <td>
+                                                        @if (IsPoEditAccessPermission == "0")
+                                                        {
+                                                            <a style="cursor:pointer;" href="javascript:void(0)" data-poid="@po.POID" class="green_link ProffPO">
+                                                                @po.GeneratedPOID
+                                                            </a>                                                           
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.Action("POEdit", "PurchaseOrder", new { POId = po.POID })" data-po="@po.POID" target="_blank" class="green_link">@po.GeneratedPOID</a>
+                                                        }                                                        
+                                                    </td>
+                                                    <td>@po.Remarks</td>
+                                                    <td>@po.Comment</td>
+                                                    <td>@LevelApprovalStatus.Split("^")[0]/@LevelApprovalStatus.Split("^")[1] @lhtm</td>
+                                                    <td>@by</td>
+                                                    <td>@po.InsertDate</td>
+                                                    <td>
+                                                        @if (!string.IsNullOrWhiteSpace(po.Files))
+                                                        {
+                                                            <a class="openfilepopup" style="color: green; text-decoration: underline; cursor: pointer;" data-flink="@po.Files">
+                                                                @po.Files.Split("$$$$").Length File(s)
+                                                            </a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>No File.</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <input type="checkbox" class="completepoacomment" data-contactid="@po.Vendor_ID" data-poid="@po.POID" data-projectid="@po.ProjectID" />
+                                                        @if (ItemNew == 1)
+                                                        {
+                                                            <span class="badge">NEW</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+
+    }
+    if (Model.DashboardActionName == "buildVendorConfirmationTasknew")
+    {
+        if (Model.incompleteVendorConfirm.Count > 0)
+        {
+            var projectfirstItem = Model.incompleteVendorConfirm.First();
+            var ItemCount = Model.incompleteVendorConfirm.Count;
+            var SelectedProjectId = projectfirstItem.ProjectID ?? 0;
+            var parentVendorGroup = Model.incompleteVendorConfirm.GroupBy(p => p.Vendor_ID).ToList();
+
+            <input type="hidden" id=@($"APPSNDVNDRS_{SelectedProjectId}_Count") data-itemcount="@ItemCount" />
+            <div class="accordion taskList" id="APPSNDVNDRS_Count_@Model.incompleteVendorConfirm.Count">
+                @foreach (var group in parentVendorGroup)
+                {
+                    var firstItem = group.First();
+                    var vendorId = firstItem.Vendor_ID;
+                    var projectid = firstItem.ProjectID;
+                    var Vcount = group.Count();
+                    var uniqueId = "APPSNDVNDRS_Indv_" + vendorId;
+                    int NEW = (string.IsNullOrEmpty(firstItem.CheckingDate) ||
+                    (!string.IsNullOrEmpty(firstItem.LatestDate) &&
+                    DateTime.TryParse(firstItem.CheckingDate, out var checkingDate) &&
+                    DateTime.TryParse(firstItem.LatestDate, out var latestDate) &&
+                    checkingDate < latestDate))
+                    ? 1 : 0;
+
+                    <div class="accordion-item">
+                        <div class="accordion-button collapsed ChangViewStatus" role="button" data-bs-toggle="collapse"
+                                data-bs-target="#@uniqueId" aria-expanded="false" data-id="@vendorId" data-projectid="@projectid" data-vcount="@Vcount" data-mode="APPSNDVNDRS">
+                            <div class="task_name">@firstItem.parentvendorname</div>
+                            <div class="task_cont"><span>Contact :</span><a href="@Url.Action("EditVendorContact", "Vendors", new { vendorId = vendorId })">@firstItem.Cname</a></div>
+                            <div class="task_phone">Phone : <span>@firstItem.Phone</span></div>
+                            <div class="task_email">
+                                <span>Email :</span><a href="#">@firstItem.Email</a>
+                            </div>
+                            <div>
+                                <input type="checkbox" class="preventclick vendorcheck_notaccept" data-vendorid="@vendorId" data-vcount="@Vcount" />
+                            </div>
+                            <div class="task_badge"><span class="badge">@Vcount</span></div>
+                            <div class="">
+                                @if (NEW == 1)
+                                {
+                                    <span class="badge">NEW</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div id="@uniqueId" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <div class="table-responsive task_list_table">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td>Action</td>
+                                                <td>PO #</td>
+                                                <td>Remarks</td>
+                                                <td>Date Send To Vendor</td>
+                                                <td>Additional Comment</td>
+                                                <td>Download</td>
+                                                <td></td>
+
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            @foreach (var po in group)
+                                            {
+                                                int ItemNew = string.IsNullOrEmpty(po.CheckingDate)
+                                                || (!string.IsNullOrEmpty(po.LatestDate)
+                                                && DateTime.TryParse(po.CheckingDate, out var checkDate1)
+                                                && DateTime.TryParse(po.LatestDate, out var insertDate1)
+                                                && checkDate1 < insertDate1)
+                                                ? 1 : 0;
+
+
+                                                <tr>
+                                                    <td>
+                                                        <a data-poid="@po.POID" class="ProffPO" style="color:#000000"><i title="View PO" class="fa fa-file-pdf-o" style="cursor:pointer;"></i></a>
+                                                        <i title="PO History" class="fa fa-info-circle pohistoryredirect" data-poid="@po.POID" style="cursor:pointer;"></i>
+
+                                                    </td>
+                                                    <td>
+                                                        @if (IsPoEditAccessPermission == "0")
+                                                        {
+                                                            <a style="cursor:pointer;" href="javascript:void(0)" data-poid="@po.POID" class="green_link ProffPO">
+                                                                @po.GeneratedPOID
+                                                            </a>                                                           
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@Url.Action("POEdit", "PurchaseOrder", new { POId = po.POID })" data-po="@po.POID" target="_blank" class="green_link">@po.GeneratedPOID</a>
+                                                        } 
+                                                    </td>
+                                                    <td>@po.Remarks</td>
+                                                    <td>@po.ArrivedDate</td>
+                                                    <td>
+                                                        <input type="text" placeholder="Additional comment" style="margin-right:100px;" />
+                                                    </td>
+                                                    <td style="color: rgba(0, 0, 255, 0.70)">
+                                                        <a style="color:rgba(0, 0, 255, 0.70);cursor:pointer;" class="NewDownloadPopup" data-po="@po.POID" data-poidshow="@po.GeneratedPOID">
+                                                            <i title="Download Attachments" class="fa fa-download" style="color:rgba(0, 0, 255, 0.70);cursor:pointer;"></i>Download Attachment
+                                                        </a>
+                                                    </td>
+                                                    <td class="last_td_width">
+                                                        <input type="checkbox" class="vendorchk" data-contactid="@po.Vendor_ID" data-poid="@po.POID" data-projectid="@po.ProjectID" />
+                                                        @if (ItemNew == 1)
+                                                        {
+                                                            <span class="badge">NEW</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <span>Nothing to show.</span>
+        }
+
+    }
+
+}
+
+<div class="modal fade" id="approval_history" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Approval History</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body approval_data approval_history" style="height:450px; overflow-y:auto;">
+                <div id="approvedBudgetHistoryTable"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-bs-dismiss="modal" class="offwhite_btn">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+

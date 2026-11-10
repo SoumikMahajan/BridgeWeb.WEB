@@ -1,0 +1,135 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@if (Model.dashBoardTaskHeaderDTO.Any())
+{
+    @foreach (var item in Model.dashBoardTaskHeaderDTO)
+    {
+        string NEW = "0";
+        if (Convert.ToInt32(item.NumberofData) < Convert.ToInt32(item.Count))
+        {
+            NEW = "1";
+        }
+        string id = item.TaskName.Trim() switch
+        {
+            "Assigned Task" => $"AT_{item.projectid}",
+            "PO Approval Comment" => $"POAC_{item.projectid}",
+            "Incomplete Info" => $"II_{item.projectid}",
+            "Budget Approval" => $"BDGTAPPR_{item.projectid}",
+            "PO Approval" => $"POAPPR_{item.projectid}",
+            "Fabrication Approvals" => $"POITEMAPPR_{item.projectid}",
+            "Approved Purchase Order(s) to Send to Vendors" => $"APPRSNDTOVNDRS_{item.projectid}",
+            "POs Not Yet Accepted by Vendor" => $"APPSNDVNDRS_{item.projectid}",
+            "PO Accepted By Vendor" => $"POACCEPT_{item.projectid}",
+            "PO Rejected" => $"POREJECT_{item.projectid}",
+            "Fabrication Approval Status Update" => $"POITEMSTATUSCHANGE_{item.projectid}",
+            "Checkback PO" => $"POCHECKBACK_{item.projectid}",
+            "Incomplete Vendor" => $"INCINFOV_{item.projectid}",
+            "Incomplete PO" => $"INCINFO_{item.projectid}",
+            "Incomplete Project" => $"INCINFOP_{item.projectid}",
+            "Rejected Budget" => $"REJBUD_{item.projectid}",
+            _ => $"UNKNOWN_{item.projectid}"
+        };
+
+        string TaskName = item.TaskName.Trim() switch
+        {
+            "Assigned Task" => $"{item.TaskName.Trim()}",
+            "Checkback PO" => $"{item.TaskName.Trim()}",
+            "PO Accepted By Vendor" => "Purchase Order(s) Accepted By Vendor",
+            "PO Rejected" => "Purchase Order(s) Rejected",
+            "POs Not Yet Accepted by Vendor" => $"{item.TaskName.Trim()}",
+            "PO Approval Comment" => "Purchase Order Comment",
+            "Approved Purchase Order(s) to Send to Vendors" => $"{item.TaskName.Trim()}",
+            "Fabrication Approvals" => "Pending Fabrication Approvals",
+            "Fabrication Approval Status Update" => "Fabrication Approval Status",
+            "Budget Approval" => $"{item.TaskName.Trim()}",
+            "PO Approval" => "Purchase Order(s) Pending Approval",
+            "Rejected Budget" => $"Rejected Budget(s)",
+            "Incomplete Vendor" => $"{item.TaskName.Trim()}",
+            _ => $"{item.TaskName.Trim()}"
+        };
+
+        bool isNew = NEW.Trim() == "1" ||
+                     (!string.IsNullOrEmpty(item.CheckingDate) &&
+                      !string.IsNullOrEmpty(item.LatestDate) &&
+                      DateTime.Parse(item.CheckingDate) < DateTime.Parse(item.LatestDate));
+
+
+        @if (item.TaskName.Trim() == "Checkback PO" || item.TaskName.Trim() == "PO Accepted By Vendor" || item.TaskName.Trim() == "PO Rejected" || item.TaskName.Trim() == "POs Not Yet Accepted by Vendor"
+        || item.TaskName.Trim() == "PO Approval Comment" || item.TaskName.Trim() == "Approved Purchase Order(s) to Send to Vendors" || item.TaskName.Trim() == "Fabrication Approvals" || item.TaskName.Trim() == "PO Approvals"
+                        || item.TaskName.Trim() == "Fabrication Approval Status Update" || item.TaskName.Trim() == "Budget Approval" || item.TaskName.Trim() == "Rejected Budget")
+        {
+            <div class="accordion taskList" id="">
+                <div class="accordion-item">
+                    <button class="accordion-button collapsed indvProjectTask" type="button" data-bs-toggle="collapse"
+                            data-bs-target="@($"#{id}")" aria-expanded="false" aria-controls="collapseOne" data-id="@id">
+                        <div class="newSpanDiv">
+                            @TaskName<span class="badge itemcount">@item.Count</span>
+                            @if (item.TaskName.Trim() == "Fabrication Approval Status Update")
+                            {
+                                if (NEW == "1")
+                                {
+                                    <span class="badge">NEW</span>
+                                }
+                            }
+                            else if (item.TaskName.Trim() == "Budget Approval")
+                            {
+                                @if (item.CheckingDate == "" || (item.CheckingDate != "" && item.LatestDate != "" && DateTime.Parse(item.CheckingDate) < DateTime.Parse(item.LatestDate)))
+                                {
+                                    <span class="badge">NEW</span>
+                                }
+                            }
+                            else
+                            {
+                                if (isNew)
+                                {
+                                    <span class="badge">NEW</span>
+                                }
+                            }
+
+                        </div>
+                        <div class="newbuttonDiv" id="button_@id">
+
+                        </div>
+                        
+                    </button>
+
+                    <div id="@id" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="accordion taskList" id="">
+                <div class="accordion-item">
+                    <button class="accordion-button collapsed indvProjectTask" type="button" data-bs-toggle="collapse"
+                            data-bs-target="@($"#{id}")" aria-expanded="false" aria-controls="collapseOne" data-id="@id">
+                        <div class="newSpanDiv">
+                            @TaskName<span class="badge itemcount">@item.Count</span>
+                        </div>
+                        <div class="newbuttonDiv" id="button_@id"></div>
+                    </button>
+
+                    <div id="@id" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+    }
+
+}
+else
+{
+    <span>Nothing to show.</span>
+}
+
+
+
+
+

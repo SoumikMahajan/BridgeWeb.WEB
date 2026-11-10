@@ -1,0 +1,15 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model BridgeWeb.Domain.Model.MultipleModel
+<input type="hidden" value="@Model.ProjectAccountDetails.FldID" id="hiddenFldId"/>
+<div class="frm_fld_wrp">
+    <label for="">Account No.</label>
+    <input type="text" class="form-control" id="accountNo"value="@Model.ProjectAccountDetails.AccountNumber">
+</div>
+<div class="frm_fld_wrp">
+    <label for="">Account Desc.</label>
+    <input type="text" class="form-control" id="accountDesc" value="@Model.ProjectAccountDetails.Description">
+</div>

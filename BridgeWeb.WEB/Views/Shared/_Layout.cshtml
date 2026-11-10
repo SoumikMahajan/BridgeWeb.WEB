@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="author" content="" />
+    <title>@ViewData["Title"]</title>
+
+    <!--fav icon-->
+    <link rel="shortcut icon" href="@Url.Content("~/images/favicon-tcg.ico")" type="image/x-icon" />
+
+    <!-- Default links -->
+    <link href="@Url.Content("~/css/bootstrap.min.css")" rel="stylesheet" type="text/css" />
+
+   @*  <link rel="stylesheet" href="@Url.Content("~/css/datatables.min.css")">
+    <link rel="stylesheet" href="@Url.Content("~/css/dataTables.bootstrap5.min.css")">
+    <link rel="stylesheet" href="@Url.Content("~/css/responsive.bootstrap5.min.css")"> *@
+    <link href="@Url.Content("~/css/custom.datatables.min.css")" rel="stylesheet" />
+    <!-- jquery ui css -->
+    <link rel="stylesheet" href="@Url.Content("~/css/jquery-ui.css")">
+
+    <!-- multiselect plugin -->
+    <link rel="stylesheet" href="@Url.Content("~/css/multiple-select.min.css")">
+
+    <!--Alegreya font -->
+    <link href='https://fonts.googleapis.com/css?family=Alegreya+Sans:400,300,500,700' rel='stylesheet' type='text/css'>
+    <!-- Open Sans font -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+
+    <!-- fontAwesome -->
+    @* <link rel="stylesheet" href="@Url.Content("~/css/fontawsome6.min.css")"> *@
+
+    <!-- custom links -->
+    <link href="@Url.Content("~/css/custom.css")" rel="stylesheet" type="text/css" asp-append-version="true" />
+    <link href="@Url.Content("~/css/responsive.css")" rel="stylesheet" type="text/css" asp-append-version="true" />
+    <link href="@Url.Content("~/css/developer.css")" rel="stylesheet" type="text/css" asp-append-version="true" />
+    <link href="@Url.Content("~/css/izitoast.min.css")" rel="stylesheet" />
+</head>
+<body>
+
+    <partial name="_GlobalLoader" />
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- header -->
+    @* @await Html.PartialAsync("_partialTopNavbar") *@
+
+    <header class="main_header">
+        <div class="container-fluid">
+            <div class="top_hedr">
+                <a href="" class="brand-loog"><img src="@Url.Content("~/images/logo.png")" alt=""></a>
+                <div class="user_cred">
+                    @if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        <a href="@Url.Content("/Home/MySettings")" class="user_name">
+                            <i class="fa-solid fa-user"></i>
+                            @User.Identity!.Name
+                        </a>
+                    }                    
+                    <a class="user_log_out" asp-controller="Home" asp-action="Logout"><i class="fa-solid fa-right-from-bracket"></i> Log Out</a>
+                </div>
+            </div>
+        </div>
+
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#main-navbar"
+                        aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="main-navbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="menuBuild">
+                        @*  Partial view *@
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- header -->
+    @RenderBody()
+
+    <!-- footer -->
+    <footer class="main_footer">
+        <div class="container-fluid">
+            <p>
+                <span>© @DateTime.Now.Year The Cardy Group | Version 2.00.000 | </span>
+                <a href="@Url.Content("/About/AccessibleCustomerServicePlan")" target="_blank"> ACCESSIBLE CUSTOMER SERVICE PLAN</a>
+                <span> | </span>
+                <a href="@Url.Content("/About/PrivacyPolicy")">PRIVACY POLICY</a>
+                <span> | </span>
+                <a href="#" id="OpnFeedBack">FEEDBACK</a>
+            </p>
+        </div>
+    </footer>
+    <!-- footer -->
+
+    <!-- modal -->
+    <div class="modal fade feedback_mdl" id="feedback_mdl" tabindex="-1" aria-labelledby="feedback_mdl"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title">FEEDBACK FORM</h1>
+                    <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="frm_fld_wrp">
+                                <label for="feebBackSub">What type of feedback?</label>
+                                <select class="form-select" id="feebBackSub">
+                                    <option value="">--Select Option--</option>
+                                    <option value="General Site Feedback">General Site Feedback</option>
+                                    <option value="Report a Bug">Report a Bug</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="frm_fld_wrp">
+                                <label for="feedbackBody">Comments</label>
+                                <textarea class="form-control" rows="20" id="feedbackBody"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="offwhite_btn" id="feedbackBtn" data-bs-dismiss="modal">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- scrips -->
+    @await Html.PartialAsync("_Script")
+
+
+</body>
+</html>

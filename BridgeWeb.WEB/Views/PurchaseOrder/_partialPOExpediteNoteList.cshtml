@@ -1,0 +1,24 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+<ul class="@(Model.POExpediteNoteList.Count() > 0 ? "comment_list" : "")">
+    @if (Model.POExpediteNoteList.Count() > 0)
+    {
+        foreach (var items in Model.POExpediteNoteList)
+        {
+
+            <li>
+                <i class="fa-regular fa-pen-to-square expeditenotecontent" data-bs-toggle="modal" data-bs-target="#expeditenoteedit" data-id="@items.FldID"
+                   aria-hidden="true" data-content="@items.Notes"></i>
+                <span>@items.CreatedDate : @items.Notes</span>
+                <a href="#" title="Remove this account" class="remove_bar deleteexpnote" data-expid="@items.FldID"><i class="fa-solid fa-xmark" aria-hidden="true"></i></a>
+            </li>
+        }
+
+    }
+    else
+    {
+        <li>No Notes available.</li>
+    }
+
+
+</ul>

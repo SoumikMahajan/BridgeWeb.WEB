@@ -1,0 +1,32 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+<table class="table table-striped table-hover invoice_term">
+    <thead>
+        <tr>
+            <th>Action</th>
+            <th>Address</th>
+            <th>Country</th>
+            <th>State/Prov</th>
+            <th>City</th>
+            <th>Postal Code</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.invoiceAddressesList)
+        {
+            <tr>
+                <td>
+                    <a href="#" class="edit_modal" data-id="@item.FldID" data-bs-target="#edit_inv_addrs" data-bs-toggle="modal" id="editInvAdd">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                    </a>
+                </td>
+                <td>@item.InvoiceAddress</td>
+                <td>@item.Country</td>
+                <td>@item.State</td>
+                <td>@item.City</td>
+                <td>@item.PostalCode</td>
+            </tr>
+        }
+        
+    </tbody>
+    
+</table>

@@ -1,0 +1,59 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    string FormatNumber(decimal? number)
+    {
+        if (!number.HasValue)
+        {
+            return "0.00";  // Return default value for null
+        }
+
+        // Round the number to 2 decimal places
+        decimal roundedNumber = Math.Round(number.Value, 2);
+
+        // Format with commas and two decimal places
+        return roundedNumber.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+}
+
+<table id="tblprevinvoice" class="table table-striped table-hover tblprevinvoice" style="width:100%">
+    <thead>
+        <tr>
+            <th>
+                Invoice Date
+            </th>
+            <th>
+                Invoice Amt
+            </th>
+            <th>
+                Item Cost
+            </th>
+            <th>
+                Item Qty
+            </th>
+            <th>
+                %
+            </th>
+            <th>
+                Total
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.PreviousInvoiceList.Count()>0)
+        {
+            foreach(var items in Model.PreviousInvoiceList)
+            {
+                <tr>
+                    <td>@items.InvoiceDate</td>
+                    <td>@(FormatNumber(items.InvoiceAmount))</td>
+                    <td>@(FormatNumber(items.Amount))</td>
+                    <td>@items.Quantity</td>
+                    <td>@(items.Percent.HasValue?Math.Round(items.Percent.Value,2):"-")</td>
+                    <td>@(FormatNumber(items.LineItemTotal))</td>
+                </tr>
+            }
+        }
+        
+    </tbody>
+</table>

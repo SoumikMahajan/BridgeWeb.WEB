@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BridgeWeb.Domain.Model.Dto.Invoice
+{
+    public class PaymentVendorLIstDTO
+    {
+        public long? VendorID { get; set; }
+        public string? Name { get; set; }
+        public string? Currency { get; set; }
+    }
+}

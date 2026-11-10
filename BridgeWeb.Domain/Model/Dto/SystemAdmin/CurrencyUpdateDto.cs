@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BridgeWeb.Domain.Model.Dto.SystemAdmin
+{
+    public class CurrencyUpdateDto
+    {
+        public long CurrencyID { get; set; }
+        public string? Currency { get; set; }
+        public string? CurrencyCode { get; set; }
+        public bool? Status { get; set; }
+        public long? UpdatedBy { get; set; }
+    }
+}

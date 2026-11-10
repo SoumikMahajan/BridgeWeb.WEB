@@ -1,0 +1,36 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Expedite
+@model MultipleModel
+@{
+    var vendorList = Model.vendorListDtos_Expedite ?? new List<VendorListDto_Expedite>();
+}
+
+<input type="hidden" id="vendorCountValue" value="@vendorList.Count" />
+
+<div class="accordion-body">
+    <div class="accordion accordion_lev_second" id="second_level">
+        <div class="accordion-item">
+            @foreach (var item in vendorList)
+            {
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed second_level_vendor_btn" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#acc_@item.VendorID" aria-expanded="false" aria-controls="acc_@item.VendorID"
+                            data-id="acc_@item.VendorID" data-vendorid="@item.VendorID">
+                        <div class="vend_dtl">
+                            <span>Vendor:</span>@item.VendorCommonName
+                        </div>
+                        <div class="vend_dtl">
+                            <span>Contact:</span> @item.ContactName
+                        </div>
+                        <div class="vend_dtl">
+                            <span>Email:</span> @item.Email
+                        </div>
+                        <div class="vend_dtl">
+                            (@item.POCount)
+                        </div>
+                    </button>
+                </h2>
+                <div id="acc_@item.VendorID" class="accordion-collapse collapse" data-bs-parent="#second_level" data-l-data="false"></div>
+            }
+        </div>
+    </div>
+</div>

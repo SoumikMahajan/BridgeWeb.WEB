@@ -1,0 +1,33 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Budget
+@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var VersionNameList = Model.VersionNameList ?? new List<VersionnameDTO>();
+}
+<select name="" id="currentV" class="form-select">
+    <option value="0">---Current Version---</option>
+    @if (VersionNameList.Any())
+    {
+        @foreach (var items in VersionNameList)
+        {
+            <option value="@items.FldId" data-versionname="@items.Versionname">@items.Versionname (@items.Version)</option>
+        }
+    }
+    else
+    {
+
+    }
+
+
+
+</select>
+
+@*Added By Dev 5 28-11-2025*@
+<div id="budgetCurrentVersion">
+    Version Number:
+    @if (VersionNameList.Any())
+    {
+        @VersionNameList.First().Version
+
+    }
+</div>

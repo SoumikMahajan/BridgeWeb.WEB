@@ -1,0 +1,46 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var groupedByLevel = Model.POApprovalGetDataListDto.GroupBy(p => p.LevelID).ToList();
+    var RqrdUserPoItemApproverList = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+}
+
+<button type="button" class="offwhite_btn" id="po_addnewlevel">Add New Level</button>
+@foreach (var group in groupedByLevel)
+{
+    var ApprovalStage = group.FirstOrDefault()?.ApprovalStage.Trim();
+    var sumOfAlreadyAssigned = group.Sum(p => p.Assigned);
+    var NoUserApprovedPoItem = group.FirstOrDefault()?.NoUserAprvPO;
+    var isUnderApproval = sumOfAlreadyAssigned < NoUserApprovedPoItem;
+
+    <div class="gp_name">
+        <div class="lvlPart">
+            <div class="levelheader" data-levelid="@group.Key" style="@(isUnderApproval ? "background: #eda7b1;" : "")">
+                @ApprovalStage Level Approval
+                <button type="button" class="close_lavel po_deleteApproverLevel" title="Remove Level" data-levelid="@group.Key">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <select class="po_changenumberstoapprovepo" data-levelid="@group.Key">
+                    @foreach (var item in RqrdUserPoItemApproverList)
+                    {
+                        <!option value="@item" @(NoUserApprovedPoItem == item ? "selected" : "")>@item</!option>
+                    }
+                </select> (@sumOfAlreadyAssigned/@NoUserApprovedPoItem)
+            </div>
+        </div>
+        <div class="levelpo">
+            @foreach (var user in group)
+            {
+                if (user.Assigned == 0)
+                {
+                    <label><input type="checkbox" class="po_chkap" data-userid="@user.FldID" data-levelid="@user.LevelID">@user.Name</label>
+                }
+                else
+                {
+                    <label><input type="checkbox" class="po_chkap" data-userid="@user.FldID" data-levelid="@user.LevelID" checked>@user.Name</label>
+                }                
+            }           
+        </div>
+    </div>
+}
+

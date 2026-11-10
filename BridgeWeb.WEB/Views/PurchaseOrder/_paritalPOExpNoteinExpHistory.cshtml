@@ -1,0 +1,38 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+<table style="width: 100%;" class="table tblPOExpediteHistory" id="">
+    <thead>
+        <tr>
+            <th>Action</th>
+            <th>Created By</th>
+            <th>Notes</th>
+            <th>Added on</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.POExpediteNoteList.Count() > 0)
+        {
+            foreach (var items in Model.POExpediteNoteList)
+            {
+                <tr>
+                    <td>
+                        <a href="javascript:void(0);" data-bs-toggle="modal" class="poexphistory" data-id="@items.FldID" data-bs-target="#popupforeditponote">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </a>
+                        <a href="javascript:void(0);" data-id="@items.FldID" class="deletepoexpnote">
+                            <i class="fa fa-trash-o mrg5L"></i>
+                        </a>
+                    </td>
+                    <td>@items.Name</td>
+                    <td>@items.Notes</td>
+                    <td>@items.CreatedDate</td>
+                </tr>
+            }
+        }
+
+        else
+        {
+            <tr><td colspan="4" class="empty_cell">No data available in table</td></tr>
+        }
+    </tbody>
+</table>

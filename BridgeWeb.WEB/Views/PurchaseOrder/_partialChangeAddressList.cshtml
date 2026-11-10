@@ -1,0 +1,19 @@
+﻿ @model BridgeWeb.Domain.Model.MultipleModel
+
+ @if(Model.AddressListVendorCo.Count() >0)
+{
+    foreach (var items in Model.AddressListVendorCo)
+    {
+        <div class="select_address">
+            <label for="">@items.TabHeader</label>
+            <p class="chooseaddress">@items.Address1</p>
+        </div>
+
+    }
+}
+else
+{
+    <div class="select_address">
+        
+    </div>
+}

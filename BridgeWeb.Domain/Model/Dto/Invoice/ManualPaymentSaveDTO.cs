@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BridgeWeb.Domain.Model.Dto.Invoice
+{
+    public class ManualPaymentSaveDTO
+    {
+        public DateTime? PaymentDate { get; set; }
+        public DateTime? ActualPaymentDate { get; set; }
+        public long? PaymentType { get; set; }
+        public string? PaymentNumber { get; set; }
+        public decimal? TotalPayment { get; set; }
+        public string? Memo { get; set; }
+        public long? BankAccountID { get; set; }
+        public long? Vendor_ID { get; set; }
+        public decimal? ConvRate { get; set; }
+        public decimal? ConvRate2 { get; set; }
+        public long? UserId { get; set; }
+
+
+    }
+}

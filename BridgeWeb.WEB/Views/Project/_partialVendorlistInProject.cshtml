@@ -1,0 +1,122 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model BridgeWeb.Domain.Model.MultipleModel
+
+
+<input type="hidden" id="totalAmount" value=""/>
+<table class="table table-striped table-hover order_vendor" id="order_vendortable" style="width:100%">
+   
+       
+    <thead>
+        <tr>
+            <th class="vendor_action">
+                <div class="sorting">
+                    Actions
+                    <i class="fa-solid fa-sort"></i>
+                </div>
+            </th>
+            <th>
+                <div class="sorting">
+                    Vendor
+                    <i class="fa-solid fa-sort"></i>
+                </div>
+            </th>
+            <th>
+                <div class="sorting">
+                    Contact Name
+                    <i class="fa-solid fa-sort"></i>
+                </div>
+            </th>
+            <th>
+                <div class="sorting">
+                    Vendor Category
+                    <i class="fa-solid fa-sort"></i>
+                </div>
+            </th>
+            <th>
+                <div class="sorting">
+                    Currency
+                    <i class="fa-solid fa-sort"></i>
+                </div>
+            </th>
+            <th>
+                <div class="sorting">
+                    City
+                    <i class="fa-solid fa-sort"></i>
+                </div>
+            </th>
+            <th>
+                <div class="sorting">
+                    State/Prov
+                    <i class="fa-solid fa-sort"></i>
+                </div>
+            </th>
+        </tr>
+        <tr>
+            <th class="reset_history_btn">
+                <input type="button" value="Reset" class="form-control">
+            </th>
+            <th>
+                <div class="frm_fld_wrp">
+                    <input type="text" class="form-control" placeholder="Search Vendor">
+                </div>
+            </th>
+            <th>
+                <div class="frm_fld_wrp">
+                    <input type="text" class="form-control" placeholder="Search Contact Name">
+                </div>
+            </th>
+            <th>
+                <div class="multi_select">
+                    <select multiple="multiple" class="multislct" id="Ddl_Vendor_Clftion" data-width="100%">
+                        @foreach(var items in Model.classificationsList)
+                        {
+                            <option value="@items.Classification">@items.Classification</option>
+                        }
+                      
+                    </select>
+                </div>
+            </th>
+            <th>
+                <div class="frm_fld_wrp">
+                    <input type="text" class="form-control" placeholder="Search Currency">
+                </div>
+            </th>
+            <th>
+                <div class="frm_fld_wrp">
+                    <input type="text" class="form-control" placeholder="Search City">
+                </div>
+            </th>
+            <th>
+                <div class="frm_fld_wrp">
+                    <input type="text" class="form-control" placeholder="Search State/Prov">
+                </div>
+            </th>
+        </tr>
+    </thead>
+        
+    
+
+    <tbody>
+        @foreach (var item in Model.VendorinProjectList)
+        {
+            <tr>
+
+                <td>
+                  <input type="checkbox" class="idParentVendor" data-id="@item.ParentVendor_ID">
+                  <input type="hidden" value="" id="hiddenPvID"/></td>
+                <td>@item.ParentVendorName</td>
+                <td>@item.ContactFirstname @item.ContactLastname</td>
+                <td >@item.Classification</td>
+                <td>@item.Currency</td>
+                <td>@item.City</td>
+                <td>@item.State</td>
+            </tr>
+
+        }
+       
+    </tbody>
+</table>

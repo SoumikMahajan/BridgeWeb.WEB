@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="author" content="" />
+    <title>@ViewData["Title"]</title>
+
+    <!--fav icon-->
+    <link rel="shortcut icon" href="@Url.Content("~/images/favicon-tcg.ico")" type="image/x-icon" />
+    <!-- Default links -->
+    <link href="@Url.Content("~/css/bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <!--Alegreya font -->
+    <link href='https://fonts.googleapis.com/css?family=Alegreya+Sans:400,300,500,700' rel='stylesheet' type='text/css'>
+    <!-- Open Sans font -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+    <!-- fontAwesome -->
+    <link rel="stylesheet" href="@Url.Content("~/css/fontawsome6.min.css")">
+    <!-- custom links -->
+    <link href="@Url.Content("~/css/custom.css")" asp-append-version="true" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/responsive.css")" asp-append-version="true" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/developer.css")" asp-append-version="true" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/izitoast.min.css")" asp-append-version="true" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <partial name="_GlobalLoader" />
+    <div class="toast-container" id="toastContainer"></div>
+    <section class="login">
+        <div class="container">
+            <div class="branding">
+                <img src="@Url.Content("~/images/BridgeLogo6-darker2.png")" alt="">
+                <h2>
+                    <em>
+                        The Bridge purchasing system connects our clients, consultants, designers and vendors with information to make
+                        valuable decisions and provides the foundation in bringing conceptual design to final placement of furniture.
+                    </em>
+                </h2>
+            </div>
+
+            @RenderBody()
+
+            <div class="login_footer">
+                <p>It is recommended that Chrome be used to access the Bridge</p>
+                <p>By entering this site, you hereby agree to the <a href="#">Terms of Use. </a></p>
+                <p>© 2024 The Cardy Group. All rights reserved.</p>
+                <p>Version 1.11.000 Enterprise Edition</p>
+                <p>Last Release Date: 2022.01.01</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- scrips -->
+    @await Html.PartialAsync("_AuthScript")
+</body>
+</html>

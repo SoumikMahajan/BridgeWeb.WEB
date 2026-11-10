@@ -1,0 +1,112 @@
+﻿@using System.Security.Claims
+@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    ViewData["Title"] = "Add User";
+}
+@{
+  var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? "";
+}
+<!-- bredcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">System Admin</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>ADD STAFF AND ADMINISTRATOR</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- bredcrumb -->
+<!-- add staff form start -->
+<section class="master_wrap">
+    <div class="container-fluid">
+        <div class="row custom_gutter5-x frm_wrp new_usr_wrp">
+            <div class="add_new_usr col-xl-5">
+                <h2 class="section_header">ADD NEW USER</h2>
+                <form action="#" class="custom_gutter5-x add_new_usr_frm row" id="create_user_form">
+                    @Html.AntiForgeryToken()
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label for="user_type" class="form-label">User Type</label>
+                            <select id="user_type" class="form-select">
+                                <option selected value="0">---Select UserType---</option>
+                                @foreach(var item in Model.systemUserTypesDTOs)
+                                {
+                                    if(item.Fldid==2||item.Fldid==3||item.Fldid==8)
+                                    {
+                                        <option value="@item.Fldid">@item.Usertype</option>
+                                    }
+                                    
+                                }
+                                
+                            </select>
+                        </div>  
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label for="First_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control text-uppercase" id="First_name" aria-label="First name">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" class="form-control text-uppercase" id="last_name" aria-label="Last Name">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                    <div class="frm_fld_wrp">
+                        <label for="email_addr" class="form-label" id="lblemail">Email address</label>
+                        <input type="email" class="form-control" id="email_addr" aria-label="Email">
+                    </div>
+                    </div>
+                    <div class="col-lg-4">
+                    <div class="frm_fld_wrp">
+                        <label for="is_buyer" class="form-label">Is this user a buyer?</label>
+                        <select id="is_buyer" class="form-select">
+                        <option value="0" selected>No</option>
+                        <option value="1">Yes</option>
+                        </select>
+                    </div>
+                    </div>
+                    <div class="col-lg-4">
+                    <div class="frm_fld_wrp">
+                        <label for="default_buyer" class="form-label">Default Buyer</label>
+                        <select id="default_buyer" class="form-select">
+
+                        @foreach (var item in Model.systemUsersDTOs)
+                        {
+                            <option value="@item.FldID">@item.Firstname @item.Lastname</option>
+                        }
+
+                        </select>
+                    </div>
+                    </div>
+                </form>
+                @if (role.ToUpper() == "Administrator".ToUpper()){
+
+                    <div class="d-flex align-items-center mt-1 gap-3">
+                       <label class="d-flex align-items-center gap-2"><input type="checkbox" id="mfaenable">Enable Two-factor Authentication</label>
+                    </div>
+                }
+            </div>
+
+            <div class="col-xl-7" id="systemaccessOption" style="display:none;">
+                
+
+            </div>
+        </div>
+    </div>
+</section>
+<!-- add staff form end -->
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="#" id="SvaeUser"><i class="fa-regular fa-floppy-disk"></i></a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->

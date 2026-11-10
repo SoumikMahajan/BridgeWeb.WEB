@@ -1,0 +1,398 @@
+﻿@using System.Security.Claims
+@{
+    ViewData["Title"] = "Client and Interior Designer";
+}
+@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? "";
+}
+@* <style>
+
+
+    .shake {
+        display: inline-block;
+        position: relative;
+    }
+ </style> *@
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">System Admin</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>Add Client/Consultant</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<!-- add client form start -->
+<section class="master_wrap add_client_wrp">
+    <div class="container-fluid">
+        <div class="custom_gutter5-x row">
+            <div class="col-xl-5">
+                <h2 class="section_header" id="usertypeselected">ADD NEW USER (Select User Type from DropDown)</h2>
+                <form action="#" class="custom_gutter5-x new_client_frm row" id="create_client_form">
+                    @Html.AntiForgeryToken()
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label for="user_type" class="form-label">User Type</label>
+                            <select id="user_type" class="form-select">
+                                <option value="0">---Select UserType---</option>
+                                @foreach (var item in Model.ProjectusertypeList)
+                                {
+                                    <option value="@item.Fldid">@item.Usertype</option>
+                                }
+                                @*  <option selected >Consultant</option>
+                                <option>Consultant2</option>
+                                <option>Consultant3</option> *@
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label for="company_name" class="form-label">Company Name</label>
+                            <input type="text" class="form-control" id="company_name" aria-label="Company Name">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" aria-label="Title">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label for="First_name" class="form-label">First Name<span class="req">*</span></label>
+                            <input type="text" class="form-control" id="First_name" aria-label="First name">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label for="last_name" class="form-label">Last Name<span class="req">*</span></label>
+                            <input type="text" class="form-control" id="last_name" aria-label="Last Name">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label for="email_addr" class="form-label">Email address<span class="req">*</span></label>
+                            <input type="email" class="form-control" id="email_addr" aria-label="Email">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="number" class="form-control" id="phone" aria-label="Phone">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label for="phone_ext" class="form-label">Phone Ext.</label>
+                            <input type="number" class="form-control" id="phone_ext" aria-label="Phone Ext.">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="frm_fld_wrp">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" rows="4"></textarea>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" aria-label="City">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="frm_fld_wrp">
+                            <label for="Country" class="form-label">Country</label>
+                            <select id="Country" class="form-select">
+                                <option value="0" selected>--Select Country--</option>
+                                @foreach (var item in Model.CountryList)
+                                {
+                                    <option value="@item.CountryID">@item.Country</option>
+                                }
+
+                            </select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="state" class="form-label">State/Prov</label>
+                            <select id="state" class="form-select">
+                                @*  <option value="0">Select State</option>
+                               @foreach(var item in Model.StateList)
+                                {
+                                    <option value="@item.StateID">@item.State</option>
+                                } *@
+                            </select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="zip_code" class="form-label">Postal/Zip Code</label>
+                            <input type="text" class="form-control postalcode" id="zip_code" aria-label="Postal/Zip Code">
+                        </div>
+                    </div>
+                </form>
+                @if (role.ToUpper() == "Administrator".ToUpper())
+                {
+
+                    <div class="d-flex align-items-center mt-1 gap-3">
+                        <label class="d-flex align-items-center gap-2"><input type="checkbox" id="mfaenable">Enable Two-factor Authentication</label>
+                    </div>
+                }
+            </div>
+
+            <div class="col-xl-7" id="security_permissions" style="display:none">
+                @*   <h2 class="section_header">Security Permission</h2> *@
+                @*  <form action="#" class="row security_frm custom_gutter5-x" id="sP" >
+                    <div class="col-12 check_uncheck_all">
+                        <input type="button" class="gray_checkbtn" value="Uncheck All" id="uncheck"></input>
+                        <input type="button" class="gray_checkbtn" value="Check All" id="check"></input>
+                    </div>
+
+                    @foreach (var item in Model.systemPermissionLists)
+                    {
+                        <div class="col-lg-3">
+                            <div class="check_wrp">
+                                <div class="check_hdng">
+                                    <h3>@item.SystemPermission</h3>
+                                    <input type="checkbox" value="project" onclick="isChecked(this)">
+                                </div>
+                                <ul class="check_list">
+                                    @foreach (var option in item.SystemPermissionOption)
+                                    {
+                                        <li>
+                                            <label for="creat">@option.description</label>
+                                            <input type="checkbox" id="create" class="project_check">
+                                        </li>
+                                    }
+
+                                </ul>
+                            </div>
+                        </div>
+                    } *@
+
+                @*  <div class="col-lg-3">
+                        <div class="check_wrp">
+                            <div class="check_hdng">
+                                <h3>VENDOR</h3>
+                                <input type="checkbox" value="vendor" onclick="isChecked2(this)">
+                            </div>
+                            <ul class="check_list">
+                                <li>
+                                    <label for="Create_Edit">Create/Edit</label>
+                                    <input type="checkbox" id="Create_Edit" class="vendor_check">
+                                </li>
+                                <li>
+                                    <label for="Read">Read</label>
+                                    <input type="checkbox" id="Read" class="vendor_check">
+                                </li>
+                            </ul>
+                        </div>
+                    </div> *@
+
+                @*                     <div class="col-lg-3">
+                        <div class="check_wrp">
+                            <div class="check_hdng">
+                                <h3>BUDGETING</h3>
+                                <input type="checkbox" value="budget" onclick="isChecked3(this)">
+                            </div>
+                            <ul class="check_list">
+                                <li>
+                                    <label for="creat2">Create</label>
+                                    <input type="checkbox" id="create2" class="budget_check">
+                                </li>
+                                <li>
+                                    <label for="Edit">Edit</label>
+                                    <input type="checkbox" id="Edit" class="budget_check">
+                                </li>
+                                <li>
+                                    <label for="Approve">Approve</label>
+                                    <input type="checkbox" id="Approve" class="budget_check" checked>
+                                </li>
+                                <li>
+                                    <label for="Read2">Read</label>
+                                    <input type="checkbox" id="Read2" class="budget_check" checked>
+                                </li>
+                            </ul>
+                        </div>
+                    </div> *@
+
+                @* <div class="col-lg-3">
+                        <div class="check_wrp">
+                            <div class="check_hdng">
+                                <h3>PO</h3>
+                                <input type="checkbox" value="po" onclick="isChecked4(this)">
+                            </div>
+                            <ul class="check_list">
+                                <li>
+                                    <label for="create3">Create</label>
+                                    <input type="checkbox" id="create3" class="po_check">
+                                </li>
+                                <li>
+                                    <label for="Fab">Fabrication Approval</label>
+                                    <input type="checkbox" id="Fab" class="po_check" checked>
+                                </li>
+                                <li>
+                                    <label for="Edit3">Edit</label>
+                                    <input type="checkbox" id="Edit3" class="po_check">
+                                </li>
+                                <li>
+                                    <label for="Read3">Read</label>
+                                    <input type="checkbox" id="Read3" class="po_check" checked>
+                                </li>
+                                <li>
+                                    <label for="Vendor">Vendor Accept</label>
+                                    <input type="checkbox" id="Vendor" class="po_check">
+                                </li>
+                                <li>
+                                    <label for="Approve">Approve</label>
+                                    <input type="checkbox" id="Approve" class="po_check" checked>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <div class="check_wrp">
+                            <div class="check_hdng">
+                                <h3>EXPEDITING</h3>
+                                <input type="checkbox" value="expedit" onclick="isChecked5(this)">
+                            </div>
+                            <ul class="check_list">
+                                <li>
+                                    <label for="Readinfo">Read Information</label>
+                                    <input type="checkbox" id="Readinfo" class="exp_chk" checked>
+                                </li>
+                                <li>
+                                    <label for="EditInfo">Edit Information</label>
+                                    <input type="checkbox" id="EditInfo" class="exp_chk">
+                                </li>
+                                <li>
+                                    <label for="Add_Info">Add Information</label>
+                                    <input type="checkbox" id="Add_Info" class="exp_chk" checked>
+                                </li>
+                            </ul>
+                        </div>
+                    </div> *@
+                @* 
+                    <div class="col-lg-3">
+                        <div class="check_wrp">
+                            <div class="check_hdng">
+                                <h3>ACCOUNTING</h3>
+                                <input type="checkbox" value="account" onclick="isChecked6(this)">
+                            </div>
+                            <ul class="check_list">
+                                <li>
+                                    <label for="Create_Inv">Create Invoice</label>
+                                    <input type="checkbox" id="Create_Inv" class="account_chk">
+                                </li>
+                                <li>
+                                    <label for="EditInvo">Edit Invoice</label>
+                                    <input type="checkbox" id="EditInvo" class="account_chk">
+                                </li>
+                                <li>
+                                    <label for="record">Record Payment</label>
+                                    <input type="checkbox" id="record" class="account_chk">
+                                </li>
+                                <li>
+                                    <label for="Issue">Issue Payment</label>
+                                    <input type="checkbox" id="Issue" class="account_chk">
+                                </li>
+                                <li>
+                                    <label for="Print">Print Cheques</label>
+                                    <input type="checkbox" id="Print" class="account_chk">
+                                </li>
+                                <li>
+                                    <label for="Read">Read Payment</label>
+                                    <input type="checkbox" id="Read" class="account_chk">
+                                </li>
+                                <li>
+                                    <label for="Invoice">Read Invoice</label>
+                                    <input type="checkbox" id="Invoice" class="account_chk">
+                                </li>
+                                <li>
+                                    <label for="Supporter">Bridge Supporter</label>
+                                    <input type="checkbox" id="Supporter" class="account_chk">
+                                </li>
+                            </ul>
+                        </div>
+                    </div> *@
+
+                @* <div class="col-lg-3">
+                        <div class="check_wrp">
+                            <div class="check_hdng">
+                                <h3>REPORTING</h3>
+                                <input type="checkbox" value="reporting" onclick="isChecked7(this)">
+                            </div>
+                            <ul class="check_list">
+                                <li>
+                                    <label for="Budget">Budget</label>
+                                    <input type="checkbox" id="Budget" class="report_chk" checked>
+                                </li>
+                                <li>
+                                    <label for="Purchase">Purchase</label>
+                                    <input type="checkbox" id="Purchase" class="report_chk" checked>
+                                </li>
+                                <li>
+                                    <label for="Status">Status</label>
+                                    <input type="checkbox" id="Status" class="report_chk" checked>
+                                </li>
+                                <li>
+                                    <label for="Acco">Accounting</label>
+                                    <input type="checkbox" id="Acco" class="report_chk" checked>
+                                </li>
+                            </ul>
+                        </div>
+                    </div> *@
+
+                @*   <div class="col-lg-3">
+                        <div class="check_wrp">
+                            <div class="check_hdng">
+                                <h3>USER</h3>
+                                <input type="checkbox" value="user" onclick="isChecked8(this)">
+                            </div>
+                            <ul class="check_list">
+                                <li>
+                                    <label for="Interior">Create Client/Interior</label>
+                                    <input type="checkbox" id="Interior" class="user_check">
+                                </li>
+                                <li>
+                                    <label for="Designer">Designer</label>
+                                    <input type="checkbox" id="Designer" class="user_check">
+                                </li>
+                                <li>
+                                    <label for="Assign">Assign Permissions</label>
+                                    <input type="checkbox" id="Assign" class="user_check">
+                                </li>
+                                <li>
+                                    <label for="Create_Staff">Create Staff and Administrator</label>
+                                    <input type="checkbox" id="Create_Staff" class="user_check">
+                                </li>
+                            </ul>
+                        </div>
+                    </div> *@
+                @*  </form> *@
+            </div>
+        </div>
+    </div>
+</section>
+<!-- add client form end -->
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li id="btn_CrtClientOrID">
+            <a href="#">
+                <i class="fa-regular fa-floppy-disk" title="Create User"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->

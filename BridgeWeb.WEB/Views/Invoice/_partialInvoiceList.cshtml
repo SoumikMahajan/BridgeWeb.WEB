@@ -1,0 +1,87 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    // string FormatNumber(decimal number)
+    // {
+
+    //     // Round the number to 2 decimal places first
+    //     number = Math.Round(number, 2);
+
+    //     // Format number with commas and ensure it's a string
+    //     return number.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    // }
+    string FormatNumber(decimal? number)
+    {
+        // Check if the number is null
+        if (number == null)
+        {
+            return "0.00"; // Default value for null
+        }
+
+        // Round the number to 2 decimal places first
+        decimal roundedNumber = Math.Round(number.Value, 2);
+
+        // Format number with commas and ensure it's a string
+        return roundedNumber.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+    string formatDoubleNumber(double? Number)
+    {
+        if (Number == null)
+        {
+            return "0.00"; // Default value for null
+        }
+        double roundedNumber = Math.Round(Number.Value, 2);
+        return roundedNumber.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+}
+<table id="inv_list_tab" class="table table-striped table-hover" style="width:100%">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Vendor</th>
+            <th>Invoice #</th>
+            <th>Project</th>
+            <th>Currency</th>
+            <th>Fx Rate</th>
+            <th>Subtotal</th>
+            <th>Tax1</th>
+            <th>Tax2</th>
+            <th>Tax3</th>
+            <th>Payment</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.InvoiceList.Count() > 0)
+        {
+            foreach (var items in Model.InvoiceList)
+            {
+                <tr class="redirecttable" data-redirect="@(items.Subtotal >=0 ?"Invoice":"Credit")" data-invoiceid="@items.InvoiceNumber" style="cursor:pointer;">
+                    <td>@items.InvoiceDate</td>
+                    <td>@items.LegalName</td>
+                    <td>@items.InvoiceNumberVendor</td>
+                    <td>@items.ProjectNumber-@items.ProjectName</td>
+                    <td>@items.CurrencyCode</td>
+                    <td>@FormatNumber(@items.Exrate)</td>
+                    <td >@FormatNumber(@items.Subtotal)</td>
+                    <td>@FormatNumber(@items.Tax1)</td>
+                    <td>@FormatNumber(@items.Tax2)</td>
+                    <td>@FormatNumber(@items.Tax3)</td>
+                    @if (@formatDoubleNumber(@items.Paymenttotal) != "0.00")
+                    {
+                       @*  go to payment *@
+                        <td class="payment" style="cursor:pointer;text-decoration:underline;color:blue;" data-invid="@items.InvoiceNumber"data-canbeclicked="true">@formatDoubleNumber(@items.Paymenttotal)</td>
+                    }
+                    else
+                    {
+                        <td class="payment" data-canbeclicked="false">@formatDoubleNumber(@items.Paymenttotal)</td> @* go to invoice *@
+                    }
+                </tr>
+            }
+        }
+        else
+        {
+
+        }
+
+    </tbody>
+</table>

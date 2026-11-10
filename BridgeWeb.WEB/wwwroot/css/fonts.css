@@ -1,0 +1,14 @@
+/*@font-face {
+    font-family: 'helvetica';
+    src: url('../fonts/helvetica_regular-webfont.woff2') format('woff2'),
+        url('../fonts/helvetica_regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}*/
+
+@font-face {
+    font-family: 'FontAwesomeRegular';
+    src: url('../fonts/fa-regular-400.woff2') format('woff2'), url('./fonts/fa-regular-400.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}

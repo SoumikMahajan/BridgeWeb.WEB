@@ -1,0 +1,91 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model BridgeWeb.Domain.Model.MultipleModel
+@foreach (var invAdd in Model.InvoiceAddresses)
+{
+    <div class="row">
+        <div class="col-md-4">
+            <div class="frm_fld_wrp">
+                <input type="hidden" id="hidenInvAddId" value="@invAdd.FldID" />
+                <label for="inv_Add">Address</label>
+                <textarea class="form-control" id="inv_Add">@invAdd.InvoiceAddress</textarea>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="frm_fld_wrp">
+                <label for="inv_Countrylist">Country</label>
+               
+                <select name="" id="inv_Countrylist" class="form-select">
+                    @* <option value="1" selected>Yes</option>
+                <option value="0">No</option> *@
+                    <option value="0">--Select Country--</option>
+                    @foreach (var items in Model.CountryList)
+                    {
+                        var cId = items.CountryID;
+                        if (items.CountryID == invAdd.CountryID)
+                        {
+                           
+                            <option value="@items.CountryID" selected>@items.Country</option>
+                            <option value="@items.CountryID">@items.Country</option>
+                        }
+                        else
+                        {
+                            <option value="@items.CountryID">@items.Country</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="frm_fld_wrp">
+                <label for="invadd_State">State/Prov</label>
+
+                <select name="" id="invadd_State" class="form-select">
+                    @* <option value="1" selected>Yes</option> *@
+                    @* <option value="0">No</option> *@
+
+                    @foreach (var item in Model.StateList)
+                    {
+                        if (item.StateID == invAdd.StateID)
+                        {
+                            
+                            
+
+                            <option value="@item.StateID" selected>@item.State</option>
+
+
+
+
+
+                        }
+                        else
+                        {
+                            <option value="@item.StateID">@item.State</option>
+                        }
+
+                       
+
+
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="frm_fld_wrp">
+                <label for="invadd_City">City</label>
+                <input type="text" class="form-control" id="invadd_City" value="@invAdd.City">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="frm_fld_wrp">
+                <label for="invadd_Postalcode">Postal Code</label>
+                <input type="text" class="form-control" id="invadd_Postalcode" value="@invAdd.PostalCode">
+            </div>
+        </div>
+    </div>
+
+
+}

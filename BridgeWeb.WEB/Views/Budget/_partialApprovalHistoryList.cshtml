@@ -1,0 +1,49 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Budget
+@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var approvalHistory = Model.ApprovalHistoryList
+        ?? Enumerable.Empty<ApprovalHistoryListDTO>();
+}
+
+@* <p id="budgetapprovalstatus">Budget not yet submitted for approval.</p> *@
+<div id="budgetsentforapprovalyes" class="mb-4"></div>
+
+<table id="prevversionapproval" class="table">
+    <thead style="background:rgba(60, 74, 85, 0.35); text-align:center;">
+        <tr>
+
+            <th style="text-align: center; width:50%;">History</th>
+            <th style="text-align: center; width:50%;">Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (approvalHistory.Any())
+        {
+            @foreach (var item in approvalHistory)
+            {
+                <tr style="background: rgb(192, 186, 186);">
+                    <td> (@item.Version VERSION) VERSION NAME : @item.VersionName, Budget @item.Status on @item.CreatedDate, FROM @item.GroupName</td>
+                    <td>
+                        <ul>
+                            @if (string.IsNullOrEmpty(item.ApprovedByName) || string.IsNullOrWhiteSpace(item.ApprovedByName))
+                            {
+                                <li>@item.Approver @item.Status on @item.CreatedDate </li>
+                            }
+                            else
+                            {
+                                <li>@item.ApprovedByName @item.Status on behalf of @item.Approver on @item.CreatedDate </li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr></tr>
+        }
+
+
+    </tbody>
+</table>

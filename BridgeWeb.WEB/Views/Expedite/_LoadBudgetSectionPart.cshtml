@@ -1,0 +1,33 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Expedite
+@model MultipleModel
+
+@{
+    var projectSection = Model.projectSectionDto_Expedites ?? new List<ProjectSectionDto_Expedite>();
+}
+
+<div class="accordion-body">
+    <div class="accordion accordion_lev_second" id="budget_second_level">
+        <div class="accordion-item">
+            @foreach (var item in projectSection)
+            {
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed second_level_budget_btn" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#acc_@item.BudgetSectionID" aria-expanded="false" aria-controls="acc_@item.BudgetSectionID"
+                            data-budgetsectionid="@item.BudgetSectionID" data-id="acc_@item.BudgetSectionID">
+                        <div class="vend_dtl">
+                            <span>Number:</span> @item.SectionNumber
+                        </div>
+                        <div class="vend_dtl"></div>
+                        <div class="vend_dtl">
+                            <span>Name:</span> @item.Name
+                        </div>
+                        <div class="vend_dtl">
+                            (@item.BudgetItemCount)
+                        </div>
+                    </button>
+                </h2>
+                <div id="acc_@item.BudgetSectionID" class="accordion-collapse collapse" data-bs-parent="#budget_second_level" data-l-data="false"></div>
+            }
+        </div>
+    </div>
+</div>

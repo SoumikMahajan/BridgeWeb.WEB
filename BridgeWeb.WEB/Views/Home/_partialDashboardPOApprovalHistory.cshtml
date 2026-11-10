@@ -1,0 +1,115 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var LevelApprovalStatus = ViewData["LevelApprovalStatus"] as string ?? string.Empty;
+    var TotalLevelID = Convert.ToInt32(LevelApprovalStatus.Split("^")[0]);
+    // var ApprovedID = (Convert.ToInt32(LevelApprovalStatus.Split("^")[1]));
+    var ApprovedID = (Convert.ToInt32(LevelApprovalStatus.Split("^")[1]) - 1);
+    // var TotalLevelID = 3;
+    // var ApprovedID = 1;
+    ApprovedID = ApprovedID < 0 ? 0 : ApprovedID;
+    var WidthPercentage = (TotalLevelID > 0) ? (ApprovedID * 100 / TotalLevelID) : 0;
+}
+
+@functions {
+    public static string GetOrdinal(int number)
+    {
+        string[] ordinals = { "FIRST", "SECOND", "THIRD", "FOURTH", "FIFTH", "SIXTH", "SEVENTH", "EIGHTH", "NINTH", "TENTH" };
+        return number <= ordinals.Length ? ordinals[number - 1] : $"{number}TH";
+    }
+}
+
+
+
+<div class="milestones">
+    <div class="progress">
+        <div class="progress_bar" role="progressbar" style="width:@WidthPercentage%"> </div>
+    </div>
+    <div class="stage">
+
+        @for (int i = 0; i < TotalLevelID; i++)
+        {
+            <div>
+                <span class="tick">
+                    @if (i < ApprovedID)
+                    {
+                        <i class="fa fa-check checks"></i>
+                    }
+                </span>
+            </div>
+        }
+    </div>
+    <div class="lable">
+        @for (int i = 0; i < TotalLevelID; i++)
+        {
+            <div>
+                <span class="tick-lable">
+                    @(GetOrdinal(i + 1) + " LEVEL")
+                </span>
+            </div>
+        }
+
+    </div>
+
+</div>
+
+<table class="table">
+    <thead style="background: #7d97ac;color: white;">
+        <tr>
+            <th>History</th>
+            <th>Comment</th>
+            <th>Files</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.incompletePoHistoryDTO.Count > 0)
+        {
+            foreach (var item in Model.incompletePoHistoryDTO)
+            {
+                var approvalStatus = item.Approved == "1" ? "Approved"
+                                    : item.Rejected == "1" ? "Rejected"
+                                    : "Commented";
+
+                var rowStyle = item.resendon == "0" ? "" : "style='background:rgb(192, 186, 186);'";
+               
+
+                string approvalText;
+                if (string.IsNullOrWhiteSpace(item.ManagerName) ||
+                item.ManagerName.Equals(item.UserName, StringComparison.OrdinalIgnoreCase))
+                {
+                    approvalText = $"by {item.UserName}";
+                }
+                else
+                {
+                    approvalText = $"by {item.ManagerName} on behalf of {item.UserName}";
+                }
+
+                var fileLinks = string.Empty;
+                if (!string.IsNullOrWhiteSpace(item.files))
+                {
+                    var fileArray = item.files.Split("$$$$", StringSplitOptions.RemoveEmptyEntries);
+                    fileLinks = string.Join(" , ", fileArray.Select(f =>
+                        $"<a target='_blank' href='/Assets/POApprovals/{f}'>{f}</a>"
+                    ));
+                }
+
+                <tr @Html.Raw(rowStyle)>
+                    <td>
+                        (@GetOrdinal((int)item.Level) LEVEL APPROVAL) @approvalStatus On @item.InsertDate @approvalText
+                    </td>
+                    <td>@item.Comment</td>
+                    <td>
+                        @Html.Raw(fileLinks)
+                    </td>
+                </tr>
+            }
+
+        }
+        else
+        {
+            <tr>
+                <td>No History Available</td>
+            </tr>        
+        }
+    </tbody>
+
+</table>

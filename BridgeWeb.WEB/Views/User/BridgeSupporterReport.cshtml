@@ -1,0 +1,165 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    ViewData["Title"] = "Bridge Supporter Report";
+    var selectedPercentage = 3;
+}
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><span>Report</span></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>BridgeSupporterReport</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="#" data-bs-toggle="popover" data-bs-content="Export To PDF Report" data-bs-trigger="hover" id="exportToBridgePDF">
+                <i class="fa-regular fa-file-pdf"></i>
+            </a>
+        </li>       
+    </ul>
+</div>
+
+<!-- Report supporter section -->
+<section class="master_wrap report_supporter_section">
+    <div class="container-fluid">
+        <h2 class="section_header">BRIDGE SUPPORTER REPORT</h2>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="multi_slc_wrp">
+                    <label for="" class="form-label">Project<span class="req">*</span></label>
+                    <select multiple="multiple" class="multislct" data-width="100%" id="dllProject">
+                        @foreach (var item in Model.allProjectDropdownDtos)
+                        {
+                            <option value="@item.projectID">@item.proName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="report_support_form">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="report_input">
+                        <label class="lblHeader subLblHeader">Filters (Leave blank for all)</label>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <label for="">Vendor</label>
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="multi_slc_wrp">
+                                    <select multiple="multiple" class="multislct" data-width="100%" id="ddlVendor">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <label for="">Date Range</label>
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="st_dtRange">
+                                    <select class="form-select datecontrol" data-from="fromsearch" data-to="tosearch">
+                                        <option value="All">ALL</option>
+                                        <option value="custom">Custom</option>
+                                        <option value="last365">Last 365 Days</option>
+                                        <option value="today">Today</option>
+                                        <option value="yesterday">Yesterday</option>
+                                        <option value="thisweek">This Week</option>
+                                        <option value="thismonth">This Month</option>
+                                        <option value="thisquarter">This Quarter</option>
+                                        <option value="thisyear">This Year</option>
+                                        <option value="lastweek">Last Week</option>
+                                        <option value="lastmonth">Last Month</option>
+                                        <option value="lastquarter">Last Quater</option>
+                                        <option value="lastyear">Last Year</option>
+                                    </select>
+                                    <input type="text" class="form-control datepicker fromsearch" placeholder="YYYY.MM.DD" disabled>
+                                    <input type="text" class="form-control datepicker tosearch" placeholder="YYYY.MM.DD" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <label for="">Send</label>
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="multi_slc_wrp">
+                                    <select multiple="multiple" class="multislct ddlIsSend" data-width="100%">
+                                        <!option value="1">Yes</!option>
+                                        <!option value="0">No</!option>                                        
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <label for="">Can Send</label>
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="multi_slc_wrp">
+                                    <select multiple="multiple" class="multislct ddlcanSend" data-width="100%">
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <label for="">Paid</label>
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="multi_slc_wrp">
+                                    <select multiple="multiple" class="multislct ddlIsPaid" data-width="100%">
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <label for="">Supporter Amount</label>
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="multi_slc_wrp">
+                                    <select multiple="multiple" class="multislct ddlSuptrAmt" data-width="100%">
+                                       @for (int i = 0; i < 100; i++)
+                                        {
+                                            <!option value="@i" @(i == selectedPercentage ? "selected" : "")>@i %</!option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+<!-- Report supporter section -->

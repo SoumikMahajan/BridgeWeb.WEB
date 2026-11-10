@@ -1,0 +1,151 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var LevelApprovalStatus = "";
+    var TotalLevelID = 1;
+    var ApprovedID = 0;
+    var WidthPercentage = 0;
+
+    if (Model?.POApprovalsBackupDTO != null && Model.POApprovalsBackupDTO.Count > 0)
+    {
+        var firstApproval = Model.POApprovalsBackupDTO?.FirstOrDefault();
+        LevelApprovalStatus = firstApproval?.LevelStatus ?? "1^0";
+        TotalLevelID = Convert.ToInt32(LevelApprovalStatus.Split('^')[0]);
+        ApprovedID = (Convert.ToInt32(LevelApprovalStatus.Split("^")[1]) - 1);
+
+        // ApprovedID = Convert.ToInt32(LevelApprovalStatus.Split('^')[1]);
+
+        // if (Model.POApprovalsBackupDTO.Any(x => x.Rejected == 1))
+        // {
+        //     ApprovedID -= 1;
+        // }
+
+        ApprovedID = ApprovedID < 0 ? 0 : ApprovedID;
+        WidthPercentage = (TotalLevelID > 0) ? (ApprovedID * 100 / TotalLevelID) : 0;
+    }
+}
+
+@functions {
+    public static string GetOrdinal(int number)
+    {
+        string[] ordinals = { "FIRST", "SECOND", "THIRD", "FOURTH", "FIFTH", "SIXTH", "SEVENTH", "EIGHTH", "NINTH", "TENTH" };
+        return number <= ordinals.Length ? ordinals[number - 1] : $"{number}TH";
+    }
+}
+
+@{
+    var CountPOApprovalsBackup = Model?.POApprovalsBackupDTO?.Count ?? 0;
+}
+
+@if (CountPOApprovalsBackup > 0)
+{
+    <div class="milestones">
+        <div class="progress">
+            <div class="progress_bar" role="progressbar" style="width:@(WidthPercentage + "%")"> </div>
+        </div>
+        <div class="stage">
+
+            @for (int i = 0; i < TotalLevelID; i++)
+            {
+                <div>
+                    <span class="tick">
+                        @if (i < ApprovedID)
+                        {
+                            <i class="fa fa-check checks"></i>
+                        }
+                    </span>
+                </div>
+            }
+        </div>
+        <div class="lable">
+            @for (int i = 0; i < TotalLevelID; i++)
+            {
+                <div>
+                    <span class="tick-lable">
+                        @(GetOrdinal(i + 1) + " LEVEL")
+                    </span>
+                </div>
+            }
+
+        </div>
+    </div>
+}
+
+
+<table class="table">
+    <thead style="background: #7d97ac;color: white;">
+        <tr>
+            <th>History</th>
+            <th>Comment</th>
+            <th>Files</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (CountPOApprovalsBackup > 0)
+        {
+            @foreach (var item in Model?.POApprovalsBackupDTO!)
+            {
+                var fileLinks = string.Empty;
+                if (!string.IsNullOrWhiteSpace(item.FName))
+                {
+                    var fileArray = item.FName.Split("$$$$", StringSplitOptions.RemoveEmptyEntries);
+                    fileLinks = string.Join(" , ", fileArray.Select(f =>
+                    $"<a target='_blank' href='/Assets/POApprovals/{f}'>{f}</a>"
+                    ));
+                }
+
+                var approvalStatus = item.Approved == 1 ? "Approved"
+                : item.Rejected == 1 ? "Rejected"
+                : "Commented";
+                var InsertDate = @item.InsertDate?.ToString("yyyy-MM-dd hh:mm tt") ?? "";
+
+                string approvalText;
+                if (string.IsNullOrWhiteSpace(item.ManagerName) ||
+                item.ManagerName.Equals(item.UserName, StringComparison.OrdinalIgnoreCase))
+                {
+                    approvalText = $"by {item.UserName}";
+                }
+                else
+                {
+                    approvalText = $"by {item.ManagerName} on behalf of {item.UserName}";
+                }
+
+                var backgroundStyle = item.Rejected != 0
+                ? "background: rgb(201,152,152,1);"
+                : "background: rgb(192, 186, 186);";
+
+                if (item.Approved != 0 || item.Rejected != 0 || item.Comment != "")
+                {
+                    <tr style="@backgroundStyle">
+                        <td>
+                            (@GetOrdinal(Convert.ToInt32(item.Level)) LEVEL APPROVAL) @approvalStatus On @InsertDate @approvalText
+                        </td>
+                        <td>@item.Comment</td>
+                        <td>
+                            @Html.Raw(fileLinks)
+                        </td>
+                    </tr>
+
+                }
+                else
+                {
+                    <tr style="@backgroundStyle">
+                        <td>
+                            Sent for approval On @InsertDate @approvalText
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                }
+            }
+        }
+        else
+        {
+            <tr>
+                <td>No History Available</td>
+            </tr>
+        }
+
+    </tbody>
+
+</table>

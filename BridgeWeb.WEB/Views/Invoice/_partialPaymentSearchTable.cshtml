@@ -1,0 +1,100 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var status = string.Empty;
+}
+<table id="payment_list" class="table table-striped table-hover payment_list_table" style="width:100%">
+    <thead>
+        <tr>
+            <th class="leftposition tdMultipleQBO" style="width:1%;"></th>
+            <th class="leftposition">Date</th>
+            <th class="leftposition">Vendor</th>
+            <th class="leftposition">Account</th>
+            <th class="leftposition">Type</th>
+            <th class="leftposition">Number</th>
+            <th class="leftposition">Currency</th>
+            <th class="rightposition">Fx Rate</th>
+            <th class="rightposition">Amount</th>
+            <th class="rightposition">Status</th>
+            <th class="rightposition">QBO #</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.PaymentDetailsAdvanced.Count()>0)
+        {
+            foreach (var items in Model.PaymentDetailsAdvanced)
+            {
+                status = string.Empty;
+                if (items.TotalPayment != 0 &&  string.IsNullOrWhiteSpace(items.QBO))
+                {
+                    status = "Pending";
+                }
+                else if (items.TotalPayment != 0 &&  !string.IsNullOrWhiteSpace(items.QBO))
+                {
+                    if (items.QBOStatus?.ToLower() == "PrintComplete".ToLower())
+                    {
+                        status = "Printed";
+                    }
+                    else
+                    {
+                        status = "Posted";
+                    }
+                }
+                else if (items.TotalPayment == 0)
+                {
+                    status = "Void";
+                }
+
+                <tr data-status="@status" data-id="@items.FldID" data-cid="@(items.CancelID ?? 0)" >
+                    <td>
+                        @if (status == "Pending")
+                        {
+                            <input type="checkbox" class="chkMultipleQBO" />
+                        }
+                        else
+                        {
+                            <input type="checkbox" class="chkMultipleQBO" disabled />
+                        }
+                    </td>
+                    <td style="cursor:pointer;">@items.PaymentDate</td>
+                    <td style="cursor:pointer;">@items.ParentVendorName</td>
+                    <td style="cursor:pointer;">@items.Bank_Account</td>
+                    <td style="cursor:pointer;">@items.PaymentTypeName</td>
+                    <td style="cursor:pointer;">@items.PaymentNumber</td>
+                    <td style="cursor:pointer;">@items.CurrencyCode</td>
+                    <td style="cursor:pointer;">@items.ConvRate</td>
+                    <td style="cursor:pointer;">@items.TotalPayment</td>
+                    <td style="cursor:pointer;">@status</td>
+                    <td style="cursor:pointer;" class="notclickable">
+                        @if (status == "Posted" || status == "Printed")
+                        {
+                            if(items.QBO =="-")
+                            {
+                                <span>Not Printed</span> <a href="#" class="sync-qbo"
+                                                            data-number="@items.PaymentNumber"
+                                                            data-amount="@items.TotalPayment"
+                                                            data-qboid="@items.FldID">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <span>@items.QBO</span> <a href="#" class="sync-qbo"
+                                                           data-number="@items.PaymentNumber"
+                                                           data-amount="@items.TotalPayment"
+                                                           data-qboid="@items.FldID">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

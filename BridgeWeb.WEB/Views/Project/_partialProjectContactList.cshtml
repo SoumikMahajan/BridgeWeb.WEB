@@ -1,0 +1,95 @@
+﻿
+@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var index = 0;
+}
+
+<table class="table table-striped table-hover projectContactDatatable" id="projectContactDatatable" style="width: 100%;">
+    <thead>
+        <tr>
+            <th class="action">Action</th>
+            <th>Contact Type</th>
+            <th>Contact Name</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>State/Prov</th>
+            <th>Country</th>
+            <th>Telephone</th>
+            <th>Mobile</th>
+            <th>Email</th>
+        </tr>
+
+      
+    </thead>
+
+    <tbody>
+        @if (Model.ProjectContactListInProjectEdit.Count > 0 && Model.ProjectContactListInProjectEdit!=null)
+        {
+            foreach(var items in Model.ProjectContactListInProjectEdit)
+            {
+                <tr>
+
+                    <td class="edit-project">
+                        <i title="Delete Project" class="fa fa-trash-o fa-fw deleteProjectContact" style="cursor:pointer;" data-id="@items.ProjectContact_ID"></i>
+                        <i class="fa fa-pencil-square-o editvendorContactList" style="cursor:pointer;"
+                           data-id="@items.ProjectContact_ID" id="projectContact_@index"></i>
+                       
+                    </td>
+                    <td>@items.ContactType</td>
+                    <td>@items.ContactName </td>
+                    <td>@items.Address</td>
+                    <td>@items.City</td>
+                  
+
+                    
+                    <td>
+
+                        @foreach (var item in Model.StateList)
+                        {
+                            if (item.StateID == items.State)
+                            {
+                                @item.State
+                            }
+                            else
+                            {
+                                
+                            }
+                        }
+                       
+
+                    </td>
+                        
+                  
+                       
+                        
+                        <td>
+
+                        @foreach (var item in Model.CountryList)
+                        {
+                            if (item.CountryID == items.Country)
+                            {
+                                @item.Country
+                            }
+                            else
+                            {
+                                
+                            }
+
+                        }
+
+                        </td>
+                        
+                    
+                   
+                    <td>@items.Telephone</td>
+                    <td>@items.MobilePhone</td>
+                    <td>@items.Email</td>
+
+                </tr>
+                index++;
+            }
+        }
+        
+        
+    </tbody>
+</table>

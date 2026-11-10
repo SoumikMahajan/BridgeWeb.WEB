@@ -1,0 +1,89 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{   
+    var groupedByLevel = Model.FabApprovalGetListData.GroupBy(p => p.GroupName).ToList();
+    var RqrdUserPoItemApproverList = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+}
+
+<button type="button" class="offwhite_btn" id="fab_addnewlevel">Add New Group</button>
+
+@foreach (var group in groupedByLevel)
+{
+    var firstItem = group.FirstOrDefault();
+
+    if (firstItem == null)
+    {
+        continue;
+    }
+
+    var approvallevel = firstItem.ApprovalLevel;
+    var isfabrication = firstItem.IsFabrication;
+    var levelId = firstItem.LevelID;
+    var NoUserApprovedPoItem = firstItem.NumOfUserToAprv_POITEMS;
+    var sumOfAlreadyAssigned = group.Sum(p => p.Assigned);
+    var isUnderApproval = sumOfAlreadyAssigned < NoUserApprovedPoItem;
+
+
+    <div class="gp_name">
+        <div class="lvlPart">
+            <div class="levelheader" data-levelid="@levelId" style="@(isUnderApproval ? "background: #eda7b1;" : "")">
+                Group @approvallevel -               
+                <button type="button" class="close_lavel fab_deleteApproverLevel" title="Remove Level" data-levelid="@levelId" style="@(isfabrication == 1 ? "display:none;" : "")">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <input type="text" value="@group.Key.ToUpper()" class="fabgrp_name" data-levelid="@levelId" autocomplete="off">
+                <select class="fab_changenumberstoapprovepo" data-levelid="@levelId">
+                    @foreach (var item in RqrdUserPoItemApproverList)
+                    {
+                        <!option value="@item" @(NoUserApprovedPoItem == item ? "selected" : "")>@item</!option>
+                    }
+                </select> (@sumOfAlreadyAssigned/@NoUserApprovedPoItem)
+            </div>
+        </div>
+
+        <div class="levelpo">
+            @foreach (var user in group)
+            {
+                if (user.Assigned == 0)
+                {
+                    <label><input type="checkbox" class="fab_chkap" data-userid="@user.FldID" data-levelid="@user.LevelID">@user.Name</label>
+                }
+                else
+                {
+                    <label><input type="checkbox" class="fab_chkap" data-userid="@user.FldID" data-levelid="@user.LevelID" checked>@user.Name</label>
+                }
+            }                                   
+        </div>
+    </div>
+}
+
+
+@* <div class="gp_name">
+    <div class="lvlPart">
+        <div class="levelheader" data-levelid="1">
+            Group 2-
+            <button type="button" class="close_lavel" title="Remove Level">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <input type="text">
+            <select id="ReqApprvDropdown_1" data-levelid="1">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select> (1/1)
+        </div>
+    </div>
+    <div class="levelpo">
+        <label><input type="checkbox" checked>ADAM WILLIAMS</label>
+        <label><input type="checkbox" checked>OWNER SHIP</label>
+        <label><input type="checkbox" checked>STEPHEN SMITH</label>
+    </div>
+</div> *@

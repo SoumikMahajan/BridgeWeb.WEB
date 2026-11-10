@@ -1,0 +1,160 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+<table class="table fav_approv_table">
+    <thead>
+        <tr>
+            <td style="width:40%">History</td>
+            <td style="width:25%">Comment</td>
+            <td style="width:35%">Attachment</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.FabricationHistoryDTO)
+        {
+            if (item.HistoryID == 1)
+            {
+                <tr>
+                    <td>
+                        Added on <span style="color:green;"><strong>@item.ShowDate</strong></span> by <span style="color:green;"><strong>@item.Username</strong></span>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>
+                        @Html.Raw(item.DeleteIcon)@item.Action
+                        <span style='color:@item.Color'><strong>@item.ShowDate</strong></span> by
+                        @Html.Raw(item.FinalUsername)
+                    </td>
+                    <td>@item.Comment</td>
+                    <td>@Html.Raw(item.FileHtml)</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+@* @model BridgeWeb.Domain.Model.MultipleModel
+
+
+<table class="table fav_approv_table">
+    <thead>
+        <tr>
+            <td style="width:40%">History</td>
+            <td style="width:25%">Comment</td>
+            <td style="width:35%">Attachment</td>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model.FabricationHistoryDTO)
+        {
+            var HistoryId = item.HistoryID;
+
+            //global action type
+            var action = item.ActionType switch
+            {
+                "Add Comment" => "Commented",
+                "Approve" => "Approved",
+                "Reject" => "Rejected",
+                "Send" => "Sent",
+                "Receive" => "Received",
+                _ => item.ActionType
+            };
+
+            //global color style
+            var color = action switch
+            {
+                "Rejected" => "red",
+                "Amended" => "#a6320f",
+                _ => "green"
+            };                                  
+
+            //history delete icon html
+            var delIcon = "";
+            if (item.CheckAuthority == 1)
+            {
+                delIcon = item.RejectedOne == 1
+                ? $"<i title='Delete History' data-id='{item.HistoryID}' class='fa-regular fa-trash-can pointer me-2 deleteHistory' style='cursor: not-allowed;'></i>"
+                : $"<i title='Delete History' data-item='{item.POLineItemID}' data-id='{item.HistoryID}' class='fa-regular fa-trash-can pointer me-2 deleteHistory' style='cursor:pointer;'></i>";
+            }
+
+            //show date html
+            var showdateHtml = $"<span style='color:{color}'><strong>{@item.ShowDate}</strong></span> by";
+
+            //files html
+            var fileHtml = "";
+            var fname = "Assets/Approvals/";
+            if (!string.IsNullOrEmpty(item.FileNamePhysical) && !string.IsNullOrEmpty(item.FileNameToShow))
+            {
+                var physicalFiles = item.FileNamePhysical.Split("^^^");
+                var displayFiles = item.FileNameToShow.Split("^^^");
+
+                for (var i = 0; i < physicalFiles.Length; i++)
+                {
+                    var furl = Uri.EscapeDataString(physicalFiles[i]);
+                    var fshow = i < displayFiles.Length ? displayFiles[i] : "Unknown File";
+
+                    fileHtml += string.IsNullOrEmpty(fileHtml) ? "" : ", ";
+                    fileHtml += $"<u><a target='_blank' href='{fname}{furl.Replace("#", "%23")}'>{fshow}</a></u>";
+                }
+            }
+
+            //username html
+            var finalUsername = "";
+            if (string.IsNullOrWhiteSpace(item.ManagerName))
+            {                
+                var IsFilesShow = action switch
+                {
+                    "Rejected" => fileHtml,
+                    "Amended" => fileHtml,
+                    _ => ""
+                };
+                finalUsername = $"<span style='color:{color};'><strong>{item.Username}</strong>&nbsp;{IsFilesShow}</span>";
+            }
+            else
+            {                
+                var IsFilesShow = action switch
+                {
+                    "Rejected" => fileHtml,
+                    "Amended" => fileHtml,
+                    _ => ""
+                };
+                finalUsername = $"<span style='color:{color};'><strong>{item.ManagerName}</strong></span> On behalf of <span style='color:green'><strong>{item.Username}</strong>&nbsp;{IsFilesShow}</span>";
+            }
+
+            
+
+
+            if (HistoryId == 1)
+            {
+                <tr>
+                    <td>
+                        Added on <span style="color:green;"><strong>@item.ShowDate</strong></span> by <span style="color:green;"><strong>@item.Username</strong></span>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>
+                        @Html.Raw(delIcon)@action
+                        @Html.Raw(showdateHtml)
+                        @Html.Raw(finalUsername)
+                    </td>
+                    <td>@item.Comment</td>
+                    <td>@Html.Raw(fileHtml)</td>
+                    
+                </tr>
+            }            
+        }
+        
+               
+    </tbody>
+</table> *@

@@ -1,0 +1,228 @@
+﻿@using BridgeWeb.Domain.Model
+@model MultipleModel
+
+@{
+    ViewData["Title"] = "Budget Summary";
+}
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Lineitems", "Budget")">BUDGETS</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>SUMMARY</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+
+<!-- budget summery section -->
+<section class="master_wrap budget_summery">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="budget_section">
+                    <h2 class="section_header">BUDGET SECTION</h2>
+                    <div class="select_project">
+                        <div class="multi_slc_wrp">
+                            <select multiple="multiple" class="multislct" data-width="100%" id="PrjtDdl">
+                                @if (Model.dropDownListDTOs != null)
+                                {
+                                    @foreach (var item in Model.dropDownListDTOs)
+                                    {
+                                        <option data-id="@item.Id" value="@item.Id">@item.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="project_budget_dtls">
+                        <div id="projectbudgetdtls"></div>
+                        <div class="subtotal_budget">
+                            <span class="filter_subtotal" id="filteredSubTotal"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="adv_search">
+                    <h2 class="section_header">ADVANCED SEARCH</h2>
+                    <div class="row custom_gutter5-x">
+                        <div class="col-md-6">
+                            <div class="frm_fld_wrp">
+                                <input type="text" id="searchByNumberId" class="form-control" placeholder="Search By Number eg. 0-5, 7, 10-12" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="frm_fld_wrp">
+                                <input type="text" id="searchByNameId" class="form-control" placeholder="Search By Name">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row custom_gutter5-x">
+            <div class="col-lg-6">
+                <!--    Project Section      -->
+                <div id="projectSections">
+                    <div class="shortable_wrp">
+                        <div class="headerbar">
+                            <div class="edit"></div>
+                            <div class="number sort"><span>Number <i class="fa-solid fa-sort"></i></span></div>
+                            <div class="name"><span>Name</span></div>
+                            <div class="line-items"><span>Line Items</span></div>
+                            <div class="total"><span>Total</span></div>
+                        </div>
+                        <ul id="sortable" class="sortable">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="appr_grp">
+                    <div class="create_apprgrp">
+                        <i class="fa-solid fa-plus pointer" id="approvalGroupId" data-bs-target="#new_approval_grp" data-bs-toggle="modal"></i>
+                        <span>APPROVAL GROUPS</span>
+                    </div>
+                </div>
+
+                <!--   Approval Groups      -->
+                <div class="sample_grp" id="appGroup">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- budget summery section-->
+
+<!-- flote icon -->
+<div class="flote_icon">
+  <a href="#" data-bs-target="#add_section" data-bs-toggle="modal"><i class="fa-solid fa-plus" title="Add New Section"></i></a>
+</div>
+<!-- flote icon -->
+
+<!-- Modal -->
+<!-- Add Section -->
+<div class="modal fade" id="add_section" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Add Section</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="row custom_gutter5-x" id="add_budget_section_modal_form">
+                    <div class="col-md-6">
+                        <div class="frm_fld_wrp">
+                            <label for="" class="form-label">Number<span class="req">*</span></label>
+                            <input type="text" class="form-control" id="sectionAddNumber" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="frm_fld_wrp">
+                            <label for="" class="form-label">Section Name<span class="req">*</span></label>
+                            <input type="text" class="form-control text-uppercase" id="sectionAddName">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" id="addSectionBtn">Add Section</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Section -->
+<div class="modal fade" id="edit_section" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit Section</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="row custom_gutter5-x" id="edit_section_modal_form">
+                    <div class="col-md-6">
+                        <div class="frm_fld_wrp">
+                            <input type="hidden" id="sectionEditorId" />
+                            <label for="" class="form-label">Number<span class="req">*</span></label>
+                            <input type="text" class="form-control" id="sectionEditorNumber" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="frm_fld_wrp">
+                            <label for="" class="form-label">Name<span class="req">*</span></label>
+                            <input type="text" class="form-control text-uppercase" id="sectionEditorName" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" id="removeSectionBtn">Remove Data</button>
+                <button type="button" class="gray_checkbtn" id="editSectionBtn">Save Data</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Approval Group -->
+<div class="modal fade new_approval_grp" id="new_approval_grp" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Add New Approval Group</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form class="frm_fld_wrp" id="add_approval_group_form">
+                    <label for="" class="form-label">Name<span class="req">*</span></label>
+                    <input type="text" class="form-control text-uppercase" id="txtGroupName">
+                </form>
+                <ul class="add_grpList" id="addGrpList"></ul>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" id="addGroupBtn">Add Group</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Approval Group -->
+<div class="modal fade edit_approval_grp" id="edit_approval_grp" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit Approval Group</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" id="editGroupBody"></div>
+
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" id="deleteGroupBtn">Delete Group</button>
+                <button type="button" class="gray_checkbtn" id="editGroupBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

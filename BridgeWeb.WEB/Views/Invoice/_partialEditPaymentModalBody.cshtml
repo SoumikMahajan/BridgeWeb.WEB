@@ -1,0 +1,109 @@
+﻿@model MultipleModel
+
+<div class="container-fluid">
+    <input type="hidden" id="hdnEditPayment" value="@Model.ManulPaymentDetails.FldID" />
+    <input type="hidden" id="hdnEditPaymentType" value="@Model.ManulPaymentDetails.PaymentType" />
+    <input type="hidden" id="hdnEditBankAccount" value="@Model.ManulPaymentDetails.BankAccountID" />
+    <input type="hidden" id="hdnEditPaymentNumber" value="@Model.ManulPaymentDetails.PaymentNumber" />
+
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="txt_EditPaymentDate" class="form-label">Payment Date</label>
+                <input type="text" class="form-control datepicker" placeholder="Select Payment Date" id="txt_EditPaymentDate" value="@Model.ManulPaymentDetails.PaymentDate!.Value.ToString("yyyy.MM.dd")">
+            </div>
+        </div>
+
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="Ddl_EditPaymentType" class="form-label">Payment Type</label>
+                <select class="form-select" id="Ddl_EditPaymentType">
+                    <!option value="0">Select Payment Type</!option>
+                    @if (Model.PaymentTypesList.Count() > 0)
+                    {
+                        foreach (var items in Model.PaymentTypesList)
+                        {
+                            <!option data-code="@items.PayementCode"value="@items.FldId" @(Model.ManulPaymentDetails.PaymentType == items.FldId ? "selected" : "")>@items.PaymentName</!option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp nsaqbo">
+                <label for="DDl_EditBank" class="form-label"><span>Bank Account</span></label>
+                <select class="form-select" id="DDl_EditBank">
+                    @foreach (var item in Model.BankAccountDetailsLists)
+                    {
+                        <!option data-bankname="@item.Bank_Account" data-currid="@item.CurrencyID" value="@item.Fld_ID">@item.BankAccountName</!option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="txtEditPaymentNumber">Payment #</label>
+                <input type="text" id="txtEditPaymentNumber" placeholder="Enter Payment Number" class="form-control" value="@Model.ManulPaymentDetails.PaymentNumber" />
+            </div>
+        </div>
+
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="txtEditExrate">Exchange. Rate</label>
+                <input type="text" style="text-align: right;" id="txtEditExrate" placeholder="Enter Exchange Rate" class="form-control" value="@Model.ManulPaymentDetails.ConvRate" />
+            </div>
+        </div>
+
+        <div class="col-lg-2">
+            <label for="txtEditMemo">Memo</label>
+            <input type="text" id="txtEditMemo" class="form-control" value="@Model.ManulPaymentDetails.Memo" />
+        </div>
+
+        <div class="col-lg-2">
+            <label for="txtEditTotalAmount">Total Payment Amount</label>
+            <input type="text" id="txtEditTotalAmount" class="form-control makedisable" value="@Model.ManulPaymentDetails.TotalPayment" />
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-lg-12">
+            <table class="table table-bordered table-hover" id="tblInvoiceDetails">
+                <thead>
+                    <tr>
+                        <th>Vendor</th>
+                        <th>Invoice #</th>
+                        <th>Date</th>
+                        <th>Terms</th>
+                        <th>Currency</th>
+                        <th>Amount Owing</th>
+                        <th>Payment Amount</th>
+                        <th style="display:none">Invoice Number</th>
+                        <th style="display:none">Legal Name</th>
+                        <th style="display:none">Parent VendorId</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.PaymentItemList)
+                    {
+                        var html = $"<input style='text-align:right;' type='text' value='{item.InvoiceAmountPaid}' class='floatonly' onkeyup='AddTotalUpdate(this,event);' />";
+
+                        <tr>
+                            <td>@item.legalname</td> @*0*@
+                            <td>@item.invoicenumbervendor</td> @*1*@
+                            <td>@item.InvoiceDate</td> @*2*@
+                            <td>@item.terms</td> @*3*@
+                            <td>@item.currencycode</td> @*4*@
+                            <td>@item.AmountOwing</td> @*5*@
+                            <td>@Html.Raw(html)</td> @*6*@
+                            <td style="display:none">@item.invoicenumber</td> @*7*@
+                            <td style="display:none">@item.legalname</td> @*8*@
+                            <td style="display:none">@item.parentvendor_id</td> @*9*@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

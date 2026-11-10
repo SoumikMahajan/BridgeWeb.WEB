@@ -1,0 +1,86 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel;
+
+
+<div class="container-fluid">
+    <input type="hidden" id="hdnEditPayment" value="@Model.ManulPaymentDetails.FldID" />
+    <input type="hidden" id="hdnEditPaymentType" value="@Model.ManulPaymentDetails.PaymentType" />
+    <input type="hidden" id="hdnEditBankAccount" value="@Model.ManulPaymentDetails.BankAccountID" />
+    <input type="hidden" id="hdnEditPaymentNumber" value="@Model.ManulPaymentDetails.PaymentNumber" />
+    <input type="hidden" id="hdn_manualpaymentid" value="" />
+
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="frm_fld_wrp">
+                <label for="txt_EditPaymentDate" class="form-label">Payment Date</label>
+                <input type="text" class="form-control datepicker" id="txt_EditPaymentDate" placeholder="YYYY.MM.DD" value="@Model.ManulPaymentDetails.PaymentDate!.Value.ToString("yyyy.MM.dd")">
+            </div>
+        </div>
+
+        <div class="col-sm-1">
+            <div class="frm_fld_wrp">
+                <label for="Ddl_EditPaymentType" class="form-label">Payment Type</label>
+                <select class="form-select" id="Ddl_EditPaymentType">
+                    <!option value="0">Select Payment Type</!option>
+                    @if (Model.PaymentTypesList.Count() > 0)
+                    {
+                        foreach (var items in Model.PaymentTypesList)
+                        {
+                            <!option data-code="@items.PayementCode"value="@items.FldId" @(Model.ManulPaymentDetails.PaymentType == items.FldId ? "selected" : "")>@items.PaymentName</!option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-2">
+            <div class="frm_fld_wrp">
+                <label for="DDl_EditBank" class="form-label">Bank Account</label>
+                <select class="form-select" id="DDl_EditBank">
+                    @if (Model.BankAccountDetailsLists.Count() > 0)
+                    {
+                        foreach (var items in Model.BankAccountDetailsLists)
+                        {
+                            <!option value="@items.Fld_ID">@items.BankAccountName</!option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-2">
+            <div class="frm_fld_wrp">
+                <label for="txtEditPaymentNumber" class="form-label">Payment #</label>
+                <input type="text" class="form-control" id="txtEditPaymentNumber" value="@Model.ManulPaymentDetails.PaymentNumber">
+            </div>
+        </div>
+
+        <div class="col-sm-1">
+            <div class="frm_fld_wrp">
+                <label for="txtEditExrate" class="form-label">I-B Fx Rate</label>
+                <input type="text" class="form-control right-txt" id="txtEditExrate" value="@Model.ManulPaymentDetails.ConvRate">
+            </div>
+        </div>
+
+        <div class="col-sm-1">
+            <div class="frm_fld_wrp">
+                <label for="txtEditExrate1" class="form-label">P-A Fx Rate</label>
+                <input type="text" class="form-control right-txt" id="txtEditExrate1" value="@Model.ManulPaymentDetails.ConvRate2">
+            </div>
+        </div>
+
+        <div class="col-sm-2">
+            <div class="frm_fld_wrp">
+                <label for="txtEditMemo" class="form-label">Memo</label>
+                <input type="text" class="form-control" value="@(Model.ManulPaymentDetails.Memo ?? string.Empty)" id="txtEditMemo">
+            </div>
+        </div>
+
+        <div class="col-sm-2">
+            <div class="frm_fld_wrp">
+                <label for="txtEditTotalAmount" class="form-label">Total Payment Amount</label>
+                <input type="text" class="form-control" id="txtEditTotalAmount" disabled value="@Model.ManulPaymentDetails.TotalPayment">
+            </div>
+        </div>
+        <div id="paymentitemdetials"></div>
+    </div>
+</div>

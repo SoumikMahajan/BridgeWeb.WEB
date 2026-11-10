@@ -1,0 +1,207 @@
+﻿@{
+    ViewData["Title"] = "Credit Note Entry only TAX";
+}
+@model BridgeWeb.Domain.Model.MultipleModel
+
+<!-- bredcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("invoicesearch", "Invoice")">Invoice</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>Enter Credit</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- bredcrumb -->
+
+<input type="hidden" id="hdn_poid" value="" />
+<!-- Enter invoice section -->
+<section class="master_wrap enter_inv_tax right_float_space">
+    <div class="container-fluid">
+        <div class="row custom_gutter5-x gy-2">
+            <div class="col-lg-5">
+                <h2 class="section_header">INVOICE</h2>
+                <div class="multi_slc_wrp">
+                    <label for="Ddl_Vendors" class="form-label">Vendor</label>
+                    <select multiple="multiple" class="multislct" data-width="100%" id="Ddl_Vendors">
+                        @if (Model.ParentVendorListEnterInvoice.Count() > 0)
+                        {
+                            <!option value="0" selected>---Select Vendor ---</!option>
+                            foreach (var items in Model.ParentVendorListEnterInvoice)
+                            {
+
+                                <!option data-curr="@items.Currency" value="@items.Vendor_ID">@items.NAME</!option>
+                            }
+                        }
+
+                    </select>
+                </div>
+                <div class="multi_slc_wrp">
+                    <label for="project_tax" class="form-label">Project</label>
+                    <div id="project_tax"></div>
+
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <h2 class="section_header">PO SELECTOR</h2>
+                <div id="poselector_Tax"></div>
+
+            </div>
+
+            <div class="col-12">
+                <div class="invoice_data">
+                    <h2 class="section_header">INVOICE DATA</h2>
+                    <div class="row custom_gutter5-x">
+                        <div class="col-xl-8">
+                            <div class="row custom_gutter5">
+                                <div class="col-lg-1">
+                                    <div class="frm_fld_wrp">
+                                        <label for="txt_InvoiceDate" class="form-label">Date</label>
+                                        <input type="text" class="form-control datepicker" id="txt_InvoiceDate">
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="frm_fld_wrp nsaqbo">
+                                        <label for="ddl_terms" class="form-label">
+                                            Terms <i class="fa-solid fa-plus new_termpopup"
+                                                     data-bs-toggle="modal" data-bs-target="#terms_popup"></i>
+                                        </label>
+                                        <select name="" id="ddl_terms" class="form-select">
+                                            <option value="0">--Select Terms--</option>
+                                            @if (Model.vendorTermsList.Count() > 0)
+                                            {
+                                                foreach (var item in Model.vendorTermsList)
+                                                {
+
+                                                    <option value="@item.TermID">@item.Terms</option>
+                                                }
+                                            }
+
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="frm_fld_wrp">
+                                        <label for="txt_InvoiceNumber" class="form-label">Number</label>
+                                        <input type="text" class="form-control right-txt" id="txt_InvoiceNumber" value="CR-">
+                                    </div>
+                                </div>
+                                <div class="col-lg-1">
+                                    <div class="frm_fld_wrp">
+                                        <label for="txt_TotalInvoiceAmount" class="form-label">
+                                            Total Amt.
+                                        </label>
+                                        <input type="number" class="floatonly form-control right-txt" id="txt_TotalInvoiceAmount">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="frm_fld_wrp nsaqbo">
+                                        <label for="bnkbalance" class="form-label">
+                                            <span>Project Account</span><span id="bnkbalance">
+
+                                        </span>
+                                    </label>
+                                    <select name="Ddl_ProjectAccount" id="Ddl_ProjectAccount" class="form-select">
+                                        <option value="0">No Project Account</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-1">
+                                <div class="frm_fld_wrp">
+                                    <label for="exchngrate" class="form-label">Fx Rate</label>
+                                    <input type="number" class="form-control right-txt" id="exchngrate" data-edited="N" value="1.0000">
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="frm_fld_wrp inv_memo">
+                                    <label for="txt_InvoiceMemo" class="form-label">Invoice Memo</label>
+                                    <textarea name="" id="txt_InvoiceMemo" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <div class="row custom_gutter5-x">
+                            <div class="col-lg-2">
+                                <div class="frm_fld_wrp">
+                                    <label for="txt_TotalTax1" class="form-label">Total Tax 1</label>
+                                    <input type="text" class="form-control floatonly" id="txt_TotalTax1">
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="frm_fld_wrp">
+                                    <label for="txt_TotalTax2" class="form-label">Total Tax 2</label>
+                                    <input type="text" class="form-control floatonly" id="txt_TotalTax2">
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="frm_fld_wrp">
+                                    <label for="txt_TotalTax3" class="form-label">Total Tax 3</label>
+                                    <input type="text" class="form-control floatonly" id="txt_TotalTax3">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="txt_TotalInvoice" class="form-label">Total Invoice</label>
+                                    <input type="text" class="form-control" id="txt_TotalInvoice" disabled="disabled">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+<!-- Enter invoice section-->
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="javascript:void(0);" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Save" id="btn_Save">
+                <i class="fa-regular fa-floppy-disk"></i>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Cancel" id="btn_Cancel">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->
+
+
+<div class="modal fade terms_popup" id="terms_popup" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Add New Terms</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="frm_fld_wrp">
+                    <label for="txtInvoiceTerms" class="form-label">Invoice Terms</label>
+                    <input type="text" class="form-control" id="txtInvoiceTerms">
+                </div>
+                <label for="selectafterchecking" class="sel_aft_add">
+                    Select After Adding <input type="checkbox"
+                                               id="selectafterchecking" checked>
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" id="addnewterms">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

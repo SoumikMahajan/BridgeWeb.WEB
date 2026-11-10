@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "My Settings";
+}
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Content("/Home/Dashboard")">Home</a></li>
+                <li class="breadcrumb-item"><a href="javascript:void(0);">My Settings</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>Change Settings</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<!-- my setting section -->
+<section class="master_wrap setting_wrp">
+    <div class="container-fluid">
+        @*  <a href="#" class="browsing_history">Download Browsing History</a> *@
+        <h2 class="section_header">CHANGE PASSWORD</h2>
+        <div class="password_setting">
+            <div class="row">
+                <div class="col-6">
+                    <div class="frm_fld_wrp">
+                        <label class="form-label">Old Password<span class="req">*</span></label>
+                        <input type="password" class="form-control" id="txt_oldpassword">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="frm_fld_wrp">
+                        <label class="form-label">New Password<span class="req">*</span></label>
+                        <input type="password" class="form-control" id="txt_newpassword">
+                        <div id="passwordRequirements" class="d-none">
+                            <ul>
+                                <li id="reqLength">✔ 8–15 characters</li>
+                                <li id="reqUpper">✔ At least one uppercase</li>
+                                <li id="reqLower">✔ At least one lowercase</li>
+                                <li id="reqDigit">✔ At least one digit</li>
+                                <li id="reqSpecial">✔ At least one special character</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="frm_fld_wrp">
+                        <label class="form-label">Retype New Password<span class="req">*</span></label>
+                        <input type="password" class="form-control" id="txt_retypenewpassword">
+                        <div id="confirmPasswordMsg" class="d-none">
+                            <span id="matchMsg">Passwords do not match</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <button type="button" class="solid_teal_btn" id="UpdatePassword_btn">
+                        <i class="fa-regular fa-pen-to-square"></i> Save
+                        Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--  my setting section -->

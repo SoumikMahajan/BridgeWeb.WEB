@@ -1,0 +1,76 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var TeamMemberId = @ViewBag.TeamMemberId;
+    var UserTypeName = @ViewBag.UserTypeName;
+    var groupedPermissions = Model.ProjectMemberPermissionDtos.GroupBy(p => p.GroupType).ToList();
+}
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h1 class="modal-title">Edit User</h1>
+        <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="frm_fld_wrp">
+                    <label for="" class="form-label">Project Role</label>
+                    <select name="" id="userTypeId" class="form-select">
+                        <option value="0" selected>---Select User Type---</option>
+                        @foreach (var item in Model.ProjectusertypeList)
+                        {
+                            if (item.Usertype == UserTypeName)
+                            {
+                                <option value="@item.Fldid" selected>@item.Usertype</option>
+                            }
+                            else
+                            {
+                                <option value="@item.Fldid">@item.Usertype</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+        <form action="#" class="edit_user_checkbox">
+            <div class="row custom_gutter5-x">
+                @foreach (var group in groupedPermissions)
+                {
+                    if (group.Key.ToUpper() != "PROJECT" && group.Key.ToUpper() != "USER" && group.Key.ToUpper() != "VENDOR")
+                    {
+                        <div class="col-lg-3 gy-2">
+                            <div class="check_wrp">
+                                <div class="check_hdng">
+                                    <h3>@group.Key</h3>
+                                    <input type="checkbox" id="@group.Key.ToLower()_header" value="@group.Key.ToLower()" class="headerCheckbox">
+                                </div>
+                                <ul class="check_list">
+                                    @foreach (var permission in group)
+                                    {
+                                        <li>
+                                            <label for="@permission.priority_name">@permission.priority_name</label>
+                                            <input type="checkbox" data-sysid="@permission.security_id"
+                                                   id="@permission.priority_name"
+                                                   class="@group.Key.ToLower()_check project_check systemoption"
+                                            @(permission.is_selected == 1 ? "checked" : "")>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                }                
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" data-teammemberid="@TeamMemberId" class="gray_checkbtn" id="editProjectMemberPer">Update</button>
+    </div>
+</div>

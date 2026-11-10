@@ -1,0 +1,54 @@
+﻿@{
+  Layout = "_AuthLayout";
+  ViewData["Title"] = "TheBridgeByTCG";
+}
+
+<input type="hidden" id="hdn_userid" value="@ViewBag.UserId" />
+
+<section class="login">
+  <div class="container">
+    @* <div class="branding">
+      <img src="@Url.Content("~/images/BridgeLogo6-darker2.png")" alt="">
+      <h2>
+        <em>
+          The Bridge purchasing system connects our clients, consultants, designers and vendors with information
+          to
+          make
+          valuable decisions and provides the foundation in bringing conceptual design to final placement of
+          furniture.
+        </em>
+      </h2>
+    </div> *@
+
+    <div class="otp_wrap">
+      <div class="otp_heading">
+        <h3>Verify with OTP</h3>
+        <p>To ensure your security,please enter One-Time Password (OTP) sent to your registered email id</p>
+      </div>
+
+      <form action="#" class="otp_form">
+        <input type="number" class="otp_inp">
+        <input type="number" class="otp_inp">
+        <input type="number" class="otp_inp">
+        <input type="number" class="otp_inp">
+      </form>
+      <p class="resend">Didn't receive the OTP? <a href="javascript:void(0);" class="disabled" id="resendbtn">Resend</a></p>
+      <div class="btn_wrp">
+        <button type="button" class="submit_btn" id="verifyotp">Submit</button>
+        <button type="button" class="border_btn" id="cancelbtn">Cancel</button>
+      </div>
+      <p class="otp-timer" id="otptimer">OTP will expire in <b id="countdown">30:00</b></p>
+      <p class="otp-expire-msg d-none" id="otpexpired">OTP Expired</p>
+    </div>
+
+
+
+    <div class="login_footer">
+      <p>It is recommended that Chrome be used to access the Bridge</p>
+      <p>By entering this site, you hereby agree to the <a href="#">Terms of Use. </a></p>
+      <p>© 2024 The Cardy Group. All rights reserved.</p>
+      <p>Version 1.11.000 Enterprise Edition</p>
+      <p>Last Release Date: 2022.01.01</p>
+    </div>
+  </div>
+</section>

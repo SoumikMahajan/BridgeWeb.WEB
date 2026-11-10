@@ -1,0 +1,245 @@
+﻿@{
+    ViewData["Title"] = "Add Vendor Contact";
+}
+
+@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    //int index = 0;
+    var groupedPermissions = Model.venndorSystemPermissionList.GroupBy(p => p.GroupType).ToList();
+}
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>                
+                <li class="breadcrumb-item active" aria-current="page">
+                    <span>ADD VENDOR CONTACT UNDER PARENT VENDOR</span>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<!-- add client form start -->
+<section class="master_wrap add_client_wrp add_vendor_contact">
+    <div class="container-fluid">
+        <h2 class="section_header add_vendor_head">ADD VENDOR CONTACTS</h2>
+        <div class="row">
+            <div class="col-xl-5">
+                <form action="#" class="custom_gutter5-x new_client_frm row" id="parent_vendor_contact_add">
+                    @Html.AntiForgeryToken()
+                    <div class="col-lg-6">
+                        <div class="row custom_gutter5-x">
+                            <div class="col-xl-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="company_name" class="form-label">Parent Vendor</label>
+                                    <input type="text" class="form-control" disabled value="@Model.parentVendorCreateDto.ParentVendorName.ToUpper()">
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="First_name" class="form-label" >First Name<span class="req">*</span></label>
+                                    <input type="text" class="form-control text-uppercase" id="txt_ContactFname" tabindex="4">
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="phone" class="form-label">Phone</label>
+                                    <input type="number" class="form-control" id="txt_Phone" tabindex="8">
+                                </div>
+                            </div>
+
+                            <div class="col-xl-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="company_name" class="form-label" >Contact Title</label>
+                                    <input type="text" class="form-control" id="txt_ContactTitle" tabindex="1">
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="txt_ContactLname" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control text-uppercase" id="txt_ContactLname" aria-label="Last Name" tabindex="5">
+                                </div>
+                                <div class="frm_fld_wrp">
+                                    <label for="phone_ext" class="form-label">Ext</label>
+                                    <input type="number" class="form-control" id="txt_Extension" tabindex="9">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="frm_fld_wrp">
+                            <label for="txt_Add1" class="form-label">Address(Press Enter for multiple lines)</label>
+                            <textarea class="form-control" id="txt_Add1" rows="4" value="@Model.parentVendorCreateDto.Address1" tabindex="12">@Model.parentVendorCreateDto.Address1</textarea>
+                        </div>
+
+                        <div class="frm_fld_wrp">
+                            <label for="Ddl_City" class="form-label">City</label>
+                            <input type="text" class="form-control" id="Ddl_City" aria-label="City" value="@Model.parentVendorCreateDto.City" tabindex="15">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="chek_wrp">
+                            <label>Hidden <input type="checkbox" id="Ishidden" tabindex="2"></label>
+                            <label>System User <input type="checkbox" id="checkedSystemUSer" checked tabindex="3"></label>
+                        </div>
+
+                        <div class="row custom_gutter5-x">
+                            <div class="col-xl-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="company_name" class="form-label">Email address<span class="req">*</span></label>
+                                    <input type="email" class="form-control" id="txt_Email" tabindex="6">
+                                </div>
+                                @* <div class="frm_fld_wrp">
+                                    <label for="company_name" class="form-label">Fax</label>
+                                    <input type="text" class="form-control" id="txt_Fax" tabindex="10">
+                                </div>   *@ 
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="frm_fld_wrp">
+                                    <label for="company_name" class="form-label">Website</label>
+                                    <input type="text" class="form-control" id="txt_Website" tabindex="7">
+                                </div>
+                            </div>
+                            <div class="col-xl-12">
+                                <div class="frm_fld_wrp">
+                                    <label for="company_name" class="form-label">Mobile</label>
+                                    <input type="text" class="form-control" id="txt_Mobile" tabindex="10">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="Ddl_Country" class="form-label">Country</label>
+                            <select class="form-select" id="ddlCountry" tabindex="13">
+                                <option value="0" selected>--Select Country--</option>
+                                @foreach (var item in Model.CountryList)
+                                {
+                                    if (Model.parentVendorCreateDto.Country.ToString() == item.CountryID.ToString())
+                                    {
+                                        <option value="@item.CountryID" selected>@item.Country</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.CountryID">@item.Country</option>
+                                    }                                    
+                                }
+                            </select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="Ddl_State" class="form-label">State/Prov</label>                            
+                            <select class="form-select" id="ddlState" tabindex="14">
+                                <option value="0" selected>--Select State--</option>
+                                @if (Model.parentVendorCreateDto.State != 0)
+                                {                                   
+                                    @foreach (var item in Model.StateList)
+                                    {
+                                        if (Model.parentVendorCreateDto.State.ToString() == item.StateID.ToString())
+                                        {
+                                            <option value="@item.StateID" selected>@item.State</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.StateID">@item.State</option>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="0" selected>--Select State--</option>
+                                }
+                            </select>
+                            
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="txt_ZipCode" class="form-label">Postal/Zip Code</label>
+                            <input type="text" style="text-transform:uppercase" class="form-control" id="txt_ZipCode" aria-label="Postal/Zip Code" value="@Model.parentVendorCreateDto.ZipCode" tabindex="16">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-xl-7" id="permissionShowHide">
+                <h2 class="section_header">Permission</h2>
+                <form action="#" class="row security_frm custom_gutter5-x" id="parent_vendor_contact_permission">
+                    <div class="col-12 check_uncheck_all">
+                        <input type="button" class="gray_checkbtn" value="Uncheck All" id="uncheckall" tabindex="17" />
+                        <input type="button" class="gray_checkbtn" value="Check All" id="checkall" tabindex="18"/>
+                    </div>
+                    @{
+                        int Tabindex = 19; // start AFTER 18
+                    }
+                    @foreach (var group in groupedPermissions)
+                    {
+                        if (group.Key.ToUpper() != "PROJECT" && group.Key.ToUpper() != "USER" && group.Key.ToUpper() != "VENDOR")
+                        {
+                            <div class="col-lg-3">
+                                <div class="check_wrp">
+                                    <div class="check_hdng">
+                                        <h3>@group.Key</h3>
+                                        <input type="checkbox" id="@group.Key.ToLower()_header" value="@group.Key.ToLower()" class="headerCheckbox" tabindex="@Tabindex">
+                                        @{
+                                            Tabindex++;
+                                        }
+                                    </div>
+                                    <ul class="check_list">
+                                        @foreach (var permission in group)
+                                        {
+                                            <li>
+                                                <label for="@permission.priority_name">@permission.priority_name</label>
+                                                <input type="checkbox" data-sysid="@permission.security_id"
+                                                       id="@permission.priority_name"
+                                                       class="@group.Key.ToLower()_check project_check systemoption"
+                                                       @(permission.is_selected == 1 ? "checked" : "") tabindex="@Tabindex">
+                                                @{
+                                                    Tabindex++;
+                                                }
+                                            </li>
+                                        }
+
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+
+                    }
+
+                    @* <div class="col-lg-3">
+                        <div class="check_wrp">
+                            <div class="check_hdng">
+                                <h3>BUDGETING</h3>
+                                <input type="checkbox" value="budget" onclick="isChecked3(this)">
+                            </div>
+                            <ul class="check_list">
+                                <li>
+                                    <label for="creat2">Create</label>
+                                    <input type="checkbox" id="create2" class="budget_check">
+                                </li>
+                                <li>
+                                    <label for="Edit">Edit</label>
+                                    <input type="checkbox" id="Edit" class="budget_check">
+                                </li>
+                                <li>
+                                    <label for="Approve">Approve</label>
+                                    <input type="checkbox" id="Approve" class="budget_check">
+                                </li>
+                                <li>
+                                    <label for="Read2">Read</label>
+                                    <input type="checkbox" id="Read2" class="budget_check">
+                                </li>
+                            </ul>
+                        </div>
+                    </div> *@
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- add client form end -->
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="#" id="btn_CrtVendorContact">
+                <i class="fa-regular fa-floppy-disk" title="Create User"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->

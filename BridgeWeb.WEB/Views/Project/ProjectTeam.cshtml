@@ -1,0 +1,248 @@
+﻿@{
+    ViewData["Title"] = "Project Team";
+}
+
+@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var RqrdBgtApprvrsStaticList = new List<int> { 1, 2, 3, 4 ,5,6,7,8,9,10};
+}
+
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Projectlist", "Project")">Projects</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>PROJECT TEAM</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<!-- edit project list-->
+<section class="master_wrap project-team">
+    <div class="container-fluid">
+        <input type="hidden" id="projectid" value="@Model.ProjectUserApproval.ProjectId" />
+        <div class="row custom_gutter5-x">
+            <div class="col-lg-5">
+                <div class="project-team-edit">
+                    <h2 class="section_header">PROJECT TEAM (@Model.ProjectUserApproval.ProjectName)</h2>
+                    <div class="project-team-box">
+                        <div class="grid-team-box grid-team-box1">
+                            <div class="project-btns">
+                                <button type="button" class="gray_checkbtn" id="redirectProjectEdit">
+                                    Go back To Project Edit
+                                    Page
+                                </button>
+                                <button type="button" class="gray_checkbtn" id="poApprovalLevelSet">
+                                    PO
+                                    Approval Level
+                                </button>
+                                <button type="button" class="gray_checkbtn" id="fabricationapprovallevelset" data-bs-target="#fab_approv_group"
+                                        data-bs-toggle="modal">
+                                    Fabrication Approval Groups
+                                </button>
+                                <button type="button" class="gray_checkbtn" id="fabricationPathSet" data-bs-target="#fab_approv_path"
+                                        data-bs-toggle="modal">
+                                    Fabrication Approval
+                                    Path
+                                </button>
+                            </div>
+                        </div>
+                        <div class="grid-team-box">
+                            <div class="project-manager lb_box">
+                                <div class="frm_fld_wrp">
+                                    <label for="">Project Manager<span class="req">*</span></label>
+                                    <select id="manager_ddl" class="form-select">
+                                        <option value="0">--Select--</option>
+                                        @foreach (var item in @Model.ManagerListDtos)
+                                        {
+                                            if (item.IsManager == 1)
+                                            {
+                                                <option value="@item.UserId" selected>@item.UserName</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.UserId">@item.UserName</option>
+                                            }
+                                        }                                       
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-team-box">
+                            <div class="lb_box po-approvers">
+                                <label id="lblPoApp"> PO Approvers : <span>@* @Model.ProjectUserApproval.NumOfAssignedUserToAprv_PO *@</span></label>
+                            </div>
+                        </div>
+                        <div class="grid-team-box">
+                            <div class="lb_box budget-approvers">
+                                <label id="BgtApprvrs">Budget Approvers : <span>@* @Model.ProjectUserApproval.NumOfAssignedUserToAprv_Budge *@</span></label>
+                                <label id="prevBgtApprvrs" style="display:none;">@* @Model.ProjectUserApproval.NumOfAssignedUserToAprv_Budget *@</label>
+                                <label>
+                                    Required Assigned to Team :
+                                    <select name="RqrdBgtApprvrs" id="RqrdBgtApprvrs_ddl">
+                                        @foreach (var item in RqrdBgtApprvrsStaticList)
+                                        {
+                                            if (Model.ProjectUserApproval.NumOfUserToAprv_Budget.ToString() == item.ToString())
+                                            {
+                                                <option value="@item" selected> @item</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item"> @item</option>
+                                            }
+                                        }
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="grid-team-box">
+                            <div class="lb_box fav-approve">
+                                <label id="lblFabApp">Fabrication Approvals : <span>@* @Model.ProjectUserApproval.NumOfReqFabrication_PO *@</span></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <h2 class="section_header">TEAM MEMBER(S)</h2>
+                <div id="partialTeamMemberBind">
+
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row custom_gutter5-x">
+            <div class="col-lg-4">
+                <div class="add-member-wrap">
+                    <h2 class="section_header">ADD MEMBER</h2>
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">System User Types</label>
+                        <select name="" id="SystemUserType" class="form-select">
+                            <option value="0">---Select User Type---</option>
+                            @foreach (var item in Model.ProjectusertypeList)
+                            {
+                                <option value="@item.Fldid">@item.Usertype</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">User</label>
+                        <select multiple="multiple" class="multislct" data-width="100%" name="" id="userListProject" >
+                            <option value="0" selected>---Select User---</option>
+                           
+                        </select>
+                    </div>
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Project Roles</label>
+                        <select name="" id="ProjectUserType" class="form-select">
+                            <option value="0">---Select Project Role---</option>
+                            @foreach (var item in Model.ProjectusertypeList)
+                            {
+                                <option value="@item.Fldid">@item.Usertype</option>
+                            }
+                            
+                        </select>
+                    </div>
+                    <button class="gray_checkbtn" id="AddMemberBtn">Add Member</button>
+                </div>
+            </div>
+          @*   <div class="d-none" id="memberAddPermissionList"></div> *@
+            <div class="col-lg-8" >
+                <h2 class="section_header">SECURITY PERMISSIONS</h2>
+                <div id="memberAddPermissionList"></div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- edit project list-->
+
+<!-- Start Po Approval Modal -->
+<div class="modal fade po_appro_lavel" id="po_appro_lavel" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">PO Approval Level</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" id="POModelBody">
+                @* Partial view _partialGetAllPOApprovalLevel *@
+            </div>
+
+            <div class="modal-footer">
+                @* <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Save</button> *@
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Po Approval Modal -->
+
+<!-- Start of Fabrication Level Model -->
+<div class="modal fade fab_approv_group" id="fab_approv_group" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Fabrication Approval Level</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" id="fabModelBody">
+                @* Partial view _partialGetallfabricationApprovallevel *@
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" id="saveFabGroup">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- End of Fabrication Level Model -->
+
+<div class="modal fade fab_approv_path" id="fab_approv_path" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Fabrication Approval Path</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" id="fabPathModelBody">
+                @* Partial view *@
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn d-none" id="fabsave">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Start Project Memeber Permission Edit Model PopUP-->
+
+<div class="modal fade project_editUser" id="project_editUser" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" id="partialEditPermission">
+        
+    </div>
+</div>
+
+<!--End Project Memeber Permission Edit Model PopUP-->

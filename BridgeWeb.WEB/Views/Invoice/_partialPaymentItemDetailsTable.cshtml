@@ -1,0 +1,36 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel;
+
+<div class="col-12">
+    <table id="edit_payment_table" class="table table-striped table-hover" style="width:100%;" >
+        <thead>
+            <tr>
+                <th class="leftposition">Vendor</th>
+                <th class="leftposition">Invoice</th>
+                <th class="leftposition">Date</th>
+                <th class="leftposition">Terms</th>
+                <th class="leftposition">Currency</th>
+                <th class="rightposition">Amount Owing</th>
+                <th class="rightposition">Payment Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.PaymentItemList.Count()>0)
+            {
+                foreach (var items in Model.PaymentItemList)
+                {
+                    <tr>
+                        <td data-paymentid="@items.fldid">@items.legalname</td>
+                        <td><a href="@Url.Content("/Invoice/InvoiceEdit?invoiceId=" + Convert.ToString(items.invoicenumber))" class="teal_color editInvoiceredirect" target="_blank"data-invdid="@items.invoicenumber">@items.invoicenumbervendor</a></td>
+                        <td>@items.InvoiceDate</td>
+                        <td>@items.terms</td>
+                        <td>@items.currencycode</td>
+                        <td>@items.AmountOwing</td>
+                        <td><input type="text" class="form-control right-txt" value="@items.InvoiceAmountPaid"></td>
+                    </tr>
+                }
+            }
+           
+            
+        </tbody>
+    </table>
+</div>

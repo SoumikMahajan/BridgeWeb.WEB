@@ -1,0 +1,33 @@
+﻿ @model BridgeWeb.Domain.Model.MultipleModel
+ @{
+    string FormatNumber(decimal? number)
+    {
+
+        // Round the number to 2 decimal places first
+        number = Math.Round(number.Value, 2);
+
+        // Format number with commas and ensure it's a string
+        return number.Value.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+ }
+<table class="table table-striped Committedlist" id="Committedlist" style="width:100%;">
+    <thead>
+        <tr>
+            <th>PO Number</th>
+            <th>Committed</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.CommittedPOLIDetailsDTO.Count()>0)
+        {
+            foreach (var items in Model.CommittedPOLIDetailsDTO)
+            {
+                <tr>
+                    <td>@items.PurchaseOrderID</td>
+                    <td>@FormatNumber(Convert.ToDecimal(items.POCost))</td>
+                </tr>
+            }
+        }
+        
+    </tbody>
+</table>

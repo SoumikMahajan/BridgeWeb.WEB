@@ -1,0 +1,103 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var poItemApproverCount = Model.ProjectTeamDetails
+    .Where(m => m.ProjectusertypeID != 3)
+    .Sum(m => m.POItemApprover);
+
+    var poApproverCount = Model.ProjectTeamDetails
+    .Where(m => m.ProjectusertypeID != 3)
+    .Sum(m => m.POApprover);
+
+    var budgetApproverCount = Model.ProjectTeamDetails
+    .Where(m => m.ProjectusertypeID != 3)
+    .Sum(m => m.BudgetApprover); 
+}
+
+<input id="poApproverCount" value="@poApproverCount" hidden/>
+<input id="budgetApproverCount" value="@budgetApproverCount" hidden />
+<input id="poItemApproverCount" value="@poItemApproverCount" hidden />
+
+<table class="table table-hover table-striped team-member-table" id="teamMemberTable" style="width: 100%;">
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th colspan="3" class="text-center">Approvers</th>
+        </tr>
+        <tr>
+            <th>Action</th>
+            <th>User name</th>
+            <th>Email</th>
+            <th>User Type Name</th>
+            <th>PO (@poApproverCount/1)</th>
+            <th>Budget(@budgetApproverCount/1)</th>
+            <th>Fabrication(@poItemApproverCount/1)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ProjectTeamDetails)
+        {
+            if (item.UsertypeName == "Manager")
+            {
+                <tr>
+                    <td class="action_icons">
+                        
+                    </td>
+                    <td>@item.Username</td>
+                    <td>@item.Email</td>
+                    <td>@item.UsertypeName</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td class="action_icons">
+                        <i style="cursor:pointer;" class="fa fa-pencil teamMember" data-teammemberid="@item.TeammemberID" data-bs-toggle="modal" data-bs-target="#project_editUser"data-userid="@item.SystemUserID" id="openPermissionEditModel"></i>
+                        <i style="cursor:pointer;" class="fa fa-trash deleteProjectMember" data-teammemberid="@item.TeammemberID"></i>
+                    </td>
+                    <td>@item.Username</td>
+                    <td>@item.Email</td>
+                    <td>@item.UsertypeName</td>
+                    <td>
+                        @if (item.POApprover == 1)
+                        {
+                            <i style="cursor:pointer;" class="fa fa-check" id="poApproval" data-userid="@item.TeammemberID" data-isapproved="0"></i>
+                        }
+                        else
+                        {
+                            <i style="cursor:pointer;" class="fa fa-times" id="poApproval" data-userid="@item.TeammemberID" data-isapproved="1"></i>
+                        }
+                    </td>
+                    <td>
+                        @if (item.BudgetApprover == 1)
+                        {
+                            <i style="cursor:pointer;" class="fa fa-check" id="budgetApprover" data-userid="@item.TeammemberID" data-isbudget="0"></i>
+                        }
+                        else
+                        {
+                            <i style="cursor:pointer;" class="fa fa-times" id="budgetApprover" data-userid="@item.TeammemberID" data-isbudget="1"></i>
+                        }
+                    </td>
+                    <td>
+                        @if (item.POItemApprover == 1)
+                        {
+                            <i style="cursor:pointer;" class="fa fa-check" id="poItemApprover" data-userid="@item.TeammemberID" data-ispoitem="0"></i>
+                        }
+                        else
+                        {
+                            <i style="cursor:pointer;" class="fa fa-times" id="poItemApprover" data-userid="@item.TeammemberID" data-ispoitem="1"></i>
+                        }
+                    </td>
+                </tr>
+            }
+            
+        }              
+    </tbody>
+</table>
+

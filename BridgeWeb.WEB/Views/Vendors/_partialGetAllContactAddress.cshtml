@@ -1,0 +1,225 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    int index = 0;  
+   
+}
+
+@if (Model.ContactAddressesListDto.Count > 0)
+{
+    int count = 0;
+    <ul class="nav nav-tabs" role="tablist" id="addr_tab">
+        @foreach (var item in Model.ContactAddressesListDto)
+        {
+            if (item.IsDefault == true)
+            {
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link address-nav active" data-bs-toggle="tab" data-bs-target="#address_@count" type="button"
+                            role="tab" aria-selected="true" id="tab_@count">
+                        @item.Tabheader.ToUpper() <i class="fa-solid fa-check ml-5 "></i>
+                    </button>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link address-nav" data-bs-toggle="tab" data-bs-target="#address_@count" type="button"
+                            role="tab" aria-selected="true" id="tab_@count">
+                        @item.Tabheader.ToUpper()
+                    </button>
+                </li>
+            }
+            count++;
+        }       
+        <li class="add_new_address">
+            <a href="" class="teal_color" data-bs-target="#add_new_address" data-bs-toggle="modal">
+                <i class="fa-solid fa-plus"></i>
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        @foreach (var item in Model.ContactAddressesListDto)
+        {
+            if (item.IsDefault == true)
+            {
+                <div class="tab-pane fade active show" id="address_@index" role="tabpanel" tabindex="0">
+                    <input type="hidden" id="flid_@index" value="@item.FldID" />
+                    <div class="row custom_gutter5-x">
+                        <div class="col-12">
+                            <div class="frm_fld_wrp">
+                                <label class="form-label">Address Title</label>
+                                <input type="text" class="form-control" value="@item.Tabheader" id="uptabheader_@index">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="frm_fld_wrp">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" id="upaddress_@index" rows="4" style="height: 90px;" name="address" >@item.Address</textarea>
+                            </div>
+                            <div class="frm_fld_wrp">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="upcity_@index" aria-label="City" value="@item.City" name="city">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="frm_fld_wrp">
+                                <label for="Country" class="form-label">Country</label>
+                                <select id="upddlCountry_@index" class="form-select upddlCountry" name="country">
+                                    <option value="0">--Select Country--</option>
+                                    @foreach (var country in Model.CountryList)
+                                    {
+                                        if (item.CountryID.ToString() == country.CountryID.ToString())
+                                        {
+                                            <option value="@country.CountryID" selected>@country.Country</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@country.CountryID">@country.Country</option>
+                                        }
+
+                                    }
+                                </select>
+                            </div>
+                            <div class="frm_fld_wrp">
+                                <label for="state" class="form-label">State/Prov</label>
+                                <select id="upddlstate_@index" class="form-select" name="state">
+                                    <option value="0" selected>Select State</option>
+
+                                    @if (item.statelist.Count > 0)
+                                    {
+                                        foreach (var state in item.statelist)
+                                        {
+                                            if (item.StateID.ToString() == state.StateID.ToString())
+                                            {
+                                                <option value="@state.StateID" selected>@state.State (@state.StateCode)</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@state.StateID">@state.State (@state.StateCode)</option>
+                                            }
+                                        }
+                                    }
+
+                                    
+                                </select>
+                            </div>
+                            <div class="frm_fld_wrp">
+                                <label for="zip_code" class="form-label">Postal/Zip Code</label>
+                                <input type="text" class="form-control pincode" id="upzipcode_@index" aria-label="Postal/Zip Code" value="@item.PinCode" name="pincode">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row align-items-center gy-2">
+                                <div class="col-md-6">
+                                    <label>
+
+                                        <input type="checkbox" name="IsDefaultAddress" checked id="upisdefualt_@index" disabled>
+
+                                            <span>Is Default Address ?</span>
+
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="button" id="btnDelete_@index" class="gray_checkbtn delete_btn">Delete</button>
+                                    <button type="button" class="gray_checkbtn update_btn" id="btnUpdate_@index">Update</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="tab-pane fade" id="address_@index" role="tabpanel" tabindex="0">
+                    <input type="hidden" id="flid_@index" value="@item.FldID" />
+                    <div class="row custom_gutter5-x">
+                        <div class="col-12">
+                            <div class="frm_fld_wrp">
+                                <label class="form-label">Address Title</label>
+                                <input type="text" class="form-control" value="@item.Tabheader" id="uptabheader_@index">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="frm_fld_wrp">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" id="upaddress_@index" rows="4" style="height: 90px;" name="Address">@item.Address</textarea>
+                            </div>
+                            <div class="frm_fld_wrp">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="upcity_@index" aria-label="City" value="@item.City" name="City">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="frm_fld_wrp">
+                                <label for="Country" class="form-label">Country</label>
+                                <select id="upddlCountry_@index" class="form-select upddlCountry" name="country">
+                                    <option value="0">--Select Country--</option>
+                                    @foreach (var country in Model.CountryList)
+                                    {
+                                        if (item.CountryID.ToString() == country.CountryID.ToString())
+                                        {
+                                            <option value="@country.CountryID" selected>@country.Country</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@country.CountryID">@country.Country</option>
+                                        }
+
+                                    }
+                                </select>
+                            </div>
+                            <div class="frm_fld_wrp">
+                                <label for="state" class="form-label">State/Prov</label>
+                                <select id="upddlstate_@index" class="form-select" name="state">
+                                    <option selected value="0">Select State</option>
+
+                                    @if (item.statelist.Count > 0)
+                                    {
+                                        foreach (var state in item.statelist)
+                                        {
+                                            if (item.StateID.ToString() == state.StateID.ToString())
+                                            {
+                                                <option value="@state.StateID" selected>@state.State (@state.StateCode)</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@state.StateID">@state.State (@state.StateCode)</option>
+                                            }
+                                        }
+                                    }
+
+
+                                </select>
+                            </div>
+                            <div class="frm_fld_wrp">
+                                <label for="zip_code " class="form-label">Postal/Zip Code</label>
+                                <input type="text" class="form-control pincode" id="upzipcode_@index" aria-label="Postal/Zip Code" value="@item.PinCode" name="pincode">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row align-items-center gy-2">
+                                <div class="col-md-6">
+                                    <label>
+                                        <input type="checkbox" name="IsDefaultAddress" id="upisdefualt_@index"> Is Default Address?
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="button" id="btnDelete_@index" class="gray_checkbtn delete_btn">Delete</button>
+                                    <button type="button" value="Update" class="gray_checkbtn update_btn" id="btnUpdate_@index">Update</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            index++;
+        }
+
+        
+    </div>
+}
+
+
+

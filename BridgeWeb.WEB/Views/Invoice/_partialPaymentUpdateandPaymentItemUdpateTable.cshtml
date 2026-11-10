@@ -1,0 +1,102 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    string mode = ViewBag.Mode;
+}
+
+
+<div class="col-12">
+    <table id="updatepaymentdetailstbl" class="table table-striped table-hover" style="width:100%">
+        <thead>
+
+            <tr>
+                <th>Field</th>
+                <th>Old Value</th>
+                <th>New Value</th>
+            </tr>
+
+
+        </thead>
+        <tbody>
+            @if (mode == "paymentupdatedetails")
+            {
+                if (Model.PaymentUpdateDetailsList.Count() > 0)
+                {
+                    @if (Model.PaymentUpdateDetailsList[0].PaymentDate != Model.PaymentUpdateDetailsList[1].PaymentDate)
+                    {
+                        <tr>
+                            <td>Payment Date</td>
+                            <td>@Model.PaymentUpdateDetailsList[0].PaymentDate</td>
+                            <td>@Model.PaymentUpdateDetailsList[1].PaymentDate</td>
+                        </tr>
+                    }
+                    if (Model.PaymentUpdateDetailsList[0].PaymentTypename != Model.PaymentUpdateDetailsList[1].PaymentTypename)
+                    {
+                        <tr>
+                            <td>Type</td>
+                            <td>@Model.PaymentUpdateDetailsList[0].PaymentTypename</td>
+                            <td>@Model.PaymentUpdateDetailsList[1].PaymentTypename</td>
+                        </tr>
+                    }
+                    if (Model.PaymentUpdateDetailsList[0].PaymentNumber != Model.PaymentUpdateDetailsList[1].PaymentNumber)
+                    {
+                        <tr>
+                            <td>Number</td>
+                            <td>@Model.PaymentUpdateDetailsList[0].PaymentNumber </td>
+                            <td>@Model.PaymentUpdateDetailsList[1].PaymentNumber </td>
+                        </tr>
+                    }
+                    if (Model.PaymentUpdateDetailsList[0].ConversionRate != Model.PaymentUpdateDetailsList[1].ConversionRate)
+                    {
+                        <tr>
+                            <td>Conversion Rate</td>
+                            <td>@Model.PaymentUpdateDetailsList[0].ConversionRate </td>
+                            <td>@Model.PaymentUpdateDetailsList[1].ConversionRate </td>
+                        </tr>
+                    }
+                    if (Model.PaymentUpdateDetailsList[0].TotalPayment != Model.PaymentUpdateDetailsList[1].TotalPayment)
+                    {
+                        <tr>
+                            <td>Total</td>
+                            <td>@Model.PaymentUpdateDetailsList[0].TotalPayment </td>
+                            <td>@Model.PaymentUpdateDetailsList[1].TotalPayment </td>
+                        </tr>
+                    }
+                    if (Model.PaymentUpdateDetailsList[0].Memo != Model.PaymentUpdateDetailsList[1].Memo)
+                    {
+                        <tr>
+                            <td>Memo</td>
+                            <td>@Model.PaymentUpdateDetailsList[0].Memo </td>
+                            <td>@Model.PaymentUpdateDetailsList[1].Memo </td>
+                        </tr>
+                    }
+                    if (Model.PaymentUpdateDetailsList[0].BankAccount != Model.PaymentUpdateDetailsList[1].BankAccount)
+                    {
+                        <tr>
+                            <td>Bank Account</td>
+                            <td>@Model.PaymentUpdateDetailsList[0].BankAccount </td>
+                            <td>@Model.PaymentUpdateDetailsList[1].BankAccount </td>
+                        </tr>
+                    }
+
+                }
+
+            }
+            else
+            {
+                @if (Model.PaymentItemUpdateDetailsList.Count() > 0)
+                {
+                    if (Model.PaymentItemUpdateDetailsList[0].InvoiceAmount != Model.PaymentItemUpdateDetailsList[1].InvoiceAmount)
+                    {
+                        <tr>
+                            <td>Amount</td>
+                            <td>@Model.PaymentItemUpdateDetailsList[0].InvoiceAmount </td>
+                            <td>@Model.PaymentItemUpdateDetailsList[1].InvoiceAmount </td>
+                        </tr>
+                    }
+                }
+            }
+
+
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,38 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+
+<div class="multi_slc_wrp" >
+    <label for="" class="form-label">Project Number</label>
+    <div class="add_new_ac_list">
+        <select multiple="multiple" class="multislct" data-width="100%" id="bankAccountSelect">
+            @foreach (var items in Model.BankAccountDetailsList)
+            {  if(items.IsSelected !="1")
+                {
+                    <option value="@items.Fld_ID">@items.Bank_Account @items.Desc @items.CurrencyCode</option>
+                }
+            
+            }
+        </select>
+        <button type="button" class="gray_checkbtn d-none" id="addnewAccountbtn">Add New Account</button>
+    </div>
+
+    <div class="bnk_dtl_btn_group" id="addBankDetails">
+         <button type="button" class="solid_teal_btn" id="updateBankAccount">Update Account Balance</button>
+    </div>
+    <ul class="comment_list" style="padding-top:30px;">
+        @foreach (var items in Model.BankAccountDetailsList)
+        {
+            if (items.IsSelected == "1")
+            {
+                <li>
+                    <span data-account="@items.Bank_Account" class="bankAccount">@items.Bank_Account----@items.Desc</span>
+                    <a href="#" title="Remove this Bank Account" data-id="@items.Fld_ID" class="remove_bar delete_project_bank">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                </li>
+            }
+        }
+        </ul>
+</div>
+
+

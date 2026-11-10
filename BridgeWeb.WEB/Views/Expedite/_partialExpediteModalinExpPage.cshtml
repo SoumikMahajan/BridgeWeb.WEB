@@ -1,0 +1,195 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var requiredPODate = @Model.RequiredPODate.PORequiredDate.Value.ToString("yyyy.MM.dd");
+    var hiddenItemStatus = Model.POLIStatusList.Where(u => u.selected == "selected")?.Select(i => i.FLDId).FirstOrDefault();
+    var arrivalDate = Model.RequiredPODate.ArrivalDate.HasValue &&
+                        Model.RequiredPODate.ArrivalDate.Value != DateTime.MinValue &&
+                        Model.RequiredPODate.ArrivalDate.Value != new DateTime(1900, 1, 1)
+                        ? Model.RequiredPODate.ArrivalDate.Value.ToString("yyyy.MM.dd")
+                        : "";
+
+    var EditPermission = Model.expediteHiddenFields.HdnEditPermission;
+    var AddPermission = Model.expediteHiddenFields.HdnAddPermission;
+    var AllQty = Model.singleResultDTO.Result.Split('^');
+    var TotalMaxQty = AllQty[0];
+    var ReceivedQty = AllQty[1];
+    var LineItemID = AllQty[2];
+}
+<input type="hidden" id="Hdn_PORequiedDate" value="@requiredPODate" />
+<input type="hidden" id="Hdn_POLIID" value="@ViewBag.POLIID" />
+<input type="hidden" id="hidden_POID" value="" />
+<input type="hidden" id="Hdn_ItemStatus1" value="@(hiddenItemStatus is not null ? hiddenItemStatus : 1)" />
+
+<div class="row gy-2 custom_gutter5-x">
+    <div class="col-lg-3">
+        <div class="frm_fld_wrp">
+            <label for="" class="form-label">Expected Delivery date</label>
+            <input type="text" class="form-control datepicker" id="txt_ExpectedArrivalDate" value="@arrivalDate" @(AddPermission == "0" ? "disabled" : "") />
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="frm_fld_wrp">
+            <label class="form-label">Item Status</label>
+            <select name="" id="ddl_ItemStatus" class="form-select" @(AddPermission == "0" ? "disabled" : "") >
+                @if (Model.POLIStatusList.Count() > 0)
+                {
+                    foreach (var items in Model.POLIStatusList)
+                    {
+                        <!option value="@items.FLDId"  @items.selected>@items.POLineItemStatus</!option>
+
+                    }
+                }
+                else
+                {
+                    <!option value="0">-----</!option>
+                }
+            </select>
+            
+        </div>
+    </div>
+
+    <div class="col-lg-2">
+        <div class="frm_fld_wrp">
+            <label class="update_all_itm"><input type="checkbox" id="chkPOUpdateAll" @(AddPermission == "0" ? "disabled" : "") > Update All Items</label>
+        </div>
+    </div>
+
+    <div class="col-lg-4">        
+        <div class="frm_fld_wrp">
+            <label class="form-label">&nbsp;</label>
+            <div class="statusdiv">
+                <label style="font-weight: bold;color: #595959;font-size: 16px;" class="LineItem_Quantity statusli" data-received="@ReceivedQty" data-itemqty="@TotalMaxQty">
+                    Received @ReceivedQty Out of @TotalMaxQty
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="frm_fld_wrp">
+            <label for="txt_ReturnQty" class="form-label">Received Qty</label>
+            <input type="text" class="form-control floatonly" placeholder="Enter Received Quantity" data-maxqty="@TotalMaxQty" data-maxqty1="@ReceivedQty" data-lineitemid="@LineItemID" id="txt_ReturnQty" @(AddPermission == "0" ? "disabled" : "") autocomplete="off">
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="frm_fld_wrp">
+            <label for="txt_RecvdDate" class="form-label">Received Date</label>
+            <input type="text" class="form-control datepicker avoidKeyPressForDate" name="" id="txt_RecvdDate" placeholder="Enter Received Date" @(AddPermission == "0" ? "disabled" : "") autocomplete="off" >
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="frm_fld_wrp">
+            <label for="" class="form-label">Reference#</label>
+            <input type="text" class="form-control" placeholder="Enter Reference # Here" name="" id="txt_Reference" @(AddPermission == "0" ? "disabled" : "") />
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="frm_fld_wrp">
+            <label for="" class="form-label">Item Expedite Notes</label>
+            <input type="text" class="form-control" placeholder="Enter Item Expedite Note" name="" id="ItemExpediteNote" @(AddPermission == "0" ? "disabled" : "") />
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="frm_fld_wrp">
+            <label for="btn_AddPOItemExpdNote" class="form-label">&nbsp;</label>
+            <button type="button" class="solid_teal_btn" id="btn_AddPOItemExpdNote" @(AddPermission == "0" ? "disabled" : "") >
+                <i class="fa-solid fa-square-plus" aria-hidden="true"></i>
+                Save Item Note
+            </button>
+        </div>
+    </div>
+
+    @* <div class="col-lg-12">
+        <div id="tbl_poliexphist"></div>
+
+    </div> *@
+
+    <div class="col-lg-12">
+        <table style="width: 100%;" class="table tblPOLineItemExpediteHistory">
+            <thead>
+                <tr>
+                    @if (EditPermission == "1")
+                    {
+                        <th class="leftposition" width="9%">Action</th>
+                    }
+                    <th class="leftposition" width="8%">Status</th>
+                    <th class="leftposition" width="7%">Name</th>
+                    <th class="leftposition" width="18%">Expedite Note</th>
+                    <th class="leftposition" width="8%">R-Qty</th>
+                    <th class="leftposition" width="10%">R-Date</th>
+                    <th class="leftposition" width="11%">Reference</th>
+                    <th class="leftposition" width="14%">Expected Arrival Date</th>
+                    <th class="leftposition" width="10%">Added on</th>
+                </tr>
+            </thead>
+            <tbody id="tbl_poliexphist">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-lg-12">
+        <div class="section_header" id="headerContent">PO Expedite Notes (1002-0006B)</div>
+        <div class="frm_fld_wrp">
+            <label for="" class="form-label">PO Expedite Notes</label>
+            <textarea name="" class="form-control" placeholder="Enter PO Expedite Note" id="POItemExpediteNote" @(AddPermission == "0" ? "disabled" : "") ></textarea>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="frm_fld_wrp">
+            <label for="" class="form-label">Received Date</label>
+            <input type="text" class="form-control datepicker avoidKeyPressForDate" name="" id="txt_RecvdDate1" placeholder="Enter Received Date" @(AddPermission == "0" ? "disabled" : "") autocomplete="off">
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="frm_fld_wrp">
+            <label for="" class="form-label">Reference #</label>
+            <input type="text" class="form-control" name="" id="txt_Reference1" placeholder="Enter Reference # Here" @(AddPermission == "0" ? "disabled" : "") >
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <button type="button" class="solid_teal_btn" id="btn_AddExpNote" @(AddPermission == "0" ? "disabled" : "") >
+            <i class="fa-solid fa-square-plus" aria-hidden="true"></i>
+            Save PO Note
+        </button>
+    </div>    
+
+    <div class="col-lg-6">
+        <button type="button" class="solid_teal_btn" id="btn_AddPOItemExpdNoteFull" @(AddPermission == "0" ? "disabled" : "") >
+            <i class="fa-solid fa-square-plus" aria-hidden="true"></i>
+            PO Received in Full
+        </button>
+    </div>
+
+    <div class="col-lg-12">
+        <table style="width: 100%;" class="table tblPOExpediteHistory">
+            <thead>
+                <tr>
+                    @if (EditPermission == "1")
+                    {
+                        <th>Action</th>
+                        // If IsSelected is 1 then show this else don't show, same for other fields where (if block) is applied
+                    }
+                    <th>Created By</th>
+                    <th>Notes</th>
+                    <th>Added on</th>
+                </tr>
+            </thead>
+            <tbody id="poexpnoteinExpHistory1">
+            </tbody>
+        </table>
+
+    </div>
+
+    @* <div class="col-lg-12">
+        <div id="poexpnoteinExpHistory1"></div>
+
+    </div> *@
+
+</div>

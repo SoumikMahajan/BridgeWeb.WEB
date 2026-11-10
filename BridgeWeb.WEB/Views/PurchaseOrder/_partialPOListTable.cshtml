@@ -1,0 +1,300 @@
+﻿@model MultipleModel
+@{
+    var poEditPermission = TempData["poEditPermission"] as string ?? string.Empty;
+    var UserType = TempData["usertype"] as string ?? string.Empty;
+}
+
+<div class="purchase_order_list">
+    <table id="purchs_ordr_tab" class="table table-striped table-hover" style="width:100%">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>PO Number</th>
+                <th>Project</th>
+                <th>Vendor Common</th>
+                <th>Remarks</th>
+                <th>Buyer</th>
+                <th>Arrival Date</th>
+                @if (UserType != "6")
+                {
+                    <th>CheckBack Date</th>
+                    <th>Commit</th>
+                    <th>Approved</th>
+                    <th>Accepted</th>
+                    <th>Status</th>
+                }
+            </tr>
+        </thead>
+        <tbody id="poListTbody">
+            @if (Model.purchaseOrderFilteredViews.Any())
+            {
+                @foreach (var data in Model.purchaseOrderFilteredViews)
+                {
+                    var Buttons = "";
+
+                    var flagConfirmed = 0;
+                    var ApproveButton = "";
+                    var sendMailButton = "";
+
+                    var poEditButton = "";
+
+                    var PurchaseId = data.PurchaseOrderID_New == null ? 0 : Convert.ToInt64(data.PurchaseOrderID_New.Split('#')[0]);
+                    var PurchaseOrderIDShow = data.PurchaseOrderID_New?.Split('#').ElementAtOrDefault(1) ?? string.Empty;
+                    var poTempShow = PurchaseOrderIDShow.Split('-')[0] + "-" + PurchaseOrderIDShow.Split('-')[2];
+
+                    var isSent = "";
+                    var isApproved = "";
+                    if (data.IsApproved == false && data.IsSentForApproval == true)
+                    {
+                        isSent = "*";
+                    }
+                    if (data.IsApproved == false)
+                    {
+                        isApproved = "N";
+                    }
+                    else
+                    {
+                        isApproved = "Y";
+                    }
+                    var isConfirmed = "";
+
+                    if (data.IsVendorCO == "1")
+                    {
+                        isConfirmed = "-";
+                    }
+                    else
+                    {
+                        var isAccepted = "";
+                        var confirmed = "";
+                        if (data.IsVendorSent == true && data.IsConfirmed == false)
+                        {
+                            isAccepted = "*";
+                        }
+                        if (data.IsConfirmed == false)
+                        {
+                            confirmed = "N";
+                        }
+                        else
+                        {
+                            confirmed = "Y";
+                        }
+                        isConfirmed = confirmed + isAccepted;
+                    }
+
+                    if (UserType == "6")
+                    {
+                        if (data.IsConfirmed == false && data.IsVendorSent == true)
+                        {
+                            flagConfirmed = 0;
+                        }
+                        else
+                        {
+                            flagConfirmed = 1;
+                        }
+                    }
+
+                    if (data.ShowSendForApproval == "1" && data.IsAllowSentForApproval == 1 && data.IsApproved == false)
+                    {
+                        if (data.IsConfirmed == true)
+                        {
+                            ApproveButton = $@"<i id='btn_approval_{PurchaseId}' class='fa-regular fa-share-from-square btn-action'
+                        title='Send for approval' btn-approval data-poId='{PurchaseId}' data-id='1'
+                        data-purchaseOrderId='{data.PurchaseOrderID_New}' data-poNumber='{data.POno3}'></i>";
+                        }
+                        else
+                        {
+                            ApproveButton = $@"<i id='btn_approval_{PurchaseId}' class='fa-regular fa-share-from-square btn-action'
+                        title='Send for approval' btn-approval data-poId='{PurchaseId}' data-id='0'
+                        data-purchaseOrderId='{data.PurchaseOrderID_New}' data-poNumber='{data.POno3}'></i>";
+                        }
+                    }
+
+                    if (data.Permission == "Y" && data.IsApproved == true && data.IsConfirmed == false)
+                    {
+                        sendMailButton = $@"<i id= 'btn_email_{PurchaseId}' class='fa fa-paper-plane btn-action'
+                        title='Send Mail to {data.VendorEmail}' btn-eMail data-poId='{PurchaseId}'
+                        data-purchaseOrderId='{data.PurchaseOrderID_New}' data-eMail='{data.VendorEmail}'></i>";
+                    }
+
+                    if (UserType != "6")
+                    {
+                        if (poEditPermission == "1")
+                        {
+                            if (UserType != "1" && UserType != "2" && UserType != "3" && UserType != "4")
+                            {
+                                Buttons = $@"
+                                <i id='btn_download_{PurchaseId}' class='fa fa-download btn-action' title='Add to Download' btn-download data-poId='{PurchaseId}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                                <i id='btn_pdf_{PurchaseId}' class='fa fa-file-pdf-o btn-action' title='View PDF' btn-pdf data-poId='{PurchaseId}' data-isCommited='{data.Commited}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                                {Html.Raw(ApproveButton)}
+                                {Html.Raw(sendMailButton)}";
+                            }
+                            else
+                            {
+                                Buttons = $@"
+                                <i id='btn_history_{PurchaseId}' class='fa-solid fa-clock-rotate-left btn-action' title='View Purchase Order History' btn-history data-poId='{PurchaseId}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                                <i id='btn_delete_{PurchaseId}' class='fa-solid fa-trash-can btn-action' title='Delete Purchase Order' btn-delete data-poId='{PurchaseId}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                                <i id='btn_download_{PurchaseId}' class='fa fa-download btn-action' title='Add to Download' btn-download data-poId='{PurchaseId}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                                <i id='btn_pdf_{PurchaseId}' class='fa fa-file-pdf-o btn-action' title='View PDF' btn-pdf data-poId='{PurchaseId}' data-isCommited='{data.Commited}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                                {Html.Raw(ApproveButton)}
+                                {Html.Raw(sendMailButton)}";
+                            }
+
+                            poEditButton = $"<a href=javascript:void(0) style='color:#7792a8;' data-poId='{PurchaseId}' class='btnPoEdit'>{poTempShow}</a>";
+                        }
+                        else
+                        {
+                            if (UserType != "1" && UserType != "2" && UserType != "3" && UserType != "4")
+                            {
+                                Buttons = $@"
+                                <i id='btn_download_{PurchaseId}' class='fa fa-download btn-action' title='Add to Download' btn-download data-poId='{PurchaseId}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                                <i id='btn_pdf_{PurchaseId}' class='fa fa-file-pdf-o btn-action' title='View PDF' btn-pdf data-poId='{PurchaseId}' data-isCommited='{data.Commited}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                                {Html.Raw(ApproveButton)}
+                                {Html.Raw(sendMailButton)}";
+
+                            }
+                            else
+                            {
+                                Buttons = $@"
+                                <i id='btn_history_{PurchaseId}' class='fa-solid fa-clock-rotate-left btn-action' title='View Purchase Order History' btn-history data-poId='{PurchaseId}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                                <i id='btn_download_{PurchaseId}' class='fa fa-download btn-action' title='Add to Download' btn-download data-poId='{PurchaseId}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                                <i id='btn_pdf_{PurchaseId}' class='fa fa-file-pdf-o btn-action' title='View PDF' btn-pdf data-poId='{PurchaseId}' data-isCommited='{data.Commited}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                                {Html.Raw(ApproveButton)}
+                                {Html.Raw(sendMailButton)}";
+                            }
+
+
+                            poEditButton = poTempShow;
+                        }
+                    }
+                    else
+                    {
+                        if (flagConfirmed == 0)
+                        {
+                            var vendorCOButton = "";
+                            if (data.IsVendorCO != "1")
+                            {
+                                vendorCOButton = $"<i class='fa fa-check mrg5L' style='cursor:pointer;font-size: 1.2em;' id='btn_reject_{PurchaseId}' title='Accept/Reject PO' btn-reject data-poId='{PurchaseId}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>";
+                            }
+                            Buttons = $@"
+                            <i id='btn_download_{PurchaseId}' class='fa fa-download btn-action' title='Add to Download' btn-download data-poId='{PurchaseId}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                            {Html.Raw(vendorCOButton)}
+                            <i id='btn_pdf_{PurchaseId}' class='fa fa-file-pdf-o btn-action' title='View PDF' btn-pdf data-poId='{PurchaseId}' data-isCommited='{data.Commited}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                            {Html.Raw(ApproveButton)}
+                            {Html.Raw(sendMailButton)}";
+                            poEditButton = poTempShow;
+                        }
+                        else
+                        {
+                            Buttons = $@"
+                            <i id='btn_history_{PurchaseId}' class='fa-solid fa-clock-rotate-left btn-action' title='View Purchase Order History' btn-history data-poId='{PurchaseId}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                            <i id='btn_download_{PurchaseId}' class='fa fa-download btn-action' title='Add to Download' btn-download data-poId='{PurchaseId}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                            <i id='btn_pdf_{PurchaseId}' class='fa fa-file-pdf-o btn-action' title='View PDF' btn-pdf data-poId='{PurchaseId}' data-isCommited='{data.Commited}' data-purchaseOrderId='{data.PurchaseOrderID_New}'></i>
+                            {Html.Raw(ApproveButton)}
+                            {Html.Raw(sendMailButton)}";
+                            poEditButton = poTempShow;
+                        }
+                    }
+
+                    if (UserType == "4" || UserType == "5")
+                    {
+                        if (data.IsSentForApproval != false || data.IsConfirmed != false || data.IsApproved != false)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="pot_act_icons">
+                                        @Html.Raw(Buttons)
+                                    </div>
+                                </td>
+                                <td>@Html.Raw(poEditButton)</td>
+                                <td>@data.ProjectNumber</td>
+                                <td>@data.VendorName</td>
+                                <td>@data.Remarks</td>
+                                <td>@data.BuyerName</td>
+                                @if (data.ArrivalDate == "1900.01.01")
+                                {
+                                    <td>-</td>
+                                }
+                                else
+                                {
+                                    <td>@data.ArrivalDate</td>
+                                }                                
+                                @if(@data.CheckBackDate == "1900.01.01")
+                                {
+                                    <td>-</td>
+                                }
+                                else
+                                {
+                                    <td>@data.CheckBackDate</td>
+                                }
+                                <td>@data.Commited</td>
+                                <td>@(isApproved + isSent)</td>
+                                <td>@isConfirmed</td>
+                                @if (data.InvoiceStatus != "-" && UserType != "6")
+                                {
+                                    <td>
+                                        <a href=@Url.Content($"~/Invoice/invoicesearch/{PurchaseId}") target='_blank'>
+                                            @data.InvoiceStatus
+                                        </a>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>@data.InvoiceStatus</td>
+                                }
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td>
+                                <div class="pot_act_icons">
+                                    @Html.Raw(Buttons)
+                                </div>
+                            </td>
+                            <td>@Html.Raw(poEditButton)</td>
+                            <td>@data.ProjectNumber</td>
+                            <td>@data.VendorName</td>
+                            <td>@data.Remarks</td>
+                            <td>@data.BuyerName</td>
+                            @if (data.ArrivalDate == "1900.01.01")
+                            {
+                                <td>-</td>
+                            }
+                            else
+                            {
+                                <td>@data.ArrivalDate</td>
+                            }
+                            @if (UserType != "6")
+                            {
+                                @if (@data.CheckBackDate == "1900.01.01")
+                                {
+                                    <td>-</td>
+                                }
+                                else
+                                {
+                                    <td>@data.CheckBackDate</td>
+                                }
+                                <td>@data.Commited</td>
+                                <td>@(isApproved + isSent)</td>
+                                <td>@isConfirmed</td>
+                                @if (data.InvoiceStatus != "-")
+                                {
+                                    <td>
+                                        <a href=@Url.Content($"~/Invoice/invoicesearch/{PurchaseId}") target='_blank'>
+                                            @data.InvoiceStatus
+                                        </a>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>@data.InvoiceStatus</td>
+                                }
+                            }
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,786 @@
+﻿ @model BridgeWeb.Domain.Model.MultipleModel
+@{
+    ViewData["Title"] = $"{Model.RequiredPODetails.GeneratedPONumber}";
+}
+
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("POList", "PurchaseOrder")">PURCHASE ORDER</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>EDIT PURCHASE ORDER</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+@* hidden fields start *@
+
+<input type="hidden" value="@ViewBag.POId" id="Hdn_PurchaseOrderID" />
+<input type="checkbox" id="Chk_hidden1" hidden @(Model.RequiredPODetails.IsHidden == true ? "checked" : "") />
+<input type="hidden" value="@(Model.RequiredPODetails.IsCommitted ==true ? 1:0)" id="Hdn_iscommited" ) />
+<input type="hidden" value="@(Model.RequiredPODetails.IsApproved ==true ? 1:0)" id="hdn_IsApproved" />
+<input type="hidden" value="@(Model.RequiredPODetails.IsSentForApproval ==true ? 1:0)" id="hdn_IsSentForApproval" />
+<input type="hidden" value="@Model.RequiredPODetails.LineItemCount" id="hdn_lineItemCount" />
+<input type="hidden" value="@Model.RequiredPODetails.UserType" id="hdn_isUsertype" />
+<input type="hidden" id="hdn_InvoiceStatus" value="" />
+<input type="hidden" id="Hdn_Povalue" />
+<input type="hidden" id="Hdn_IsEditable" value="@ViewBag.IsEditable" />
+<input type="hidden" id="Hdn_CreatePOPermission" value="@(Model.RequiredPODetails.CreatePOPermission ==true ? 1:0)" />
+<input type="hidden" id="Hdn_ProjectId" value="@(Model.RequiredPODetails.ProjectId)" />
+<input type="hidden" id="Hdn_GeneratedPONumber" value="@Model.RequiredPODetails.GeneratedPONumber" />
+<input type="hidden" id="Hdn_isConfirmed" value="@(Model.RequiredPODetails.IsConfirmed==true ?1:0)" />
+<input type="hidden" id="Hdn_approveforvendor" value="@(Model.RequiredPODetails.approveForVendor)" />
+<input type="hidden" id="Hdn_vendorname" value="@(Model.RequiredPODetails.VendorName?.Split("-")[1] ?? string.Empty)" />
+<input type="hidden" id="Hdn_IsVendorConfirmation" value="" />
+
+
+@* hidden fields end *@
+
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="javascript:void(0);" class="global-popover d-none" data-bs-toggle="popover" data-bs-trigger="hover"
+               data-bs-content="Edit Check Back Date and/or Note" id="btn_SavePO">
+                <i class="fa-regular fa-floppy-disk"></i>
+            </a>
+        </li>
+
+        <li>
+            <a href="javascript:void(0);" class="global-popover d-none" data-bs-toggle="popover" data-bs-trigger="hover"
+               data-bs-content="Save PO" id="btn_CreatePO">
+                <i class="fa-regular fa-floppy-disk"></i>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Copy PO" id="btn_CopyPO">
+                <i class="fa-regular fa-copy"></i>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover"
+               data-bs-content="Move to next PO" id="moveNext">
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover"
+               data-bs-content="Move to previous PO" id="movePrevious">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Cancel" id="cancelBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->
+<!-- poedti section -->
+<section class="master_wrap poedit">
+    <div class="container-fluid">
+        <div class="accordion" id="accordionExample">
+            <div class="poedti-accordian-wrp">
+                <h2 class="accordion-header">
+                    <button class="section_header collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                            aria-expanded="false" aria-controls="collapseOne" id="PODetailsCollapse">
+                        @Model.RequiredPODetails.GeneratedPONumber - @Model.RequiredPODetails.VendorName @Model.RequiredPODetails.Remarks
+                    </button>
+                </h2>
+
+                <div id="collapseOne" class="accordion-collapse collapse " data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div id="PODetails"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="line_item_btns">
+            <h2 class="section_header">LINE ITEMS</h2>
+            <div class="row custom_gutter5-x">
+                <div class="col-lg-6">
+                    <div class="btn_grp">
+                        <button type="button" data-toggle="tooltip" class="sky_btn gray_checkbtn" id="btn_RevisePO">Revise Commited PO</button>
+                        <button type="button" data-toggle="tooltip" class="sky_btn gray_checkbtn" id="btn_CommitPO">Commit PO</button>
+                        <button type="button" class="sky_btn gray_checkbtn" id="btn_CommitPONSndApprvl">Send for approval</button>
+                        <button type="button" class="sky_btn gray_checkbtn" id="btn_CancelSendPONSndApprvl">Cancel Sending</button>
+                        <button type="button" class="sky_btn gray_checkbtn" id="btn_CommitPONSndApprvl1">Send for approval</button>
+                        <button type="button" class="sky_btn gray_checkbtn" id="btn_ProofPONSndApprvl">Proof PO</button>
+                        <button type="button" class="sky_btn gray_checkbtn" id="btn_ViewPOPDF">View PDF</button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="btn_grp btn_grp_right">
+                        <button type="button" class="gray_checkbtn" id="AddLineItemPO">Add Line Item PO</button>
+                        <button type="button" class="gray_checkbtn" id="toggle-expand-all">Expand All</button>
+                        <button type="button" class="gray_checkbtn" id="btn_SaveAll">Save All</button>
+                    </div>
+                </div>
+                <div class="col-lg-6" style="display:none;" id="removemultiple">
+                    <div class="btn_grp">
+
+                        <button type="button" class="gray_checkbtn" id="deleteMultiple">
+                            &nbsp; <i class="fa fa-trash-o"></i>&nbsp;&nbsp;Delete
+                            selected Items
+                        </button>
+
+                        <button type="button" class="gray_checkbtn" id="cancelselections">
+                            &nbsp; <i class="fa fa-times-circle"></i>&nbsp;&nbsp;Cancel all selections
+                        </button>
+
+                        <button type="button" class="gray_checkbtn" id="dragger" data-bs-target="#reorder_modal" data-bs-toggle="modal">
+                            &nbsp; <i class="fa fa-bars"></i>&nbsp;&nbsp;Re-order
+                            Item
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <section class="poedit_sec">
+            <div class="table-responsive-xl">
+                <div id="polineitemtable"></div>
+
+
+            </div>
+
+            <hr>
+
+            <table class="table summey_table" style="width: auto;">
+                <tbody>
+                    <tr>
+                        <td>
+                            Total invoiced value:-
+                        </td>
+                        <td style="text-align:right">
+                            <label id="invval">@Model.POInvoiceCalculation.TotalInvoiceAmount</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Total invoiced tax:-
+                        </td>
+                        <td style="text-align:right">
+                            <label id="invtx">@Model.POInvoiceCalculation.TotalInvoiceTax</label>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>
+                            Total:-
+                        </td>
+                        <td style="text-align:right">
+                            <label id="invtot">@(Model.POInvoiceCalculation.TotalInvoiceAmount + Model.POInvoiceCalculation.TotalInvoiceTax) </label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </section>
+    </div>
+</section>
+<!-- poedit section-->
+<!-- Modal -->
+<!-- po tax modal -->
+<div class="modal fade" id="po_taxes" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">PO Taxes</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="po_wrp_modal">
+                    <div class="po_tax1 po_tax_fld">
+                        <h2 class="section_header">TAX 1</h2>
+                        <div class="row custom_gutter5-x">
+                            <div class="col-md-4">
+                                <div class="frm_fld_wrp">
+                                    <label for="" class="form-label">Name</label>
+                                    <input type="text" class="form-control makedisable" id="GSTHSTName" value="">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="frm_fld_wrp">
+                                    <label for="" class="form-label">Type</label>
+                                    <select class="form-select makedisable" id="Ddl_GSTPST">
+                                        <option value="%">%</option>
+                                        <option value="$">$</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="frm_fld_wrp">
+                                    <label for="" class="form-label">Value</label>
+                                    <input type="number" class="form-control makedisable" placeholder="Enter Tax1" id="txt_GSTHST" value="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="po_tax2 po_tax_fld">
+                        <h2 class="section_header">TAX 2</h2>
+                        <div class="row custom_gutter5-x">
+                            <div class="col-md-4">
+                                <div class="frm_fld_wrp">
+                                    <label for="" class="form-label">Name</label>
+                                    <input type="text" class="form-control makedisable" id="PSTName" value="">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="frm_fld_wrp">
+                                    <label for="" class="form-label">Type</label>
+                                    <select class="form-select makedisable" id="Ddl_PST">
+                                        <option value="%">%</option>
+                                        <option value="$">$</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="frm_fld_wrp">
+                                    <label for="" class="form-label">Value</label>
+                                    <input type="number" class="form-control makedisable" placeholder="Enter Tax1" id="txt_PSTValue" value="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="po_tax3 po_tax_fld">
+                        <h2 class="section_header">TAX 3</h2>
+                        <div class="row custom_gutter5-x">
+                            <div class="col-md-4">
+                                <div class="frm_fld_wrp">
+                                    <label for="" class="form-label">Name</label>
+                                    <input type="text" class="form-control makedisable" id="StateTaxName" value="">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="frm_fld_wrp">
+                                    <label for="" class="form-label">Type</label>
+                                    <select class="form-select makedisable" id="Ddl_StateTax">
+                                        <option value="%">%</option>
+                                        <option value="$">$</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="frm_fld_wrp">
+                                    <label for="" class="form-label">Value</label>
+                                    <input type="number" class="form-control makedisable" placeholder="Enter Tax3" id="txt_StateTax" value="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal" id="saveCommentTaxDtl2">Save And Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- fabrication approval modal -->
+<div class="modal fade" id="fav_approv" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="headerforapprovals"></h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+
+
+                <div class="table-responsive" id="partialFabItems">
+                    @* Partial View _partialFabricationItemList.cshtml *@
+                </div>
+
+                <button class="gray_checkbtn collapsed my-2 addFab" data-bs-toggle="collapse" data-bs-target="#collapseFab"
+                        aria-expanded="true" aria-controls="collapseOne" data-id="">
+                    <i class="fa-solid fa-square-plus me-2"></i>Fabrication
+                    Approvals
+                </button>
+
+                <div id="collapseFab" class="accordion-collapse po_exp_note_body collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="row custom_gutter5-x">
+                            <div class="col-lg-6">
+                                <div class="frm_fld_wrp">
+                                    <label class="form-label">Select Fabrication Approval Type</label>
+                                    <select class="form-select" name="" id="ddlItemApprovalType">
+                                        @* <option value="0" selected>--Select--</option> *@
+                                        @* @foreach (var item in Model.dropDownListDTOs)
+                                        {
+                                        <option value="@item.Id">@item.Name</option>
+                                        } *@
+                                    </select>
+                                </div>
+
+                                <div class="frm_fld_wrp">
+                                    <label class="form-label">Description</label>
+                                    <input type="text" class="form-control" name="" id="descforitem" autocomplete="off">
+                                </div>
+
+                                <button class="gray_checkbtn mt-3" id="btn_AddItemApprovalInGrid">Select Fabrication Approval</button>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="frm_fld_wrp mt-3" id="fabDescription" style="display:none;">
+                                    <div class="comment_list mt-3">
+                                        @* <span>
+                                        <p>Account Number----Account Description</p>
+                                        <a href="#" title="Remove this account" class="remove_bar">
+                                        <i class="fa-solid fa-xmark"
+                                        aria-hidden="true"></i>
+                                        </a>
+                                        </span>      *@
+                                    </div>
+                                </div>
+                                <button class="gray_checkbtn mt-3" style="display:none;" id="approvalfinaladd">Add Approval(s)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" id="hdn_isManager" value="" />
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- fab description update modal -->
+<div class="modal fade" id="desc_update" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="headerforeditdesc"></h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="frm_fld_wrp">
+                    <input type="text" class="form-control" name="" id="editabledesc" value="">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" id="editabledescid" value="">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- favricaton approval history -->
+<div class="modal fade" id="fev_approv_history" tabindex="-1" arial-hidded="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Fabrication Approval History</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" id="partialFabHistory">
+                @* _partialFabricationHistory.cshtml *@
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- po_exp_note modal -->
+<div class="modal fade" id="po_exp_note" tabindex="-1" arial-hidded="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="headerExpModal">PO Item Expedite Notes (1002-002-0001)</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" value="" id="hdn_poli" />
+                <div id="expeditedetials"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- popupforeditexpedite modal -->
+<div class="modal fade" id="popupforeditexpedite" tabindex="-1" arial-hidded="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit Expedite Notes</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="frm_fld_wrp">
+                            <input type="hidden" id="hdn_fldid" value="" />
+                            <select name="" id="newddl_ItemStatus" class="form-select">
+                            </select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Note</label>
+                            <input type="text" name="" id="edtnote" class="form-control">
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Qty</label>
+                            <input type="text" name="" id="edtrqty" class="form-control">
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">R-Date</label>
+                            <input type="text" name="" id="edtrdate" class="form-control datepicker">
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Ref</label>
+                            <input type="text" name="" id="edtref" class="form-control datepicker">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-toggle="modal" data-bs-target="#po_exp_note" id="btn_updatepoliexphist">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- popupforeditponote modal -->
+<div class="modal fade" id="popupforeditponote" tabindex="-1" arial-hidded="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit PO Expedite Notes</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="col-lg-12">
+                    <div class="frm_fld_wrp">
+                        <input type="hidden" id="hidden_fldId2" />
+                        <label for="form-label">Note</label>
+                        <input type="text" name="" id="editponote" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-toggle="modal" data-bs-target="#po_exp_note" id="edtbtnsave">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- committedmodal modal-->
+<div class="modal fade committedmodal" id="committedmodal" tabindex="-1" arial-hidded="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <table class="table heading_table">
+                    <thead>
+                        <tr>
+                            <th>Item #</th>
+                            <th>Description</th>
+                            <th>Committed</th>
+                            <th>Budget</th>
+                            <th>Variance</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="header_tablebody">
+                        <tr>
+                            <td>1002-002-0001</td>
+                            <td>Carpet  Guestroom </td>
+                            <td>14,747,500.00 USD</td>
+                            <td>86,862.70</td>
+                            <td>-14,660,637.30</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="col-lg-12">
+                    <div id="commitdetailsbind"></div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                @*  <button type="button" class="gray_checkbtn" data-bs-toggle="modal" data-bs-target="#po_exp_note">Save</button> *@
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- popupforTaxComment modal -->
+<div class="modal fade" id="popupforTaxComment" tabindex="-1" arial-hidded="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">PO Comment</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="pocommentattachmodal"></div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" id="savecomment_attachment">
+                    Save and Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- addresslistmodal modal-->
+<div class="modal fade edit_addrs" id="addresslistmodal" tabindex="-1" arial-hidded="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Choose Address</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="vendorCoAddresslist">
+                </div>
+
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- all_vendor_list modal -->
+<div class="modal fade popupforvendorlist" id="popupforvendorlist" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Vendor List</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" style="max-height: 450px;">
+                <table id="vendorlist" class="table table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Vendor</th>
+                            <th>Contact</th>
+                            <th>Classification</th>
+                            <th>Currency</th>
+                            <th>City</th>
+                            <th>State/Prov</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="fa-regular fa-hand-point-right"></i></td>
+                            <td><a href="#" class="teal_color">ARAM CONTRACTS (USD)</a></td>
+                            <td><a href="#" class="teal_color">STEPHANIE CABALLERO</a></td>
+                            <td>FF&E-Lighting-Fixtures-Catalogue,FF&E-Lighting-Lamps-Catalogue</td>
+                            <td>USD</td>
+                            <td>LONDON</td>
+                            <td>Capital Region</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa-regular fa-hand-point-right"></i></td>
+                            <td><a href="#" class="teal_color">ARAM CONTRACTS (USD)</a></td>
+                            <td><a href="#" class="teal_color">STEPHANIE CABALLERO</a></td>
+                            <td>FF&E-Lighting-Fixtures-Catalogue,FF&E-Lighting-Lamps-Catalogue</td>
+                            <td>USD</td>
+                            <td>LONDON</td>
+                            <td>Capital Region</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* POExpediteNoteModal *@
+<div class="modal fade " id="expeditenoteedit" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-l modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit PO Expedite Notes</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" style="max-height: 450px;">
+                <div>
+                    <label style="margin-bottom:10px;">Note</label>
+                    <input class="form-control" id="expnotedata" value="" />
+                </div>
+                <input type="hidden" id="hiddennotefldid" value="" />
+            </div>
+
+            @* <div class="modal-footer" style="text-align: left;">
+            <button type="button" class="solid_teal_btn" style="max-width:200px;" data-bs-dismiss="modal">Save</button>
+            </div> *@
+            <div class="modal-footer justify-content-start" style="text-align: left;margin-top:1px;">
+                <button type="button" class="solid_teal_btn" style="max-width:100px;" id="updateexpeditenote">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <div id="dialog-message" title="Create Version" style="display: none;"> *@
+@*     <p> *@
+@*         Do you want to create New version? *@
+@*     </p> *@
+@* </div> *@
+<!-- confirm modal -->
+<div class="modal fade confirm-modal" id="creat_version" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Create Version</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p>Do you want to create New Version?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="confirm_btn" data-bs-dismiss="modal" id="yes_btn">YES</button>
+                <button type="button" class="confirm_btn" data-bs-dismiss="modal" id="no_btn">NO</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dialog-confirm"></div>
+
+
+
+<!-- credit note modal -->
+<div id="creditNotem"></div>
+
+
+@* reorder modal *@
+<div id="reorder_modal" class="modal fade reorder_modal" tabindex="-1" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog modal-md">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="reorderheader">Reorder items</h4>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-3">
+                        <select id="ddl_placereorder" class=" form-select">
+                            <option value="1">Before</option>
+                            <option value="2">After</option>
+                        </select>
+                    </div>
+                    <div class="col-7">
+                        <select id="ddl_reorder" class="form-select">
+                            <option>1. Description</option>
+                            <option>2. Description</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="gray_checkbtn" data-bs-dismiss="modal" id="reorderrowbtn">Re-order</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- modal -->
+<div class="modal fade add_itme_po_mdl" id="add_itme_pom" tabindex="-1" aria-labelledby="add_itme_pom">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Add Items To PO</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="addpolibind"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="offwhite_btn" id="btn_addlidb">Add Items</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal -->

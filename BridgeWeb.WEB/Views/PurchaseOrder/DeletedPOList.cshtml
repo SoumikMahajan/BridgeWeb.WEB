@@ -1,0 +1,231 @@
+﻿@model MultipleModel
+
+@{
+    ViewData["Title"] = "Deleted Purchase Order List";
+}
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("POList", "PurchaseOrder")">PURCHASE ORDERS</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>DELETED PURCHASE ORDER</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+
+<!-- Search Purchase Order section -->
+<section class="master_wrap">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="show_po_btn">
+                    <button type="button" class="solid_teal_btn" id="poListPageBtn">
+                        <i class="fa-solid fa-list-ul"></i>Show PO
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="delete_po_wrp">
+            <h2 class="section_header">DELETED PURCHASE ORDERS</h2>
+            <div class="row custom_gutter5-x">
+                <div class="col-lg-3">
+                    <div class="multi_slc_wrp">
+                        <label for="" class="form-label">Project Number</label>
+                        <select multiple="multiple" class="multislct" data-width="100%" id="projectNumber">
+                            @if (Model.dropDownListDTOs != null)
+                            {
+                                @foreach (var item in Model.dropDownListDTOs)
+                                {
+                                    <option value="@item.Id" data-id="@item.Id">@item.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="multi_slc_wrp">
+                        <label for="" class="form-label">Vendor</label>
+                        <select multiple="multiple" class="multislct" data-width="100%" id="projectVendor">
+                            
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Item/Spec</label>
+                        <input type="text" class="form-control" placeholder="Enter Text" id="item_Spec">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="src_btn_wrp">
+                        <button type="button" class="solid_teal_btn" id="loadDeletedPoListBtn"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="purchase_order_list">
+            <h2 class="section_header">PURCHASE ORDERS LIST</h2>
+            <table id="del_po_table" class="table table-striped table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>PO Number</th>
+                        <th>Proj Number</th>
+                        <th>Vendor Name</th>
+                        <th>Buyer Name</th>
+                        <th>Ship Date</th>
+                        <th>CheckBack Date</th>
+                        <th>IsCommitted</th>
+                    </tr>
+                </thead>
+                <tbody id="deletedPoLIstTbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<!-- Purchase Order section-->
+
+<!-- Modal -->
+<div class="modal fade download_files" id="download_files" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">DOWNLOAD SELECTED FILES</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="section_header"><input type="checkbox" checked>PURCHASE ORDER PDF(S)</h2>
+                        <div class="po_pdf">
+                            <div class="po_pdf_list">
+                                <input type="checkbox" class="downloadablepopdfs">
+                                <span>
+                                    1002-0005B - ARTCO INTERNATIONAL
+                                    INC. (USD) - DENNIS DESAULNIER - PLACE EXCEPTIONALLY LONG REMARKS REFERENCE HERE
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <h2 class="section_header"><input type="checkbox" checked>ATTACHMENTS</h2>
+                        <div class="down_attact">
+                            <div class="down_attact_list">
+                                <input checked="" type="checkbox" class="downloadabletermsfiles" style="margin-top:1px;">
+                                <a target="_blank" href="#" title="Download this file">
+                                    1002-SAMPLE PROJECT,
+                                    LLC-Terms_Conditions.pdf
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-dismiss="modal">CANCEL AND REMOVE UNSELECTED</button>
+                <button type="button" class="gray_checkbtn">DOWNLOAD SELECTED FILES</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade send_mail_modal" id="send_mail_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Send Mail</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mail_top">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>To:</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>Subject:</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>Add Dynamic field :</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <select name="" id="" class="form-select">
+                                <option value="0">Link to Home</option>
+                                <option value="1">Project Name</option>
+                                <option value="2">Project Number</option>
+                                <option value="3">PO Number</option>
+                                <option value="5">Vendor Name</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <textarea id="editor" class="ckeditor"></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <div class="cc_mail_btn">
+                    <label>Add self to CC <input type="checkbox"></label>
+                </div>
+                <button type="button" class="offwhite_btn">Send Mail</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade send_po_approv" id="send_po_approv" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">SEND PO FOR APPROVAL</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <ul class="comment_list">
+                    <li>
+                        <span>1002-0019 - ABC CARPET (USD) - TALAL ZUBAIR</span>
+                        <a href="#" title="Remove this account" class="remove_bar">
+                            <i class="fa-solid fa-xmark"
+                               aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn">Send For Approval</button>
+            </div>
+        </div>
+    </div>
+</div>

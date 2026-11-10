@@ -1,0 +1,308 @@
+﻿@{
+    ViewData["Title"] = "Search Payment";
+}
+
+@model BridgeWeb.Domain.Model.MultipleModel
+
+<!-- bredcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("invoicesearch", "Invoice")">Invoice</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>Search Payment</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- bredcrumb -->
+
+<input type="hidden" id="prevpaymentids" value="@ViewData["prevdata"]" />
+
+<!-- search payment section -->
+<section class="master_wrap">
+    <div class="container-fluid">
+        <div class="payment_search_wrp">
+            <h2 class="section_header">PAYMENT SEARCH</h2>
+            <div class="row custom_gutter5-x">
+                <div class="col-sm-3">
+                    <div class="multi_slc_wrp">
+                        <label for="Ddl_Vendors" class="form-label">Vendor</label>
+                        <select multiple="multiple" class="multislct" data-width="100%" id="Ddl_Vendors">
+                            @if (Model.PaymentVendorList.Count() > 0)
+                            {
+                                foreach (var items in Model.PaymentVendorList)
+                                {
+
+                                    <option value="@items.VendorID">@items.Name </option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="0">---Select Vendor---</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-1">
+                    <div class="frm_fld_wrp">
+                        <label for="Ddl_PaymentType" class="form-label">Payment Type</label>
+                        <select class="form-select" id="Ddl_PaymentType">
+                            <option value="0">Select Payment Type</option>
+                            @if (Model.PaymentTypesList.Count() > 0)
+                            {
+                                foreach (var items in Model.PaymentTypesList)
+                                {
+                                    <option data-code="@items.PayementCode" value="@items.FldId">@items.PaymentName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="frm_fld_wrp">
+                        <label for="DDl_Bank" class="form-label">Bank Account</label>
+                        <select class="form-select" id="DDl_Bank">
+                            <option value="0">---Select Account---</option>
+                            @if (Model.BankAccountMSList.Count() > 0)
+                            {
+                                foreach (var acc in Model.BankAccountMSList)
+                                {
+                                    <option data-currcode="@acc.CurrenCode" value="@acc.FldId">@acc.BankAccount - @acc.Description</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-1">
+                    <div class="frm_fld_wrp">
+                        <label for="txtPaymentNumber" class="form-label">Payment #</label>
+                        <input type="text" class="form-control" placeholder="Enter Payment Number" id="txtPaymentNumber">
+                    </div>
+                </div>
+
+                <div class="col-sm-1">
+                    <div class="frm_fld_wrp">
+                        <label for="dateFilter" class="form-label">Date</label>
+                        <select name="dateFilter" class="form-select datecontrol" data-from="fromsearch" data-to="tosearch" id="dateFilter">
+                            <option value="All">ALL</option>
+                            <option value="custom">Custom</option>
+                            <option value="last365">Last 365 Days</option>
+                            <option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>
+                            <option value="thisweek">This Week</option>
+                            <option value="thismonth">This Month</option>
+                            <option value="thisquarter">This Quarter</option>
+                            <option value="thisyear">This Year</option>
+                            <option value="lastweek">Last Week</option>
+                            <option value="lastmonth">Last Month</option>
+                            <option value="lastquarter">Last Quater</option>
+                            <option value="lastyear">Last Year</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-1">
+                    <div class="frm_fld_wrp">
+                        <label for="fromsearch" class="form-label">From</label>
+                        <input type="text" class="form-control datepicker" placeholder="YYYY.MM.DD" id="fromsearch" name="fromsearch" disabled>
+                    </div>
+                </div>
+
+                <div class="col-sm-1">
+                    <div class="frm_fld_wrp">
+                        <label for="tosearch" class="form-label">To</label>
+                        <input type="text" class="form-control datepicker" placeholder="YYYY.MM.DD" id="tosearch" name="tosearch" disabled>
+                    </div>
+                </div>
+
+                <div class="col-lg-2">
+                    <button type="button" class="solid_teal_btn" id="payemtdetailsadvcbtn"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment_list">
+            <h2 class="section_header">PAYMENT LIST</h2>
+            <div class="sync_btn_wrp">
+                <button id="btnUpdateCheckedQBO" type="button" class="solid_teal_btn d-none">
+                    <span id="spanNoOfQBO"></span>&nbsp;
+                </button>
+
+                <button id="btnUncheck" type="button" class="solid_teal_btn d-none">Uncheck selected</button>
+
+                <button type="button" class="solid_teal_btn" id="btnSyncPayment">
+                    <i class="fa-solid fa-rotate"></i> Sync Payment Number(s) From
+                    QBO
+                </button>
+            </div>
+
+            <table id="paymentlistonLoad" class="table table-striped table-hover payment_list_table" style="width:100%">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Date</th>
+                        <th>Vendor</th>
+                        <th>Account</th>
+                        <th>Type</th>
+                        <th>Number</th>
+                        <th>Currency</th>
+                        <th>Fx Rate</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>QBO #</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <div id="paymenttbl"></div>
+
+        </div>
+    </div>
+</section>
+<!-- search payment section -->
+
+@* Edit PaymentItem Modal *@
+<div class="modal fade edit_payment_modal" id="edit_payment_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit Payment</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="paymentdetailsdatabind"></div>
+            </div>
+
+            <div class="modal-footer" id="Editable_Div">
+                <a href="javascript:void(0);" style="float: left;color: red;" class="d-none">This Payment has been reversed</a>
+                <button class="offwhite_btn" data-bs-target="#payment_history_modal" data-bs-toggle="modal" id="btnhistory">
+                    View History
+                </button>
+                <button class="offwhite_btn" id="btndeletepayment">Delete Payment</button>
+                <button class="offwhite_btn" id="btnvoidpayment">Void Payment</button>
+                <button class="offwhite_btn" id="btnsendpayment">Send Payment To QBO</button>
+                <button class="offwhite_btn" id="btnUpdatePayment">Update Payment</button>
+                <button class="offwhite_btn" id="btnStopPayment">Reverse Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@* <input type="hidden" id="hdnEditPayment" />
+<input type="hidden" id="hdnEditPaymentType" />
+<input type="hidden" id="hdnEditBankAccount" />
+<input type="hidden" id="hdnEditPaymentNumber" /> *@
+
+
+@* payment history modal *@
+
+<div class="modal fade payment_history_modal" id="payment_history_modal" tabindex="-1"
+     aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Payment History</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close" data-bs-toggle="modal" data-bs-target="#edit_payment_modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row custom_gutter5-x">
+                    <div id="paymenthistorybind"></div>
+
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="offwhite_btn" data-bs-toggle="modal" data-bs-target="#edit_payment_modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade updatedetails_modal" id="updatedetails_modal" tabindex="-1"
+     aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="headerupdatedetails">Payment History</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close" data-bs-toggle="modal" data-bs-target="#payment_history_modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row custom_gutter5-x">
+
+                   <div id="paymentanditemupdatebind"><</div>
+                   
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="offwhite_btn" data-bs-toggle="modal" data-bs-target="#payment_history_modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="qboDetailsModal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">QBO Payment Lookup</h4>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="qbStatus"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="qboModal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="qboModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="qboModalLabel">QBO Validating</h4>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="qbCheck"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="qbgeratemodal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="qboSendLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="qboSendLabel">QBO Sending Data</h4>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="qbsendinfo"></div>
+            </div>
+        </div>
+    </div>
+</div>

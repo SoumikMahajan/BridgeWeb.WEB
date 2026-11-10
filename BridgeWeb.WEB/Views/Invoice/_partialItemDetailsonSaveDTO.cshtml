@@ -1,0 +1,61 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@* @{
+    string FormatNumber(decimal? number)
+    {
+        if (!number.HasValue)
+        {
+            return "0.00";  // Return default value for null
+        }
+
+        // Round the number to 2 decimal places
+        decimal roundedNumber = Math.Round(number.Value, 2);
+
+        // Format with commas and two decimal places
+        return roundedNumber.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+} *@
+
+<table class="table table-striped table-hover " id="tblitemeditor" style="width:100%;">
+    <thead>
+
+        <tr>
+            <th>PO #</th>
+            <th>Item #</th>
+            <th>Desc.</th>
+            <th>Cost</th>
+            <th>Qty</th>
+            <th>Revised Amount</th>
+            <th>Credit Amount</th>
+            <th>Variance</th>
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.ItemDetailsonSave.Count() > 0)
+        {
+            var index = 0;
+            foreach (var items in Model.ItemDetailsonSave)
+            {
+
+                <tr data-poli="@items.POLineItemID">
+                    <td>@items.PONumber</td>
+                    <td>@items.TotalID</td>
+                    <td>@items.ItemDescription</td>
+                    <td><input class="form-control costchange" type="text" value="@items.Cost" /></td>
+                    <td><input class="form-control qtychange" type="text" value="@items.Quantity" /></td>
+                    <td data-ext="@items.Extended">@items.Extended</td>
+                    <td>@(items.POLineItemID == Convert.ToInt64(Model.POLIData[index].POLI) ? Model.POLIData[index].Amount : 0.00m)</td>
+                    <td>@(items.POLineItemID == Convert.ToInt64(Model.POLIData[index].POLI) ? Model.POLIData[index].Amount : 0.00m)</td>
+
+
+                </tr>
+                index++;
+            }
+        }
+
+    </tbody>
+</table>

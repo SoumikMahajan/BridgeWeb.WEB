@@ -1,0 +1,189 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+
+@{
+    int index = 1;
+}
+<style>
+
+    .text-uppercase1 {
+        width: 150px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        background-color: transparent; /* Ensure the default background is transparent */
+    }
+
+        .text-uppercase1:hover {
+            background-color: white; /* Set background color on hover */
+            color: black;
+        }
+
+    .pop-up {
+        border-width: 1px;
+        z-index: 65535;
+        left: 624px;
+        top: 304px;
+        width: 160px;
+    }
+</style>
+<table id="contact_list" class="table table-striped table-hover contact_list" style="width:100%">
+
+    <thead>
+        <tr>
+            <th>Action</th>
+            <th>Active</th>
+            <th>Hidden</th>
+            <th>Vendor Name</th>
+            <th>Classifications</th>
+            <th>Contact</th>
+            <th>Title</th>
+            <th>City</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.VendorContactDto)
+        {
+
+
+            <tr>
+                <td class="text-center">
+                    @if (item.IsSystemUser == 1)
+                    {
+                        <i title="Send LogIn info" style="cursor:pointer;color:#7EA6C7;" data-email="@item.Email" class="fa fa-share mrg5R sendmailforVendor" data-bs-toggle="modal"></i>
+                    }
+
+                    <i class="fa fa-pencil-square-o editvendorContactList" style="cursor:pointer;"
+                       data-id="@item.ParentVendor_ID" id="parentvendor_@index"></i>
+                </td>
+                <td class="activation1 " id="VendorIdHidden">
+
+
+                    @if (item.IsSystemUser == 1)
+                    {
+                        <i class="fa @(item.IsActive == 1 ? "fa-check-circle" : "fa-times-circle") acinAc" style="cursor:pointer;" data-vendorcontact="@item.VendorName.Split('^')[1].Trim()"></i>
+                    }
+                </td>
+                @if (item.IsHidden == 0)
+                {
+                    <td>N</td>
+                }
+                else
+                {
+                    <td>Y</td>
+                }
+
+                <td>  <p class="text-uppercase1" title="@item.ParentVendorName">@item.ParentVendorName </p></td>
+
+                <td>
+                    <p class="text-uppercase1" title="@item.Classifications">@item.Classifications</p>
+                </td>
+
+
+
+                <td>
+                    @*  <a target="_blank" style="color:#7792a8;" href="/Vendors/EditVendorContact?vendorId=@item.VendorName.Split('^')[1].Trim()">@item.VendorName.Split('^')[0].Trim()</a> *@
+
+                    <a target="_blank" style="color:#7792a8;"
+                       href="/Vendors/EditVendorContact?vendorId=@(string.IsNullOrEmpty(item.VendorName) ? item.Vendor_ID : item.VendorName.Split('^')[1].Trim())">
+                        @(string.IsNullOrEmpty(item.VendorName) ? string.Empty : item.VendorName.Split('^')[0].Trim())
+                    </a>
+                    @*   <input type="hidden" value="@item.VendorName.Split('^')[1].Trim()" id="VendorIdHidden" /> *@
+
+                </td>
+
+                <td>@item.ContactTitle</td>
+                <td>@item.City</td>
+                <td><a style="color:#7792a8;" href="telto:@item.Phone">@item.Phone</a></td>
+                <td><a style="color:#7792a8;" href="mailto:@item.Email">@item.Email</a></td>
+                <td>@((item.IsActive == 1 ? true : false).ToString().ToLower())</td>
+                <td id="sys">@item.IsSystemUser</td>
+
+            </tr>
+            index++;
+        }
+
+    </tbody>
+</table>
+
+<div id="sendmailvendortemplate" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Send Mail</h4>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row mrg15T">
+
+                    <div class="col-sm-3">
+                        Add Dynamic field :
+                    </div>
+                    <div class="col-sm-6">
+                        <select class="form-control" onchange="setdynamicfieldformailnewuser(this);">
+                            <option value="0">---Select---</option>
+                            <option value="1">Log In Link</option>
+                            <option value="USERNAME">User Name</option>
+                            <option value="USEREMAIL">User Email</option>
+                            <option value="USERPASSWORD">Password</option>
+
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="row mrg15T">
+
+                    <div class="col-sm-3">
+                        To :
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="pomailtos" disabled="disabled" />
+                    </div>
+                    <div class="col-sm-3">
+                        <p id="mailcount__tot" class="mrg5T"></p>
+                    </div>
+
+                </div>
+
+
+                <div class="row mrg15T">
+
+                    <div class="col-sm-3">
+                        Subject :
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="newusersubject" />
+                    </div>
+
+                </div>
+
+
+                <div class="row mrg15T">
+                    <div class="col-sm-12">
+                        <textarea class="ckeditor" id="newusermail"></textarea>
+
+                    </div>
+                </div>
+
+
+
+
+
+            </div>
+            <div class="modal-footer">
+                <span id="mailsenderloader"></span>
+                <button type="button" id="sendFinalMail">Send Mail</button>
+            </div>
+        </div>
+    </div>
+</div>
+

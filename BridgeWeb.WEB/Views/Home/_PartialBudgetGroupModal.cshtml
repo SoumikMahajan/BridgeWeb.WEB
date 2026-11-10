@@ -1,0 +1,21 @@
+﻿
+ @model BridgeWeb.Domain.Model.MultipleModel
+
+
+@if (Model.BudgetGroupListDashboard.Count()>0)
+{
+    var groupedSectionName = Model.BudgetGroupListDashboard.GroupBy(g => g.GroupName).ToList();
+    @foreach (var group in groupedSectionName)
+    {
+        <div class="group-head " data-groupid="@group.ElementAt(0).GroupId">@group.Key.ToUpper()</div>
+
+        <div class="container-fluid">
+            <ul class="approval_list">
+                @foreach (var item in group)
+                {
+                    <li>@item.SectionNumber - @item.Name</li>
+                }
+            </ul>
+        </div>
+    }
+}

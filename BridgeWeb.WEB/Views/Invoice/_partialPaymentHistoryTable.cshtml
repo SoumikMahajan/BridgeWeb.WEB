@@ -1,0 +1,46 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+<div class="col-12">
+    <table id="payment_history_table" class="table table-striped table-hover" style="width:100%">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Action</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.PaymentHistoryList.Count() > 0)
+            {
+                @foreach (var items in Model.PaymentHistoryList)
+                {
+                    var operationOn = @items.OperationOn?.ToString("dd MMM yyyy, h:mm tt");
+
+                    <tr>
+                        <td>@items.UserName</td>
+
+                        <td>
+
+                            @if (items.Operation == "UPDATE" && items.Area == "PAYMENT")
+                            {
+                                @items.Area
+                                <i style="cursor:pointer;" class="fa fa-info-circle viewicon" data-mode="paymentupdatedetails" data-id="@items.FLDID" data-bs-target="#updatedetails_modal" data-bs-toggle="modal"></i>
+                            }
+                            else
+                            {
+                                @(items.Area + " " + items.Operation)
+                                if (items.Area == "ITEM" && items.Operation != "INSERT")
+                                {
+                                    <i style="cursor:pointer;" class="fa fa-info-circle viewicon" data-mode="itemupdatedetails" data-id="@items.FLDID" data-bs-target="#updatedetails_modal" data-bs-toggle="modal"></i>
+                                }
+                            }
+                        </td>
+                        <td>@operationOn</td>
+                    </tr>
+
+                }
+            }
+
+        </tbody>
+    </table>
+</div>

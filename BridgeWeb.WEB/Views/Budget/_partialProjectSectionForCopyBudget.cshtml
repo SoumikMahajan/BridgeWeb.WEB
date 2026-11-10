@@ -1,0 +1,24 @@
+﻿@*   @model BridgeWeb.Domain.Model.MultipleModel
+ @{
+     var flag = Model.flag; 
+     var minValue = Model.ProjectSectionForCopyBudget.Min(x=>x.sectionOrder)
+ }
+ <select multiple="multiple" name="" id="Ddl_SelSecCopy" class="multislctCopyforSection" data-width="100%">
+     <option value="0">--Select Project Section--</option>
+     @if(flag ==0)
+     {
+          foreach(var items in Model.ProjectSectionForCopyBudget){
+             <option value="@items.budgetSectionId">@items.sectionName</option>
+         }
+     }
+     else
+     {
+         foreach(var items in Model.ProjectSectionForCopyBudget)
+         {
+             if(minValue ==items.sectionOrder)
+             {
+                
+             }
+         }
+     }
+ </select> *@

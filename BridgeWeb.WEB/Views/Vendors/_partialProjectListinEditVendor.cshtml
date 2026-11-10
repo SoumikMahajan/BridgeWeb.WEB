@@ -1,0 +1,46 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+  var totalAmount = Model.ProjectListinVendor.Count() >0 ? Model.ProjectListinVendor.Sum(x => x.Total) : 0;
+  var currcode = Model.ProjectListinVendor.Count()>0? Model.ProjectListinVendor[0].CurrencyCode:string.Empty;
+  string FormatNumber(decimal number)
+  {
+
+    // Round the number to 2 decimal places first
+    number = Math.Round(number, 2);
+
+    // Format number with commas and ensure it's a string
+    return number.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+  }
+}
+<input type="hidden" id="totalAmount" value="@totalAmount" />
+<input type="hidden" id="curr" value="@currcode" />
+<table class="display table table-striped table-hover ytdtbl" style="width:100%;" id="ytdtbl">
+      <thead>
+        <tr>
+          <th class="leftposition">Project</th>
+          <th class="leftposition">Name</th>
+          <th class="right-txt rightposition">Amount</th>
+        </tr>
+      </thead>
+
+      <tbody>
+            @if (Model.ProjectListinVendor.Count()>0){
+
+                foreach (var items in Model.ProjectListinVendor)
+                {
+                  <tr>
+                    <td class="leftposition"><a href="javascript:void(0);" style="color:#7792a8;" data-id="@items.ProjectId" class="redirecttopolist">@items.ProjectNumber</a></td>
+                    <td class="leftposition">@items.ProjectName</td>
+                    <td class="right-txt rightposition">
+                      <span class="totalval totalAmount">@FormatNumber(items.Total) @items.CurrencyCode</span>
+                    </td>
+                  </tr>
+                }
+            }
+
+
+
+
+      </tbody>
+</table>
+

@@ -1,0 +1,1137 @@
+﻿@{
+    ViewData["Title"] = "Reports";
+}
+
+@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var menuOrderRaw = Model.singleResult?? "";
+    var isAdmin = string.IsNullOrWhiteSpace(menuOrderRaw); // if blank, it's admin
+    var menuOrder = isAdmin
+        ? new List<string> { "B", "P", "S", "A" }  // full access
+        : menuOrderRaw.Split('^', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
+    bool showB = menuOrder.Contains("B");
+    bool showP = menuOrder.Contains("P");
+    bool showS = menuOrder.Contains("S");
+    bool showA = menuOrder.Contains("A");
+    var activeTab = string.IsNullOrEmpty(Model.ActiveTab) ? "B" : Model.ActiveTab;
+}
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>Report</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="#" data-bs-toggle="popover" data-bs-content="Export To PDF Report" data-bs-trigger="hover" class="exportToPDF" data-format="PDF">
+                <i class="fa-regular fa-file-pdf"></i>
+            </a>
+        </li>
+        <li>
+            <a href="#" data-bs-toggle="popover" data-bs-content="Export To Excel Report" data-bs-trigger="hover" class="exportToPDF" data-format="EXCELOPENXML">
+                <i class="fa-regular fa-file-excel"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->
+<!-- Report section -->
+<section class="master_wrap report_sec">
+    <div class="container-fluid">
+        <h2 class="section_header">REPORTS</h2>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="multi_slc_wrp">
+                    <label for="" class="form-label">Project<span class="req">*</span></label>
+                    <select multiple="multiple" class="multislct" data-width="100%" id="txt_Project">
+                        @foreach (var item in Model.ReportProjectList)
+                        {
+                            <option value="@item.ProjectID">@item.ProName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab_container">
+            <ul class="nav nav-tabs" role="tablist" id="myTab">
+                @if (showB)
+                {
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @(activeTab == "B" ? "active" : "")" data-bs-toggle="tab" data-bs-target="#systab1" type="button" role="tab"
+                                aria-selected="true">
+                            BUDGET
+                        </button>
+                    </li>
+                }
+
+                @if (showP)
+                {
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @(activeTab == "P" ? "active" : "")" data-bs-toggle="tab" data-bs-target="#systab2" type="button" role="tab"
+                                aria-selected="true">
+                            PURCHASE COMMITMENT
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#systab3" type="button" role="tab"
+                                aria-selected="false">
+                            COMMITTED COST
+                        </button>
+                    </li>
+                }
+
+                @if (showS)
+                {
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @(activeTab == "S" ? "active" : "")" data-bs-toggle="tab" data-bs-target="#systab4" type="button" role="tab"
+                                aria-selected="false" id="statusReport">
+                            STATUS
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#systab5" type="button" role="tab"
+                                aria-selected="false">
+                            Fabrication Approval
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#systab6" type="button" role="tab"
+                                aria-selected="false">
+                            RECEIVING
+                        </button>
+                    </li>
+                }
+                               
+                @if (showA)
+                {
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @(activeTab == "A" ? "active" : "")" data-bs-toggle="tab" data-bs-target="#systab7" type="button" role="tab"
+                                aria-selected="false">
+                            PO
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#systab8" type="button" role="tab"
+                                aria-selected="false">
+                            INVOICE
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#systab9" type="button" role="tab"
+                                aria-selected="false">
+                            PAYMENT
+                        </button>
+                    </li>
+                }
+
+            </ul>
+
+            <div class="tab-content">
+                @if (showB)
+                {
+                    <!--Start Budget Report-->
+                    <div class="tab-pane fade @(activeTab == "B" ? "show active" : "")" id="systab1" role="tabpanel" tabindex="0">
+                        <div class="row">
+                            <div class="col">
+                                <div class="report_input">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label class="lblHeader">Report Type<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select txtBudgetReportCategory" data-width="100%">
+                                                    <option value="0">Please Select Report Type</option>
+                                                    <option value="1">Detail</option>
+                                                    <option value="2">Summary</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="report_input">
+                                    <label class="lblHeader subLblHeader">Filters (Leave blank for all)</label>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Section</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtSection" data-width="100%">
+                                                    @*<option value="1">001-TOWER 1 (239K/145QQ)</option>*@
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End Budget Report-->
+                }
+
+
+                @if (showP)
+                {
+                    <!--Start Purchase Commitment Report-->
+                    <div class="tab-pane fade @(activeTab == "P" ? "show active" : "")" id="systab2" role="tabpanel" tabindex="0">
+                        <div class="row">
+                            <div class="col">
+                                <div class="report_input">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label class="lblHeader">Group By<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select txtStatusReportCategory" data-width="100%">
+                                                    <option value="0">Please Select Report Type</option>
+                                                    <option value="1">Project</option>
+                                                    <option value="2">Vendor</option>
+                                                    <option value="3">PO</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="report_input">
+                                    <label class="lblHeader subLblHeader">Filters (Leave blank for all)</label>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Section</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtSection" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End Purchase Commitment Report-->
+                    <!--Start Commited Cost Report-->
+                    <div class="tab-pane fade" id="systab3" role="tabpanel" tabindex="0">
+                        <div class="row">
+                            <div class="col">
+                                <div class="report_input">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label class="lblHeader">Report Type<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select txtBudgetReportCategory" data-width="100%">
+                                                    <option value="0">Please Select Report Type</option>
+                                                    <option value="1">Detail</option>
+                                                    <option value="2">Summary</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="report_input">
+                                    <label class="lblHeader subLblHeader">Filters (Leave blank for all)</label>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Section</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtSection" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End Commited Cost Report-->
+                }
+
+
+                @if (showS)
+                {
+                    <!--Start Status Report-->
+                    <div class="tab-pane fade @(activeTab == "S" ? "show active" : "")" id="systab4" role="tabpanel" tabindex="0">
+                        <div class="row">
+                            <div class="col">
+                                <div class="report_input">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label class="lblHeader">Group By<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select txtStatusReportCategory" data-width="100%">
+                                                    <option value="0">Please Select</option>
+                                                    <option value="1">Section</option>
+                                                    <option value="2">Vendor</option>
+                                                    <option value="3">Status</option>
+                                                    <option value="4">Approval Type</option>
+                                                    <option value="5">None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="report_input">
+                                    <label class="lblHeader subLblHeader">Filters (Leave blank for all)</label>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Section</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtSection" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Vendor</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtVendor" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="statusHideShow">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label for="">Ship To</label>
+                                            </div>
+
+                                            <div class="col-lg-8">
+                                                <div class="multi_slc_wrp">
+                                                    <select multiple="multiple" class="multislct txt_Ship_To" data-width="100%">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label for="">Item Status</label>
+                                            </div>
+
+                                            <div class="col-lg-8">
+                                                <div class="multi_slc_wrp">
+                                                    <select multiple="multiple" class="multislct ddl_ItemStatus" data-width="100%">
+                                                        <option value="1">On Track</option>
+                                                        <option value="2">At Risk</option>
+                                                        <option value="3">In Transit</option>
+                                                        <option value="4">Received</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label for="">Item Value</label>
+                                            </div>
+
+                                            <div class="col-lg-8">
+                                                <label for="itva" class="itva_chek">
+                                                    <input type="checkbox" name="" id="itva" checked> Include Items with 0 value
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label for="">Date Range</label>
+                                            </div>
+
+                                            <div class="col-lg-8">
+                                                <div class="st_dtRange">
+                                                    <select class="form-select datecontrol" data-from="fromsearch" data-to="tosearch">
+                                                        <option value="All">ALL</option>
+                                                        <option value="custom">Custom</option>
+                                                        <option value="last365">Last 365 Days</option>
+                                                        <option value="today">Today</option>
+                                                        <option value="yesterday">Yesterday</option>
+                                                        <option value="thisweek">This Week</option>
+                                                        <option value="thismonth">This Month</option>
+                                                        <option value="thisquarter">This Quarter</option>
+                                                        <option value="thisyear">This Year</option>
+                                                        <option value="lastweek">Last Week</option>
+                                                        <option value="lastmonth">Last Month</option>
+                                                        <option value="lastquarter">Last Quater</option>
+                                                        <option value="lastyear">Last Year</option>
+                                                    </select>
+                                                    <input type="text" class="form-control datepicker fromsearch" placeholder="YYYY.MM.DD" disabled>
+                                                    <input type="text" class="form-control datepicker tosearch" placeholder="YYYY.MM.DD" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label for="">Include Note</label>
+                                            </div>
+
+                                            <div class="col-lg-8">
+                                                <div class="frm_fld_wrp">
+                                                    <select class="form-select ddl_NoteStatus">
+                                                        <option value="0">YES</option>
+                                                        <option value="1">NO</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="hideShowApprovaltype" style="display:none;">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label for="">Approval Type</label>
+                                            </div>
+
+                                            <div class="col-lg-8">
+                                                <div class="multi_slc_wrp">
+                                                    <select multiple="multiple" class="multislct ddl_approvaltype" data-width="100%">
+                                                        @foreach (var item in Model.itemApprovalsList)
+                                                        {
+                                                            <option value="@item.ItemApprovalID">@item.ItemName.Trim()</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label for="">Approval Status</label>
+                                            </div>
+
+                                            <div class="col-lg-8">
+                                                <div class="multi_slc_wrp">
+                                                    <select multiple="multiple" class="multislct ddl_approvalstatus" data-width="100%">
+                                                        @foreach (var item in Model.itemApprovalsStatusList)
+                                                        {
+                                                            if (item.FldID != 9)
+                                                            {
+                                                                <option value="@item.FldID">@item.ActionType</option>
+                                                            }
+
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="" class="lblHeader">Sorting<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select ddl_Sort" data-width="100%">
+                                                    <option value="1">Item</option>
+                                                    <option value="2">PO</option>
+                                                    <option value="3">Arrival Date</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End Status Report-->
+                    <!--Start Fabrication Report-->
+                    <div class="tab-pane fade" id="systab5" role="tabpanel" tabindex="0">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row">
+                                    <div class="report_input">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label class="lblHeader">Sorting<span class="req">*</span></label>
+                                            </div>
+
+                                            <div class="col-lg-8">
+                                                <div class="multi_slc_wrp">
+                                                    <select class="form-select ddlFbSort" data-width="100%">
+                                                        <option value="1" selected>PO</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-4">
+                                                <label class="lblHeader">Vendor<span class="req">*</span></label>
+                                            </div>
+                                            <div class="col-lg-8">
+                                                <div class="multi_slc_wrp">
+                                                    <select multiple="multiple" class="multislct txtVendor" data-width="100%">
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-4">
+                                                <label class="lblHeader">Status<span class="req">*</span></label>
+                                            </div>
+                                            <div class="col-lg-8">
+                                                <div class="multi_slc_wrp">
+                                                    <select multiple="multiple" class="multislct ddl_approvalstatus" data-width="100%">
+                                                        @foreach (var item in Model.itemApprovalsStatusList)
+                                                        {
+                                                            if (item.FldID == 1 || item.FldID == 2 || item.FldID == 9)
+                                                            {
+                                                                <option value="@item.FldID">@item.ActionType</option>
+                                                            }
+
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End Fabrication Report-->
+                    <!--Start Received Report-->
+                    <div class="tab-pane fade" id="systab6" role="tabpanel" tabindex="0">
+                        <div class="row">
+                            <div class="col">
+                                <div class="report_input">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label class="lblHeader">Group By<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select txtStatusReportCategory" data-width="100%">
+                                                    <option value="0">Select Group</option>
+                                                    <option value="1">Vendor</option>
+                                                    <option value="2">Section</option>
+                                                    <option value="3">Project</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="report_input">
+                                    <label class="lblHeader subLblHeader">Filters (Leave blank for all)</label>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Section</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtSection" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" id="HideShowVendor">
+                                        <div class="col-lg-4">
+                                            <label for="">Vendor</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtVendor" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="HideItemAndDate" style="display:none;">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label for="">Item Status</label>
+                                            </div>
+
+                                            <div class="col-lg-8">
+                                                <div class="multi_slc_wrp">
+                                                    <select multiple="multiple" class="multislct ddl_ItemStatus" data-width="100%">
+                                                        <option value="1">On Track</option>
+                                                        <option value="2">At Risk</option>
+                                                        <option value="3">In Transit</option>
+                                                        <option value="4">Received</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label for="">Date Range</label>
+                                            </div>
+
+                                            <div class="col-lg-8">
+                                                <div class="st_dtRange">
+                                                    <select class="form-select datecontrol" data-from="fromsearch" data-to="tosearch">
+                                                        <option value="All">ALL</option>
+                                                        <option value="custom">Custom</option>
+                                                        <option value="last365">Last 365 Days</option>
+                                                        <option value="today">Today</option>
+                                                        <option value="yesterday">Yesterday</option>
+                                                        <option value="thisweek">This Week</option>
+                                                        <option value="thismonth">This Month</option>
+                                                        <option value="thisquarter">This Quarter</option>
+                                                        <option value="thisyear">This Year</option>
+                                                        <option value="lastweek">Last Week</option>
+                                                        <option value="lastmonth">Last Month</option>
+                                                        <option value="lastquarter">Last Quater</option>
+                                                        <option value="lastyear">Last Year</option>
+                                                    </select>
+                                                    <input type="text" class="form-control datepicker fromsearch" placeholder="YYYY.MM.DD" disabled>
+                                                    <input type="text" class="form-control datepicker tosearch" placeholder="YYYY.MM.DD" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="" class="lblHeader">Sorting<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select ddl_Sort" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End Received Report-->
+                }                              
+
+
+                @if (showA)
+                {
+                    <!--Start PO Report-->
+                    <div class="tab-pane fade @(activeTab == "A" ? "show active" : "")" id="systab7" role="tabpanel" tabindex="0">
+                        <div class="row">
+                            <div class="col">
+                                <div class="report_input">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label class="lblHeader">Report Type<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select txtBudgetReportCategory" data-width="100%">
+                                                    <option value="0" selected>Please Select</option>
+                                                    <option value="1">Detail</option>
+                                                    <option value="2">Summary</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="report_input">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label class="lblHeader">Group By<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select txtStatusReportCategory" data-width="100%">
+                                                    <option value="0">Vendor</option>
+                                                    <option value="2">Currency</option>
+                                                    <option value="1" selected>None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="report_input">
+                                    <label class="lblHeader subLblHeader">Filters (Leave blank for all)</label>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Vendor</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtVendor" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">PO Date</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="st_dtRange">
+                                                <select class="form-select datecontrol" data-from="fromsearch" data-to="tosearch">
+                                                    <option value="All">ALL</option>
+                                                    <option value="custom">Custom</option>
+                                                    <option value="last365">Last 365 Days</option>
+                                                    <option value="today">Today</option>
+                                                    <option value="yesterday">Yesterday</option>
+                                                    <option value="thisweek">This Week</option>
+                                                    <option value="thismonth">This Month</option>
+                                                    <option value="thisquarter">This Quarter</option>
+                                                    <option value="thisyear">This Year</option>
+                                                    <option value="lastweek">Last Week</option>
+                                                    <option value="lastmonth">Last Month</option>
+                                                    <option value="lastquarter">Last Quater</option>
+                                                    <option value="lastyear">Last Year</option>
+                                                </select>
+                                                <input type="text" class="form-control datepicker fromsearch" placeholder="YYYY.MM.DD" disabled>
+                                                <input type="text" class="form-control datepicker tosearch" placeholder="YYYY.MM.DD" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" id="hideShowInvoideDt" style="display:none;">
+                                        <div class="col-lg-4">
+                                            <label for="">Invoice Date</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="st_dtRange">
+                                                <select class="form-select datecontrol" data-from="fromsearch" data-to="tosearch">
+                                                    <option value="All">ALL</option>
+                                                    <option value="custom">Custom</option>
+                                                    <option value="last365">Last 365 Days</option>
+                                                    <option value="today">Today</option>
+                                                    <option value="yesterday">Yesterday</option>
+                                                    <option value="thisweek">This Week</option>
+                                                    <option value="thismonth">This Month</option>
+                                                    <option value="thisquarter">This Quarter</option>
+                                                    <option value="thisyear">This Year</option>
+                                                    <option value="lastweek">Last Week</option>
+                                                    <option value="lastmonth">Last Month</option>
+                                                    <option value="lastquarter">Last Quater</option>
+                                                    <option value="lastyear">Last Year</option>
+                                                </select>
+                                                <input type="text" class="form-control datepicker fromsearch" placeholder="YYYY.MM.DD" disabled>
+                                                <input type="text" class="form-control datepicker tosearch" placeholder="YYYY.MM.DD" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">PO Status</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select ddl_InvoiceStatus" data-width="100%">
+                                                    <option value="0" selected>All</option>
+                                                    <option value="1">Open</option>
+                                                    <option value="2">Close</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" id="hideShowPayment" style="display:none">
+                                        <div class="col-lg-4">
+                                            <label for="">Payment Status</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select ddl_PaymentStatus" data-width="100%">
+                                                    <option value="1" selected>All</option>
+                                                    <option value="2">Paid</option>
+                                                    <option value="3">Unpaid</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Section</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtSection" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="" class="lblHeader">Sorting<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select ddl_Sort" data-width="100%">
+                                                    <option value="1">PO</option>
+                                                    <option value="2" selected>Date</option>
+                                                    <option value="3">Vendor</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End PO Report-->
+                    <!--Start Invoice Report-->
+                    <div class="tab-pane fade" id="systab8" role="tabpanel" tabindex="0">
+                        <div class="row">
+                            <div class="col">
+                                <div class="report_input">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label class="lblHeader">Report Type<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select txtBudgetReportCategory" data-width="100%">
+                                                    <option value="0">Please Select</option>
+                                                    <option value="1">Detail</option>
+                                                    <option value="2">Summary</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="report_input">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label class="lblHeader">Group By<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select txtStatusReportCategory" data-width="100%">
+                                                    <option value="1">Vendor</option>
+                                                    <option value="2">Bank Account</option>
+                                                    <option value="4">Currency</option>
+                                                    <option value="3" selected>None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="report_input">
+                                    <label class="lblHeader subLblHeader">Filters (Leave blank for all)</label>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Vendor</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtVendor" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Bank Account</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct ddl_BankAcount" data-width="100%">
+                                                    @foreach (var item in Model.bankAccountList)
+                                                    {
+                                                        <option value="@item.Fld_ID">@item.Bank_Account</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Invoice Date</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="st_dtRange">
+                                                <select class="form-select datecontrol" data-from="fromsearch" data-to="tosearch">
+                                                    <option value="All">ALL</option>
+                                                    <option value="custom">Custom</option>
+                                                    <option value="last365">Last 365 Days</option>
+                                                    <option value="today">Today</option>
+                                                    <option value="yesterday">Yesterday</option>
+                                                    <option value="thisweek">This Week</option>
+                                                    <option value="thismonth">This Month</option>
+                                                    <option value="thisquarter">This Quarter</option>
+                                                    <option value="thisyear">This Year</option>
+                                                    <option value="lastweek">Last Week</option>
+                                                    <option value="lastmonth">Last Month</option>
+                                                    <option value="lastquarter">Last Quater</option>
+                                                    <option value="lastyear">Last Year</option>
+                                                </select>
+                                                <input type="text" class="form-control datepicker fromsearch" placeholder="YYYY.MM.DD" disabled>
+                                                <input type="text" class="form-control datepicker tosearch" placeholder="YYYY.MM.DD" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="sys8hideshowPayment" style="display:none">
+                                        <div class="col-lg-4">
+                                            <label for="">Payment Date</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="st_dtRange">
+                                                <select class="form-select datecontrol" data-from="fromsearch" data-to="tosearch">
+                                                    <option value="All">ALL</option>
+                                                    <option value="custom">Custom</option>
+                                                    <option value="last365">Last 365 Days</option>
+                                                    <option value="today">Today</option>
+                                                    <option value="yesterday">Yesterday</option>
+                                                    <option value="thisweek">This Week</option>
+                                                    <option value="thismonth">This Month</option>
+                                                    <option value="thisquarter">This Quarter</option>
+                                                    <option value="thisyear">This Year</option>
+                                                    <option value="lastweek">Last Week</option>
+                                                    <option value="lastmonth">Last Month</option>
+                                                    <option value="lastquarter">Last Quater</option>
+                                                    <option value="lastyear">Last Year</option>
+                                                </select>
+                                                <input type="text" class="form-control datepicker fromsearch" placeholder="YYYY.MM.DD" disabled>
+                                                <input type="text" class="form-control datepicker tosearch" placeholder="YYYY.MM.DD" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Invoice Status</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select ddl_InvoiceStatus" data-width="100%">
+                                                    <option value="0" selected>All</option>
+                                                    <option value="1">Paid</option>
+                                                    <option value="2">Unpaid</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Section</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtSection" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Payment Mode</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txt_PaymentMode" data-width="100%">
+                                                    @foreach (var item in Model.paymentTypeList)
+                                                    {
+                                                        <option data-code="@item.PaymentCode" value="@item.FldID">@item.PaymentTypeName</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="" class="lblHeader">Sorting<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select ddl_Sort" data-width="100%">
+                                                    <option value="1">Invoice Number</option>
+                                                    <option value="2" selected>Date</option>
+                                                    <option value="3">Vendor</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End Invoice Report-->
+                    <!--Start Payment Report-->
+                    <div class="tab-pane fade" id="systab9" role="tabpanel" tabindex="0">
+                        <div class="row">
+                            <div class="col">
+                                <div class="report_input">
+                                    <label class="lblHeader subLblHeader">Filters (Leave blank for all)</label>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Section</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtSection" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Vendor</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txtVendor" data-width="100%">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Bank Account</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct ddl_BankAcount" data-width="100%">
+                                                    @foreach (var item in Model.bankAccountList)
+                                                    {
+                                                        <option value="@item.Fld_ID">@item.Bank_Account</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Date Range</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="st_dtRange">
+                                                <select class="form-select datecontrol" data-from="fromsearch" data-to="tosearch">
+                                                    <option value="All">ALL</option>
+                                                    <option value="custom">Custom</option>
+                                                    <option value="last365">Last 365 Days</option>
+                                                    <option value="today">Today</option>
+                                                    <option value="yesterday">Yesterday</option>
+                                                    <option value="thisweek">This Week</option>
+                                                    <option value="thismonth">This Month</option>
+                                                    <option value="thisquarter">This Quarter</option>
+                                                    <option value="thisyear">This Year</option>
+                                                    <option value="lastweek">Last Week</option>
+                                                    <option value="lastmonth">Last Month</option>
+                                                    <option value="lastquarter">Last Quater</option>
+                                                    <option value="lastyear">Last Year</option>
+                                                </select>
+                                                <input type="text" class="form-control datepicker fromsearch" placeholder="YYYY.MM.DD" disabled>
+                                                <input type="text" class="form-control datepicker tosearch" placeholder="YYYY.MM.DD" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="">Payment Mode</label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select multiple="multiple" class="multislct txt_PaymentMode" data-width="100%">
+                                                    @foreach (var item in Model.paymentTypeList)
+                                                    {
+                                                        <option data-code="@item.PaymentCode" value="@item.FldID">@item.PaymentTypeName</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label for="" class="lblHeader">Sorting<span class="req">*</span></label>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="multi_slc_wrp">
+                                                <select class="form-select ddl_Sort" data-width="100%">
+                                                    <option value="1" selected>Payment Number</option>
+                                                    <option value="2">Payment Date</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End Payment Report-->
+                }
+
+
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Report Detail-->

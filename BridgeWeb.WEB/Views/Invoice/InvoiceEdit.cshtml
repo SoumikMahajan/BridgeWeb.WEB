@@ -1,0 +1,341 @@
+﻿@{
+    ViewData["Title"] = "Edit Invoice";
+}
+
+@model BridgeWeb.Domain.Model.MultipleModel
+
+<!-- bredcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("invoicesearch", "Invoice")">Invoice</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>Enter Invoice</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- bredcrumb -->
+
+<input type="hidden" id="hdn_vendorid" />
+<input type="hidden" id="hdn_poid" value="@(Model.InvoiceEditDetails.POID is null ? 0 : Model.InvoiceEditDetails.POID)" />
+<input type="hidden" id="hdn_invoiceid" value="@(Model.InvoiceEditDetails.InvoiceNumber is null ? 0 : Model.InvoiceEditDetails.InvoiceNumber)" />
+<input type="hidden" id="hdn_paymentcount" value="@(Model.CheckInvoiceVoidPayment.Count is null ? 0 : Model.CheckInvoiceVoidPayment.Count)" />
+<input type="hidden" id="hdn_subtotal" value="@(Model.CheckInvoiceVoidPayment.Subtotal is null ? 0 : Model.CheckInvoiceVoidPayment.Subtotal)" />
+
+
+<!-- Enter invoice section -->
+<section class="master_wrap enter_inv">
+    <div class="container-fluid">
+
+        <div class="row custom_gutter5-x">
+            <div class="col-lg-6">
+                <div class="veandprowrp">
+                    <h2 class="section_header">VENDOR AND PROJECT</h2>
+                    <div class="row align-items-end">
+                        <div class="col-lg-6">
+                            <div class="pull-left">
+                                <div class="multi_slc_wrp">
+                                    <label for="Ddl_Vendors" class="form-label">Vendor</label>
+                                    <select multiple="multiple" class="multislct" data-width="100%" id="Ddl_Vendors" disabled>
+
+                                        @if (Model.InvoiceEditDetails.VendorId is not null)
+                                        {
+                                            <!option data-currcode=@(Model.InvoiceEditDetails.Currency) value="@Model.InvoiceEditDetails.VendorId" selected>@Model.InvoiceEditDetails.Name</!option>
+                                        }
+                                        else
+                                        {
+                                            <!option value="0" selected>No Vendor Found.</!option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="multi_slc_wrp">
+                                    <label for="ddl_project" class="form-label">Project</label>
+                                    <select multiple="multiple" class="multislct" data-width="100%" id="ddl_project" disabled>
+
+                                        @if (Model.InvoiceEditDetails.ProjectID is not null)
+                                        {
+                                            <!option value="@Model.InvoiceEditDetails.ProjectID" selected>@Model.InvoiceEditDetails.ProjectName</!option>
+                                        }
+                                        else
+                                        {
+                                            <!option value="0" selected>No Project Found.</!option>
+                                        }
+                                    </select>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="pull-right">
+                                <div class="frm_fld_wrp">
+                                    <label for="form-label" id="lblLegal" class="d-block"></label>
+                                    @* <textarea class="form-control" id="lblAddress" disabled></textarea> *@
+                                    <a target="_blank">
+                                        <textarea class="form-control mrg10T" id="lblAddress" rows="4" cols="35"
+                                                  disabled="disabled" style="resize: none; margin-top:0px; cursor: pointer; pointer-events: none;"></textarea>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="invoice_data">
+                    <h2 class="section_header">INVOICE DATA</h2>
+                    <div class="row custom_gutter5-x">
+                        <div class="col-lg-2">
+                            <div class="frm_fld_wrp">
+                                <label for="txt_InvoiceDate" class="form-label">Date</label>
+                                <input type="text" class="form-control datepicker" id="txt_InvoiceDate" value="@(Model.InvoiceEditDetails.InvoiceDate is null && Model.InvoiceEditDetails.InvoiceDate.HasValue == false ? string.Empty : Model.InvoiceEditDetails.InvoiceDate.Value.ToString("yyyy-MM-dd"))">
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="frm_fld_wrp nsaqbo">
+                                <label for="" class="form-label">
+                                    Terms <i class="fa-solid fa-plus new_termpopup"
+                                             data-bs-toggle="modal" data-bs-target="#terms_popup"></i>
+                                </label>
+                                <select name="" id="ddl_terms" class="form-select">
+                                    <option value="0">--Select Terms--</option>
+                                    @if (Model.vendorTermsList.Count() > 0)
+                                    {
+                                        foreach (var items in Model.vendorTermsList)
+                                        {
+                                            if (Model.InvoiceEditDetails.InvoiceTerms is not null && Model.InvoiceEditDetails.InvoiceTerms == items.TermID)
+                                            {
+                                                <option value="@items.TermID" selected>@items.Terms</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@items.TermID">@items.Terms</option>
+                                            }
+
+                                        }
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Number</label>
+                                <input type="text" class="form-control right-txt" id="txt_InvoiceNumber" value="@(Model.InvoiceEditDetails.InvoiceNumberVendor is not null ? Model.InvoiceEditDetails.InvoiceNumberVendor : string.Empty)">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">
+                                    Total Amt.
+                                </label>
+                                <input type="number" class="form-control right-txt" id="txt_TotalInvoiceAmount" value="@(Model.InvoiceEditDetails.InvoiceAmount is not null ? Model.InvoiceEditDetails.InvoiceAmount : 0)">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="frm_fld_wrp nsaqbo">
+                                <label for="" class="form-label">
+                                    <span>Project Account</span><span id="bnkbalance">
+
+                                </span>
+                            </label>
+
+                            <select name="" id="Ddl_ProjectAccount" class="form-select">
+                                <option value="0">Cash on hand - Project account</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="frm_fld_wrp">
+                            <label for="exchngrate" class="form-label">Fx Rate</label>
+                            <input type="number" class="form-control right-txt" id="exchngrate" data-edited="N" value="@(Model.InvoiceEditDetails.Exrate is not null ? Model.InvoiceEditDetails.Exrate : "")">
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="frm_fld_wrp inv_memo">
+                            <label for="txt_InvoiceMemo" class="form-label">Invoice Memo</label>
+                            <textarea name="" id="txt_InvoiceMemo" class="form-control">@(Model.InvoiceEditDetails.Memo is not null ? Model.InvoiceEditDetails.Memo : string.Empty)</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <h2 class="section_header">PO SELECTOR</h2>
+            <div id="poselectortblbind"></div>
+
+        </div>
+
+        <div class="col-lg-7">
+            <h2 class="section_header">ITEM SELECTOR</h2>
+            <div id="polineitemtblbind"></div>
+
+        </div>
+
+        <div class="col-lg-7 offset-lg-5">
+            <div class="row_shifter">
+                <div class="frm_fld_wrp">
+                    <label for="percentage" class="form-label">Apply %</label>
+                    <input type="text" class="form-control right-txt" id="percentage" data-maxval="100" value="100">
+                </div>
+                <div class="shift_btns">
+                    <button type="button" id="singleSelect" class="global-popover" title="Select Selected"><i class="fa-solid fa-angle-down"></i></button>
+                    <button type="button" id="selectall" class="global-popover" title="Select All"><i class="fa-solid fa-angles-down"></i></button>
+                    <button type="button" id="unselectSelected" class="global-popover" title="Unselect Selected"><i class="fa-solid fa-angle-up"></i></button>
+                    <button type="button" id="unselectAll" class="global-popover" title="Unselect All"><i class="fa-solid fa-angles-up"></i></button>
+                    <div class="line_adjustment_btn d-none" id="adjustbtn">
+                        <i class="fa fa-plus-circle global-popover" aria-hidden="true" title="Increase selected value by 1 cent" id="increaseval"></i>
+                        <i class="fa fa-minus-circle ms-1" aria-hidden="true" title="Decrease selected value by 1 cent" id="decreaseval"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <h2 class="section_header">INVOICE ITEMS</h2>
+            <div id="invoiceitemtblbind"></div>
+
+
+            <div class="total_inputs">
+                <div class="total_inputs_row">
+                    <div class="total_inputs_col">
+                        <label for="txt_SubtotalInvoice" class="form-label">Subtotal Invoice</label>
+                    </div>
+                    <div class="total_inputs_col">
+                        <input type="text" class="form-control" id="txt_SubtotalInvoice" value="@(Model.InvoiceEditDetails.InvoiceSubTotal is not null ? Model.InvoiceEditDetails.InvoiceSubTotal : 0.00)" disabled>
+                    </div>
+                </div>
+                <div class="total_inputs_row">
+                    <div class="total_inputs_col">
+                        <label for="txt_TotalTax1" class="form-label" id="tt1">Total @(Model.InvoiceEditDetails.Taxn1 is null && string.IsNullOrWhiteSpace(Model.InvoiceEditDetails.Taxn1) ? "Tax 1" : Model.InvoiceEditDetails.Taxn1)</label>
+                    </div>
+                    <div class="total_inputs_col">
+                        <input type="text" class="form-control floatonly" id="txt_TotalTax1" value="@(Model.InvoiceEditDetails.Tax1 is not null ? Model.InvoiceEditDetails.Tax1 : 0.00)">
+                    </div>
+                </div>
+                <div class="total_inputs_row">
+                    <div class="total_inputs_col">
+                        <label for="txt_TotalTax2" class="form-label" id="tt2">Total @(Model.InvoiceEditDetails.Taxn2 is null && string.IsNullOrWhiteSpace(Model.InvoiceEditDetails.Taxn2) ? "Tax 2" : Model.InvoiceEditDetails.Taxn2)</label>
+                    </div>
+                    <div class="total_inputs_col">
+                        <input type="text" class="form-control floatonly" id="txt_TotalTax2" value="@(Model.InvoiceEditDetails.Tax2 is not null ? Model.InvoiceEditDetails.Tax2 : 0.00)">
+                    </div>
+                </div>
+                <div class="total_inputs_row">
+                    <div class="total_inputs_col">
+                        <label for="txt_TotalTax3" class="form-label" id="tt3">Total @(Model.InvoiceEditDetails.Taxn3 is null && string.IsNullOrWhiteSpace(Model.InvoiceEditDetails.Taxn3) ? "Tax 3" : Model.InvoiceEditDetails.Taxn3)</label>
+                    </div>
+                    <div class="total_inputs_col">
+                        <input type="text" class="form-control floatonly" id="txt_TotalTax3" value="@(Model.InvoiceEditDetails.Tax3 is not null ? Model.InvoiceEditDetails.Tax3 : 0.00)">
+                    </div>
+                </div>
+                <div class="total_inputs_row">
+                    <div class="total_inputs_col">
+                        <label for="txt_TotalInvoice" class="form-label">Total Invoice</label>
+                    </div>
+                    <div class="total_inputs_col">
+                        <input type="text" class="form-control" id="txt_TotalInvoice" value="@(Model.InvoiceEditDetails.TotalInvoice is not null ? Model.InvoiceEditDetails.TotalInvoice : 0.00)" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+<!-- Enter invoice section-->
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li id="btn_Save">
+            <a href="javascript:void(0);" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Update">
+                <i class="fa fa-save"></i>
+            </a>
+        </li>
+        <li id="btn_void">
+            <a href="javascript:void(0);" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Void">
+                <i class="fa fa-ban"></i>
+            </a>
+        </li>
+        <li id="btn_delete">
+            <a href="javascript:void(0);" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Delete">
+                <i class="fa fa-trash-o"></i>
+            </a>
+        </li>
+        <li id="btn_Cancel">
+            <a href="javascript:void(0);" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Cancel">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->
+<!-- Modal -->
+<div class="modal fade terms_popup" id="terms_popup" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Add New Terms</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="frm_fld_wrp">
+                    <label for="txtInvoiceTerms" class="form-label">Invoice Terms</label>
+                    <input type="text" class="form-control" id="txtInvoiceTerms">
+                </div>
+                <label for="selectafterchecking" class="sel_aft_add">
+                    Select After Adding <input type="checkbox" checked id="selectafterchecking">
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" id="addnewterms">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="previnvoice" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Invoices</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="previnvlistbind"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="invexceedtotal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">INVOICE EDIT</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="invexceedtotal_text"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-dismiss="modal" id="btn_save2">CONTINUE AND SAVE THE INVOICE</button>
+            </div>
+        </div>
+    </div>
+</div>

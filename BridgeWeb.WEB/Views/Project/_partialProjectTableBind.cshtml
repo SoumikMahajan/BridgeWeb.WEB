@@ -1,0 +1,73 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    int index = 0;
+}
+
+<table id="project_list" class="table table-striped table-hover project_list" style="width:100%">
+    <thead>
+        <tr>
+            <th style="width:4%;">Action</th>
+            <th style="width:5%;">Project</th>
+            <th style="width:14%;">Name</th>
+            <th style="width:14%;">Legal Name</th>
+            <th style="width:11%;">Project Manager</th>
+            <th style="width:12%;">Hotel City</th>
+            <th style="width:10%;">Country</th>
+            @*  <th>Contact</th> *@
+            <th style="min-width:7.5%;">Mobile</th>
+            <th style="width:7.5%;">Email</th>
+            <th style="width:5%;">Status</th>
+            <th class="d-none">Bcount</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model.ProjectListDto)
+        {
+            <tr>
+
+
+                <td class="edit-project">
+                    <i class="fa-regular fa-pen-to-square editProject" title="Edit Project" id="project_index" data-id="@item.ProjectID" style="cursor:pointer"></i>
+                    @if (item.Bcount == 0)
+                    {
+                        <i title="Delete Project" class="fa fa-trash-o fa-fw deleteProject" data-id="@item.ProjectID" style="cursor:pointer"></i>
+                    }
+                </td>
+
+
+
+                <td>@item.ProjectNumber</td>
+                <td style="text-align: left !important">@item.ProjectName</td>
+                <td>@item.LegalName</td>
+                <td>@item.ProjectManager</td>
+                <td>@item.HotelCity</td>
+
+
+                <td>@item.HotelCountry</td>
+
+
+                <td>@item.OwnerMobile</td>
+                <td class="contact"><a class="teal_color" href="mailto:@item.AccountingEmail">@item.AccountingEmail</a></td>
+                @if (item.IsClosed == true)
+                {
+                    <td class="mob">CLOSED</td>
+                }
+                else
+                {
+                    <td class="mob">OPEN</td>
+                }
+
+
+                <td class="d-none">@item.Bcount</td>
+
+
+            </tr>
+            index++;
+        }
+
+        
+    </tbody>
+</table>

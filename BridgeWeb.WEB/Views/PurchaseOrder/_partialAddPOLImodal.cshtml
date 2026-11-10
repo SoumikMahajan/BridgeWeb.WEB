@@ -1,0 +1,177 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var projectId = Model.ProjectID;
+}
+<input type="hidden" id="Hdn_ProjectID" value="@projectId" />
+<div class="container-fluid">
+    <form action="#">
+        @Html.AntiForgeryToken()
+        <div class="add_itmes_to_po">
+            <div class="row gy-3 custom_gutter5-x">
+
+                <div class="col-12">
+                    <h2 class="section_header">Add Items To PO(USD)</h2>
+                    <h3 class="teal_subheading">@Html.Raw(ViewData["POIDTOSHOW"])</h3>
+                    <div class="row custom_gutter5-x">
+                        <div class="col-lg-5">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Select Section</label>
+                                <select class="form-select" id="Ddl_SecPOLI">
+
+                                    @if (Model.SectionListInAddPOLI.Count() > 0)
+                                    {
+                                        foreach (var item in Model.SectionListInAddPOLI)
+                                        {
+                                            <!option value="@item.SectionID" @(item.Selected)>@item.SectionNumber-@item.SectionName</!option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <!option value="0">--select project section--</!option>
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Select Line Items</label>
+
+                                <select id="Ddl_LineItems" multiple="multiple" class="multislct vendorlist" data-width="100%">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 hidefields">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Model</label>
+                                <input type="text" class="form-control" disabled id="txt_LineItemModel">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 hidefields">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Qty.</label>
+                                <input type="text" class="form-control" id="txt_LineItemQty">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 hidefields">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">UOM</label>
+                                <select class="form-select" id="Ddl_LineItemUnt">
+                                    <!option value="0">--Select UOM--</!option>
+
+                                    @if (Model.AllOUMDetailsListInBudgetDetails.Count() > 0)
+                                    {
+                                        foreach (var uom in Model.AllOUMDetailsListInBudgetDetails)
+                                        {
+                                            <!option value="@uom.UOM_ID" @* @(uom.UOM_ID ==56?"selected":string.Empty) *@>@uom.UOM</!option>
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                    }
+
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 hidefields">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Cost</label>
+                                <input type="text" class="form-control" id="txt_LineItemCosts">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 ">
+                            <label class="mb-2"><input type="checkbox" class="mt-1" id="chk_ActvTg"> Active tag </label>
+                            <textarea class="form-control d-none" style="min-height: 90px;font-weight: bold;" id="txt_LineItemAutoTagg" readonly></textarea>
+                        </div>
+
+                        <div class="col-lg-6 right-txt ">
+                            @if (Model.TaxDataFromPO is not null)
+                            {
+                                <label id="lbl_GSTHSTTx" class="@(Model.TaxDataFromPO.GSTHST == "0" ? "d-none" : "")"><input type="checkbox" id="chk_GSTHSTTx" @(Model.TaxDataFromPO.GSTHST != "0" ? "checked" : string.Empty)><span></span> @Model.TaxDataFromPO.GSTHST</label>
+                                <label id="lbl_PSTTx" class="@(Model.TaxDataFromPO.PST == "0" ? "d-none" : "")" style="align-items:end"><input type="checkbox" id="chk_PSTTx" @(Model.TaxDataFromPO.PST != "0" ? "checked" : string.Empty)><span></span> @Model.TaxDataFromPO.PST</label>
+                                <label id="lbl_StateTx" class="@(Model.TaxDataFromPO.StateTax == "0" ? "d-none" : "")" style="align-items:end"><input type="checkbox" id="chk_StateTx" @(Model.TaxDataFromPO.StateTax != "0" ? "checked" : string.Empty)><span></span>@Model.TaxDataFromPO.StateTax</label>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+
+                @* <div class="col-xl-6"> *@
+                @*     <h2 class="section_header">Item Details Description</h2> *@
+                @*     <textarea class="ckeditor" name="" id="txt_LineItemDtldDesc"></textarea> *@
+                @* </div> *@
+
+                <div class="col-12">
+                    <button type="button" class="gray_checkbtn" id="btn_addlitolist" disabled>Add Items</button>
+                </div>
+
+                <div class="col-lg-8">
+                    <ul class="" id="lilist">
+                    </ul>
+                </div>
+                <div class="col-12">
+
+                    <!-- Collapse Toggle Button -->
+                    <button type="button"
+                            class="gray_checkbtn my-2 addFabOnAddLineitemsModel btn-disabled" disabled>
+                        <i class="fa-solid fa-square-plus me-2 icon-fab-toggle"></i>
+                        Fabrication Approvals
+                    </button>
+
+                    <!-- Bootstrap Collapse -->
+                    <div class="accordion po_exp_note_body" id="fabAccordion">
+                        <div class="accordion-item border-0">
+                            <div id="collapseFabOnAddLineitemsModel"
+                                 class="accordion-collapse collapse"
+                                 data-bs-parent="#fabAccordion">
+
+                                <div class="accordion-body">
+                                    <div class="row custom_gutter5-x">
+
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label class="form-label">Select Fabrication Approval Type</label>
+                                                <select class="form-select" id="ddlItemApprovalTypeOnAddLineitemsModel">
+                                                    <option value="0" selected>--Select--</option>
+                                                    @foreach (var item in Model.dropDownListDTOs)
+                                                    {
+                                                        <option value="@item.Id">@item.Name</option>
+                                                    }
+                                                </select>
+                                            </div>
+
+                                            <div class="frm_fld_wrp">
+                                                <label class="form-label">Description</label>
+                                                <input type="text" class="form-control" id="descforfabitemOnAddLineitemsModel">
+                                            </div>
+
+                                            <button class="gray_checkbtn mt-3"
+                                                    id="btn_AddItemApprovalInGridOnAddLineitemsModel">
+                                                Select Fabrication Approval
+                                            </button>
+                                        </div>
+
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp mt-3"
+                                                 id="fabDescriptionOnAddLineitemsModel"
+                                                 style="display:none;">
+                                                <div class="comment_list mt-3"></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>

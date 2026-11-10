@@ -1,0 +1,152 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Expedite
+@model List<PurchaseOrderDto_Expedite>
+
+@{
+    var IsPoEditAccessPermission = @ViewBag.IsEditable;
+}
+
+<div class="accordion-body">
+    @{
+        int index = 0;
+        var count = 0;
+    }
+    @foreach (var po in Model)
+    {
+        count = po.PoLineItems?.Count() ?? 0;
+        <div class="accordion accordion_lev_third" id="third_level">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#acc_@po.PoNumber" aria-expanded="false" aria-controls="acc_@po.PoNumber">
+                        <table class="table table-striped table-hover">
+                            @if (index == 0)
+                            {
+                                <thead>
+                                    <tr>
+                                        <th style="width:8%;" class="leftposition">PO#</th>
+                                        <th style="width:12%;" class="leftposition">Buyer</th>
+                                        <th style="width:5%;" class="leftposition">Currency</th>
+                                        <th style="width:7%;" class="rightposition">Conv. Rate</th>
+                                        <th style="width:7%;" class="leftposition">Arrival Date</th>
+                                        <th style="width:7%;" class="leftposition">Ship Method</th>
+                                        <th style="width:11%;" class="leftposition">Freight</th>
+                                        <th style="width:11%;" class="leftposition">Ship To</th>
+                                        <th style="width:7%;" class="leftposition">Committed</th>
+                                        <th style="width:12%;" class="leftposition">Vendor(CO)</th>
+                                        <th style="width:7%;" class="leftposition">Remarks</th>
+                                        <th style="width:8%;padding-right:15px;" class="rightposition">
+                                            @count
+                                        </th>
+                                    </tr>
+                                </thead>
+                            }
+                            <tbody>
+                                <tr>
+                                    <td style="width:8%;">
+                                        @if (IsPoEditAccessPermission == "0")
+                                        {
+                                            <a href="javascript:void(0)" data-poid="@po.PoNumber" class="gotoPOReport">
+                                                @po.TotalPOID
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" data-href="/PurchaseOrder/POEdit?POId=@po.PoNumber" class="gotoPOEdit">@po.TotalPOID</a>
+                                        }                                       
+                                        @if (po.PONOTESTATUS == "YES")
+                                        {
+                                            <i class="fa fa-asterisk ponotehist" title="This PO has notes" data-poid="@po.PoNumber"></i>
+                                        }
+                                    </td>
+                                    <td style="width:12%;">@po.Buyer</td>
+                                    <td style="width:5%;">@po.Currency</td>
+                                    <td style="width:7%;">@po.ConversionRate</td>
+                                    <td style="width:7%;">@po.ArrivalDate</td>
+                                    <td style="width:7%;">@po.ShipMethod</td>
+                                    <td style="width:11%;">@po.Freight</td>
+                                    <td style="width:11%;">@po.ShipTo</td>
+                                    <td style="width:7%;">@po.IsCommited</td>
+                                    <td style="width:12%;">@po.VendorCO</td>
+                                    <td style="width:7%;">@po.Remarks</td>
+                                    <td style="width:8%;padding-right:15px;">@po.NumOfUserToAprv_PO</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </button>
+                </h2>
+                <div id="acc_@po.PoNumber" class="accordion-collapse collapse" data-bs-parent="#third_level">
+                    <div class="accordion-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>PO LineItem ID</th>
+                                        <th>Spec Num</th>
+                                        <th>Item Description</th>
+                                        <th>Fabrication Approvals</th>
+                                        <th>Item Status</th>
+                                        <th>Quantity</th>
+                                        <th>Invoice</th>
+                                        <th>Expected Arrival Date</th>
+                                        <th>Received Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var liteItems in po.PoLineItems)
+                                    {
+                                        var favHtml = string.Empty;
+                                        if (liteItems.FebricationTypes == null || liteItems.FebricationTypes.Count == 0)
+                                        {
+                                            favHtml = "<span style='color:gray;'></span>";
+                                        }
+                                        else
+                                        {
+                                            foreach (var fav in liteItems.FebricationTypes)
+                                            {
+                                                favHtml += $"<span title='{fav.colorType}' style='color:{fav.color};'>{fav.FavText}</span> <br/>";
+                                            }
+                                        }
+                                        var lineItemId = liteItems.POLineItemID.Split('#')[0];
+                                        var lineItemNumber = liteItems.POLineItemID.Split('#')[1];
+                                        var Numofexpnotes = "";
+                                        if (liteItems.cnt > 0)
+                                        {
+                                            Numofexpnotes = $"<i class='fa fa-asterisk mrg10L' aria-hidden='true' style='cursor: pointer;' title='This item has {liteItems.cnt} notes'></i>";
+                                        }
+
+                                        <tr>
+                                            <td>
+                                                <a href="javascript:void(0);" class="expNotebtn" data-lineitemnumber="@lineItemNumber" data-lineitemid="@lineItemId" data-qty="@Math.Round(liteItems.Quantity.Value, 0)"
+                                                   data-rqty="@Math.Round(liteItems.ReceivedQuantity.Value, 0)" data-ponumber="@po.PoNumber" data-bs-target="#po_exp_note" data-poid="@liteItems.POID" data-bs-toggle="modal" style="cursor: pointer; color: black;">
+                                                    <i class="fa-regular fa-pen-to-square edit_vendor_po_item "></i>
+                                                </a>
+                                                @Html.Raw(Numofexpnotes)
+                                            </td>
+                                            <td>@lineItemNumber</td>
+                                            <td>@liteItems.SpecNum</td>
+                                            <td>@liteItems.ItemDescription</td>
+                                            <td>
+                                                <p style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#fav_approv"
+                                                   class="btn_approval" id="OpenFabricationHistory" data-lineitemid="@lineItemId"
+                                                   data-lineitemnumber="@lineItemNumber" data-ponumber="@po.PoNumber">
+                                                    @Html.Raw(favHtml)
+                                                </p>
+                                            </td>
+                                            <td>@liteItems.ItemStatus</td>
+                                            <td>@liteItems.Quantity</td>
+                                            <td>@liteItems.Invoice</td>
+                                            <td>@liteItems.Arrivedon</td>
+                                            <td>@liteItems.ReceivedQuantity</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        index++;
+    }
+</div>

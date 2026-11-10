@@ -1,0 +1,115 @@
+﻿@using BridgeWeb.Domain.Model.Dto
+@using System.Globalization
+
+<style>
+    .cursor_Pointer{
+        cursor:pointer;
+        font-size:1.3em;
+    }
+</style>
+
+
+@if (Model.invoiceDetailsList != null)
+{
+    int index = 0;
+    <table class="table table-striped table-hover invoice_data_table" id="invoice_data_table">
+        <thead>
+            <tr>
+                <th>History</th>
+                <th>PO Number</th>
+                <th>Vendor</th>
+                <th>Inv Number</th>
+                <th>Fully Inv Date</th>
+                <th>Total</th>
+                <th>Can send</th>
+                <th>Sent</th>
+                <th>Paid</th>
+                <th>Ref#</th>                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.invoiceDetailsList)
+            {
+                string scientificNotation = item.TotalInvoice;
+                decimal decimalValue = Convert.ToDecimal(double.Parse(scientificNotation, NumberStyles.Float, CultureInfo.InvariantCulture));
+                string formattedNumber = decimalValue.ToString("N2", CultureInfo.InvariantCulture);
+                <tr>
+                    <td>
+                        <a href="#" class="eye invoicehistory" data-flid="@item.FldID" id="invoicehistory_@index" data-bs-toggle="modal" data-bs-target="#invoiceHistory">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                    </td>
+                    <td>@item.generatedponumber</td>
+                    <td>@item.LegalName.</td>
+                    <td>@item.InvoiceNumberVendor</td>
+                    <td>@item.FullyInvoicedDate</td>
+                    <td>@formattedNumber</td>
+                    @if (item.Cansend == 1)
+                    {
+                        <td class="status_chk">
+                            <p class="d-none">1</p>
+                            <i class="fa-solid fa-check cansendevent cursor_Pointer" id="cansendevent_@index" data-flid="@item.FldID" data-status="@item.Cansend"></i>
+                        </td>
+                        @if (item.IsSent == 1)
+                        {
+                            <td class="status_chk">
+                                <p class="d-none">1</p>
+                                <i class="fa-solid fa-check issentevent cursor_Pointer" id="issentevent_@index" data-flid="@item.FldID" data-status="@item.IsSent"></i>
+                            </td>
+                        }
+                        else
+                        {
+                            <td class="status_chk">
+                                <p class="d-none">0</p>
+                                <i class="fa-solid fa-xmark issentevent cursor_Pointer" id="issentevent_@index" data-flid="@item.FldID" data-status="@item.IsSent"></i>
+                            </td>
+                        }
+                    }
+                    else
+                    {
+                        <td class="status_chk">
+                            <p class="d-none">0</p>
+                            <i class="fa-solid fa-xmark cansendevent cursor_Pointer" id="cansendevent_@index" data-flid="@item.FldID" data-status="@item.Cansend"></i>
+                        </td>
+
+                        <td class="status_chk">
+                            <p class="d-none">-1</p>
+                            <i class="fa-solid fa-xmark issentevent cursor_Pointer" id="issentevent_@index" data-flid="@item.FldID" data-status="@item.IsSent" style="cursor:not-allowed;color:#d2c8c8;"></i>
+                        </td>
+                    }
+                    
+                    @if (item.IsPaid == 1)
+                    {
+                        <td class="status_chk">
+                            <p class="d-none">1</p>
+                            <i class="fa-solid fa-check ispaidevent cursor_Pointer" id="ispaidevent_@index" data-flid="@item.FldID" data-status="@item.IsPaid"></i>
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="status_chk">
+                            <p class="d-none">0</p>
+                            <i class="fa-solid fa-xmark ispaidevent cursor_Pointer" id="ispaidevent_@index" data-flid="@item.FldID" data-status="@item.IsPaid"></i>
+                        </td>
+                    }
+
+                    @if (item.InvRef == "")
+                    {
+                        <td class="status_chk">
+                            <i class="fa-solid fa-plus cursor_Pointer openRef" data-ref="@item.InvRef" data-flid="@item.FldID"></i>
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="status_chk">
+                            @item.InvRef
+                            <i style="color:green;cursor:pointer;" class="fa fa-pencil-square-o mrg5L openRef" data-ref="@item.InvRef" data-flid="@item.FldID"></i>
+                        </td>
+                    }
+
+                </tr>
+                index++;
+            }
+        </tbody>        
+    </table>
+}

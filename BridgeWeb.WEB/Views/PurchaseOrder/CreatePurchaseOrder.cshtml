@@ -1,0 +1,305 @@
+﻿@model MultipleModel
+
+@{
+    ViewData["Title"] = "Create Purchase Order";
+    var IsCopyPO = ViewData["IsCopyPO"] as string;
+    //var currency = IsCopyPO=="1"? TempData["Currency"].ToString():"0";
+}
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("POList", "PurchaseOrder")">PURCHASE ORDERS</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>CREATE PURCHASE ORDER</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+
+<input type="hidden" id="iscopypo" value="@IsCopyPO" />
+<input type="hidden" id="vendorCo" value="@Model.PurchaseOrderCopy.VendorCO" />
+<input type="hidden" id="buyerhidden" value="@Model.PurchaseOrderCopy.Buyer_ID" />
+
+<!-- Purchase Order section -->
+<section class="master_wrap purchase_order">
+    <form id="purchaseOredrForm">
+        @Html.AntiForgeryToken()
+        <div class="container-fluid">
+            <h2 class="section_header">CREATE PURCHASE ORDER</h2>
+            <div class="row custom_gutter5-x row_grp">
+                <div class="col-lg-3">
+                    <div class="multi_slc_wrp">
+                        <label for="" class="form-label">Project<span class="req">*</span></label>
+                        <select id="project_DD_Id" name="Project" class="multislct" data-width="100%">
+                        <option value="0" data-currid="0" data-name=@(string.Empty)"data-legalname =@string.Empty>--Select Project--</option>
+                            @if (IsCopyPO == "0")
+                            {
+                                @if (Model.dropDownListDTOs != null)
+                                {
+                                    @foreach (var item in Model.dropDownListDTOs)
+                                    {
+                                     <!option value="@item.Id" data-id="@item.Id" data-name="@item.Name" data-legalname="@item.Name">@item.Name</!option>
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                @if (Model.ProjectSelectList != null)
+                                {
+                                    @foreach (var item in Model.ProjectSelectList)
+                                    {
+                                        <!option value="@item.ProjectId" data-id="@item.ProjectId" @(Model.PurchaseOrderCopy.Project_ID == item.ProjectId ? "selected" : "")data-id="@item.ProjectId" data-name="@item.ProjectFullName" data-legalname="@item.legalName">@item.ProjectName</!option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="frm_fld_wrp nsaqbo">
+                        <div id="vendorLabelWithLinq">
+                            <label for="" class="form-label">
+                                Vendor <span class="req me-auto">*</span>
+                                <a href="@Url.Content("/Vendors/ContactList")" class="edtvndr" target="_blank"><i class="fa-regular fa-pen-to-square"></i></a>
+                            </label>
+                        </div>
+                        <div class="ui-widget">
+                            <select id="vendor_DD_Id" name="Vendor" class="multislct" data-width="100%">
+                                @if (IsCopyPO == "0")
+                                {
+
+                                    @if (Model.VendorDDList != null)
+                                    {
+                                        foreach (var v in Model.VendorDDList)
+                                        {
+                                            <option value="@v.VendorId" data-currcode="@v.CurrencyCode" data-currid="@v.CurrCode">@v.VendorName</option>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    @if (Model.VendorDDList != null)
+                                    {
+                                        foreach (var v in Model.VendorDDList)
+                                        {
+                                            <!option value="@v.VendorId" data-currcode="@v.CurrencyCode" data-currid="@v.CurrCode" @(Model.PurchaseOrderCopy.Vendor_ID == v.VendorId ? "selected" : "")>
+                                                @v.VendorName
+                                            </!option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Buyer<span class="req">*</span></label>
+                        <select class="form-select" id="buyer" name="Buyer">
+                            <option value="0">--Select Buyer--</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Currency</label>
+                        <input type="text" id="currency" name="CurrencyCode" class="form-control" value="@(IsCopyPO == "0"?string.Empty:Model.PurchaseOrderCopy.CurrencyCode)"disabled>
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Conv. Rate</label>
+                        <input type="number" id="cnvRate" name="CnvRate" value="@(IsCopyPO == "0"?"1.00":Math.Round(Model.PurchaseOrderCopy.ConversionRate,3))" class="form-control right-txt">
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">
+                            Payment Schedule
+                            @* <span class="req">*</span> *@
+                        </label>
+                        <select class="form-select" name="PaymentSchedule" id="paymentSchedule">
+                            <option value="0">--Select Terms--</option>
+                            @if (IsCopyPO == "0")
+                            {
+                                @if (Model.ActiveTermsDDList != null)
+                                {
+                                    foreach (var at in Model.ActiveTermsDDList)
+                                    {
+                                        <!option value="@at.TermId">@at.Terms</!option>
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                @if (Model.ActiveTermsDDList != null)
+                                {
+                                    foreach (var at in Model.ActiveTermsDDList)
+                                    {
+                                        <!option value="@at.TermId" @(Model.PurchaseOrderCopy.Terms ==at.TermId ?"selected":"")>@at.Terms</!option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row custom_gutter5-x row_grp">
+                <div class="col-lg-2">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Ship Via</label>
+                        <select class="form-select" name="ShipVia" id="shipVia">
+                            <option value="0">--Select Shipping Method--</option>
+                            @if (IsCopyPO == "0")
+                            {
+
+                                @if (Model.ShipmentDDList != null)
+                                {
+                                    foreach (var s in Model.ShipmentDDList)
+                                    {
+                                        <!option value="@s.ShipId">@s.ShipMode</!option>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                @if (Model.ShipmentDDList != null)
+                                {
+                                    foreach (var s in Model.ShipmentDDList)
+                                    {
+                                        <!option value="@s.ShipId" @(Model.PurchaseOrderCopy.ShipMethod == s.ShipId ? "selected" : "")>@s.ShipMode</!option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Shipping Instructions</label>
+                        <input type="text" name="ShipingInstruction" id="shipingInstruction" class="form-control" value="@(IsCopyPO == "0"?"Prepaid and Charge":Model.PurchaseOrderCopy.Freight)">
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">FOB</label>
+                        <input type="text" name="FOB" id="fob" class="form-control" value="@(IsCopyPO == "0"?string.Empty:Model.PurchaseOrderCopy.FOB)">
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Delivery Date</label>
+                        <input type="text" name="DeliveryDate" id="deliveryDate" class="form-control datepicker" placeholder="Select Delivery Date" value="@(IsCopyPO =="0"?string.Empty:Model.PurchaseOrderCopy.ArrivalDate.Value.ToString("yyyy-MM-dd"))">
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Check Back Date</label>
+                        <input type="text" name="CheckBackDate" id="checkDate" class="form-control datepicker" placeholder="Select CheckBack Date" value="@(IsCopyPO =="0"?string.Empty:Model.PurchaseOrderCopy.CheckBackDate.Value.ToString("yyyy-MM-dd"))">
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">Reference</label>
+                        <input type="text" name="Referance" id="reference" class="form-control" value="@(IsCopyPO =="0"?string.Empty:Model.PurchaseOrderCopy.Remarks)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row custom_gutter5-x">
+                <div class="col-lg-4">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">
+                            Ship To
+                        </label>
+                        <input type="text" id="ShipTo" name="ShipTo" id="shipTo" class="form-control" value="@(IsCopyPO =="0"?string.Empty:Model.PurchaseOrderCopy.ShipTo)">
+                    </div>
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">
+                            Vendor(C/O):
+                        </label>
+                        <div class="ui-widget">
+                            <select id="vendorCO_DD_Id" name="VendorCO" class="multislct" data-width="100%">
+                                <option value="0" data-currcode="" data-currid="0">---select---</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">
+                            Invoice To
+                        </label>
+                        <input type="text" id="InvoiceTo" name="InvoiceTo" class="form-control" value="@(IsCopyPO =="0"?string.Empty:Model.PurchaseOrderCopy.InvoiceTo)">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="ship_tarea">
+                        <div class="frm_fld_wrp nsaqbo">
+                            <label for="" class="form-label">
+                                Address
+                                <a href="#" id="loadAddressListModal">
+                                    Change Address
+                                </a>
+                            </label>
+                            @if (IsCopyPO == "0")
+                            {
+
+                                <textarea class="form-control" name="Address" placeholder="To Be Determined" id="addressTXT"></textarea>
+                            }
+                            else
+                            {
+                                <textarea class="form-control" name="Address" placeholder="To Be Determined" id="addressTXT">@Model.PurchaseOrderCopy.Address1</textarea>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="notes_tarea">
+                        <div class="frm_fld_wrp">
+                            <label for="" class="form-label">Notes</label>
+
+                            <textarea class="form-control" name="Notes" id="notes">@(IsCopyPO == "0" ? string.Empty : Model.PurchaseOrderCopy.Notes)</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+<!-- Purchase Order section-->
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="#" class="global-popover" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="Create PO" id="createPoBtn">
+                <i class="fa-regular fa-floppy-disk"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->
+<!-- Modal -->
+<div class="modal fade edit_addrs" id="edit_addrs" tabindex="-1" aria-labelledby="edit_addrs" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Choose Address</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="loadAddList">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

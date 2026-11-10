@@ -1,0 +1,697 @@
+﻿@model MultipleModel
+@{
+    ViewData["Title"] = "Expedite Dashboard";
+    //var CanAdd = Model.expediteHiddenFields.HdnAddPermission;
+    var CanEdit = Model.expediteHiddenFields.HdnEditPermission;
+    var AddPermission = Model.expediteHiddenFields.HdnAddPermission == "1" ? "" : "disabled";
+    var EditPermission = CanEdit == "1" ? "" : "disabled";
+}
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>EXPEDITE</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<!-- Hidden field -->
+
+<input type="hidden" id="Hdn_IsUserType" value="@Model.expediteHiddenFields.HdnUserType" />
+<input type="hidden" id="Hdn_IsVendor" value="@Model.expediteHiddenFields.HdnIsVendor" />
+
+<input type="hidden" id="Hdn_EditPermission" value="@Model.expediteHiddenFields.HdnEditPermission" />
+<input type="hidden" id="Hdn_AddPermission" value="@Model.expediteHiddenFields.HdnAddPermission" />
+<input type="hidden" id="Hdn_EditHistoryPermission" value="@Model.expediteHiddenFields.HdnIsAllowEditHistory" />
+
+<input type="hidden" id="Hdn_Filter" />
+<input type="hidden" id="Hdn_POLineItemID" />
+<input type="hidden" id="Hdn_PurchaseOrderID" />
+<input type="hidden" id="Hdn_IsManager" />
+<input type="hidden" id="Hdn_LineObj" />
+<input type="hidden" id="Hdn_PORequiredDate" />
+<input type="hidden" id="Hdn_ItemStatus" />
+
+<input type="hidden" id="HiddenClause" />
+
+<!-- Hidden field -->
+<!-- Expedite section -->
+<section class="master_wrap expledite">
+    <div class="container-fluid">
+        <div class="row custom_gutter5-x">
+            <div class="col-lg-4">
+                <h2 class="section_header">EXPEDITE</h2>
+                <div class="multi_slc_wrp">
+                    <label for="" class="form-label">Select Project</label>
+                    <select multiple="multiple" class="multislct" data-width="100%" id="projectDD">
+                        @if (Model.dropDownListDTOs != null)
+                        {
+                            @foreach (var item in Model.dropDownListDTOs)
+                            {
+                                <option data-id="@item.Id" value="@item.Id">@item.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <h2 class="section_header">ADVANCED SEARCH</h2>
+                <div class="row custom_gutter5-x">
+                    <div class="col-lg-3">
+                        <div class="frm_fld_wrp">
+                            <label for="" class="form-label">Select Criteria</label>
+                            <select class="TakeVal displayon form-select" id="FirstSearchDdlLeft"></select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <select class="TakeVal displayon form-select" id="FirstSearchDdlRight"></select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="frm_fld_wrp">
+                            <label for="" class="form-label">Select Parameter</label>
+                            <select class="form-select" id="SecondSearchDdlLeft"></select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <select class="form-select" id="SecondSearchDdlRight"></select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="frm_fld_wrp">
+                            <label for="" class="form-label">Select Value</label>
+
+                            <input class="ThirdSearchDdlLefttxt displayoff form-control" id="ThirdSearchDdlLefttxt" />
+
+                            <input class="displayoff form-control" id="ThirdSearchDdlLeftDtPckr" autocomplete="off" />
+
+                            <select class="ThirdSearchDdlLeftddl form-select" id="ThirdSearchDdlLeft"></select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <input class="ThirdSearchDdlRighttxt displayoff form-control" id="ThirdSearchDdlRighttxt" />
+
+                            <input class="displayoff form-control" id="ThirdSearchDdlRightDtPckr" autocomplete="off" />
+
+                            <select class="ThirdSearchDdlRightddl form-select" id="ThirdSearchDdlRight"></select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="and_or">
+                            <label for="chk_and"><input type="radio" id="chk_and" value="and" name="and_or_redio" checked> and</label>
+                            <label for="chk_or"><input type="radio" id="chk_or" value="or" name="and_or_redio"> or</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="exp_acc_wrp">
+            <div class="row">
+                <div class="col-12">
+
+                    <div class="accordion byvendor_acc" id="first_level">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accVendor"
+                                        aria-expanded="false" aria-controls="accVendor">
+                                    <div class="byvendor">
+                                        By Vendor <span id="vendorCount">(@(ViewBag.VendorCount is null ? 0 : ViewBag.VendorCount))</span>
+                                    </div>
+                                    <i class="fa-solid fa-arrows-rotate ref_table" id="vendorRefresh" title="Refresh"></i>
+                                </button>
+                            </h2>
+                            <div id="accVendor" class="accordion-collapse collapse" data-bs-parent="#first_level"></div>
+                        </div>
+                    </div>
+
+                    <div class="accordion bybudget_acc" id="budget_level" style="@(Model.expediteHiddenFields.HdnIsVendor == "Y" ? "display:none" : "")">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accBudget"
+                                        aria-expanded="true" aria-controls="accBudget">
+                                    <div class="byvendor">
+                                        By Budget Section <span id="sectionCount">(0)</span>
+                                    </div>
+                                    <i class="fa-solid fa-arrows-rotate ref_table" id="budgetRefresh" title="Refresh"></i>
+                                </button>
+                            </h2>
+                            <div id="accBudget" class="accordion-collapse collapse" data-bs-parent="#budget_level"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Expedite section-->
+<!-- float icon -->
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="javascript:void(0);" title="Filter" id="applyFilter"><i class="fa-solid fa-filter"></i></a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" title="Reset" id="clearFilterBtn"><i class="fa-solid fa-xmark"></i></a>
+        </li>
+    </ul>
+</div>
+<!-- float icon -->
+<!-- Modal -->
+<div class="modal fade" id="note_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">PO NOTES</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="expdite_note">
+                    <div class="frm_fld_wrp">
+                        <label for="" class="form-label">PO Expedite Notes</label>
+                        <textarea class="form-control" id="POItemExpediteNotemodal"></textarea>
+                    </div>
+                    <button type="button" class="save_po_btn solid_teal_btn" id="btn_AddOnlyExpNote">
+                        <i class="fa-regular fa-square-plus"></i> Save PO
+                        Note
+                    </button>
+                    <div class="col-lg-12">
+                        <input type="hidden" id="hdn_poid" />
+                        <div id="poexpnoteinExpHistory">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="po_itm_exp_note" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">PO ITEM EXPEDITE NOTES</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body po_itm_exp_wrp">
+                <div class="row gy-2">
+                    <input type="hidden" id="hdn_POID" />
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Expected Arrival Date</label>
+                            <input type="text" class="form-control datepicker" @AddPermission>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Item Status</label>
+                            <select name="" id="" class="form-select" @AddPermission>
+                                @foreach (var item in Model.status_Expedites)
+                                {
+                                    <option data-id="@item.FldID">@item.POLineItemStatus</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <label><input type="checkbox"> Update All Items</label>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="status_div">
+                            <p>Received : 1 Out of 5901</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Received Qty</label>
+                            <input type="text" class="form-control" placeholder="ENTER RECEIVED QUANTITY" @AddPermission>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Received Date</label>
+                            <input type="text" class="form-control datepicker" @AddPermission>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Reference #</label>
+                            <input type="text" class="form-control" placeholder="ENTER REFERENCE # HERE" @AddPermission>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="frm_fld_wrp">
+                            <label class="form-label">Item Expedite Notes</label>
+                            <input type="text" class="form-control" placeholder="Enter Item Expedite Note" @AddPermission>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <button type="button" class="save_po_btn solid_teal_btn" @AddPermission>
+                            <i class="fa-regular fa-square-plus"
+                               aria-hidden="true"></i> Save PO
+                            Note
+                        </button>
+                    </div>
+                    <div class="col-12">
+                        <div class="table-responsive">
+                            <table class="poitmexptable table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Status</th>
+                                        <th>Name</th>
+                                        <th>Expedite Note</th>
+                                        <th>R-Qty</th>
+                                        <th>R-Date</th>
+                                        <th>Reference</th>
+                                        <th>Expected Arrival Date</th>
+                                        <th>Added on</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <i class="fa fa-pencil-square-o" data-bs-target="#edit_exp_modal" data-bs-toggle="modal"></i>
+                                            <i class="fa fa-trash-o ml-5"></i>
+                                        </td>
+                                        <td>Received</td>
+                                        <td>STEVEN JONCAS</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>2022.01.20</td>
+                                        <td>2024.05.06</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <i class="fa fa-pencil-square-o" data-bs-target="#edit_exp_modal" data-bs-toggle="modal"></i>
+                                            <i class="fa fa-trash-o ml-5"></i>
+                                        </td>
+                                        <td>At Risk</td>
+                                        <td>STEVEN JONCAS</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>2022.01.20</td>
+                                        <td>2024.05.06</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <i class="fa fa-pencil-square-o" data-bs-target="#edit_exp_modal" data-bs-toggle="modal"></i>
+                                            <i class="fa fa-trash-o ml-5"></i>
+                                        </td>
+                                        <td>On Track</td>
+                                        <td>STEVEN JONCAS</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>2022.01.20</td>
+                                        <td>2024.05.06</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <i class="fa fa-pencil-square-o" data-bs-target="#edit_exp_modal" data-bs-toggle="modal"></i>
+                                            <i class="fa fa-trash-o ml-5"></i>
+                                        </td>
+                                        <td>At Risk</td>
+                                        <td>STEVEN JONCAS</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>2022.01.20</td>
+                                        <td>2024.05.06</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="po_exp_note">
+                            <h2 class="section_header">PO EXPEDITE NOTES</h2>
+                            <div class="row">
+                                <div class="col-lg-6 lft_col">
+                                    <div class="frm_fld_wrp">
+                                        <label class="form-label">PO Expedite Notes</label>
+                                        <textarea class="form-control" @AddPermission></textarea>
+                                    </div>
+                                    <button type="button" class="save_po_btn solid_teal_btn" @AddPermission>
+                                        <i class="fa-regular fa-square-plus"
+                                           aria-hidden="true"></i>
+                                        Save PO
+                                        Note
+                                    </button>
+                                </div>
+
+                                <div class="col-lg-6 right_col">
+                                    <div class="row custom_gutter5-x">
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label class="form-label">Received Date</label>
+                                                <input type="text" class="form-control datepicker" placeholder="ENTER RECEIVED DATE" @AddPermission>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6">
+                                            <div class="frm_fld_wrp">
+                                                <label class="form-label">Reference #</label>
+                                                <input type="text" class="form-control" placeholder="ENTER REFERENCE # HERE" @AddPermission>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="save_po_btn solid_teal_btn" @AddPermission>
+                                        <i class="fa-regular fa-square-plus"
+                                           aria-hidden="true"></i>
+                                        PO Received in Full
+                                    </button>
+                                </div>
+                            </div>
+
+                            <table class="po_exp_table table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Created By</th>
+                                        <th>Notes</th>
+                                        <th>Added on</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="4">
+                                            <p class="no-data">No Expedite History Found</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="edit_exp_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit Expedite Notes</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="#" class="edit_exp">
+                    <div class="frm_fld_wrp">
+                        <select id="user_type" class="form-select">
+                            <option selected="">On Track</option>
+                            <option>At Risk</option>
+                            <option>In Transit</option>
+                            <option>Received</option>
+                        </select>
+                    </div>
+                    <div class="frm_fld_wrp">
+                        <label for="user_type" class="form-label">Note</label>
+                        <input type="text" class="form-control">
+                    </div>
+                    <div class="frm_fld_wrp">
+                        <label for="user_type" class="form-label">Qty</label>
+                        <input type="text" class="form-control">
+                    </div>
+                    <div class="frm_fld_wrp">
+                        <label for="user_type" class="form-label">R-Date</label>
+                        <input type="text" class="form-control datepicker">
+                    </div>
+                    <div class="frm_fld_wrp">
+                        <label for="user_type" class="form-label">Ref</label>
+                        <input type="text" class="form-control">
+                    </div>
+
+                    <button type="button" class="gray_checkbtn">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- fabrication approval modal -->
+<div class="modal fade" id="fav_approv" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="headerforapprovals"></h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+
+
+                <div class="table-responsive" id="partialFabItems">
+                    @* Partial View _partialFabricationItemList.cshtml *@
+                </div>
+
+                <button class="gray_checkbtn collapsed my-2 addFab" data-bs-toggle="collapse" data-bs-target="#collapseFab"
+                        aria-expanded="true" aria-controls="collapseOne" data-id="">
+                    <i class="fa-solid fa-square-plus me-2"></i>Fabrication
+                    Approvals
+                </button>
+
+                <div id="collapseFab" class="accordion-collapse po_exp_note_body collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="row custom_gutter5-x">
+                            <div class="col-lg-6">
+                                <div class="frm_fld_wrp">
+                                    <label class="form-label">Select Fabrication Approval Type</label>
+                                    <select class="form-select" name="" id="ddlItemApprovalType">
+                                        @* <option value="0" selected>--Select--</option> *@
+                                        @* @foreach (var item in Model.dropDownListDTOs)
+                                        {
+                                        <option value="@item.Id">@item.Name</option>
+                                        } *@
+                                    </select>
+                                </div>
+
+                                <div class="frm_fld_wrp">
+                                    <label class="form-label">Description</label>
+                                    <input type="text" class="form-control" name="" id="descforitem" autocomplete="off">
+                                </div>
+
+                                <button class="gray_checkbtn mt-3" id="btn_AddItemApprovalInGrid">Select Fabrication Approval</button>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="frm_fld_wrp mt-3" id="fabDescription" style="display:none;">
+                                    <div class="comment_list mt-3">
+                                        @* <span>
+                                        <p>Account Number----Account Description</p>
+                                        <a href="#" title="Remove this account" class="remove_bar">
+                                        <i class="fa-solid fa-xmark"
+                                        aria-hidden="true"></i>
+                                        </a>
+                                        </span>      *@
+                                    </div>
+                                </div>
+                                <button class="gray_checkbtn mt-3" style="display:none;" id="approvalfinaladd">Add Approval(s)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" id="hdn_isManager" value="" />
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- fab description update modal -->
+<div class="modal fade" id="desc_update" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="headerforeditdesc"></h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="frm_fld_wrp">
+                    <input type="text" class="form-control" name="" id="editabledesc" value="">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" id="editabledescid" value="">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- favricaton approval history -->
+<div class="modal fade" id="fev_approv_history" tabindex="-1" arial-hidded="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Fabrication Approval History</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body" id="partialFabHistory">
+                @* _partialFabricationHistory.cshtml *@
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="po_exp_note" tabindex="-1" arial-hidded="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="headerExpModal">PO Item Expedite Notes (1002-002-0001)</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" value="" id="hdn_poli" />
+                <div id="expeditedetials"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- popupforeditexpedite modal -->
+<div class="modal fade" id="popupforeditexpedite" tabindex="-1" arial-hidded="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit Expedite Notes</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="frm_fld_wrp">
+                            <input type="hidden" id="hdn_fldid" value="" />
+                            <select name="" id="newddl_ItemStatus" class="form-select">
+                            </select>
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Note</label>
+                            <input type="text" name="" id="edtnote" class="form-control">
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Qty</label>
+                            <input type="text" name="" id="edtrqty" class="form-control">
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">R-Date</label>
+                            <input type="text" name="" id="edtrdate" class="form-control datepicker">
+                        </div>
+                        <div class="frm_fld_wrp">
+                            <label for="form-label">Ref</label>
+                            <input type="text" name="" id="edtref" class="form-control datepicker">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-toggle="modal" data-bs-target="#po_exp_note" id="btn_updatepoliexphist">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- popupforeditponote modal -->
+<div class="modal fade" id="popupforeditponote" tabindex="-1" arial-hidded="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit PO Expedite Notes</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="col-lg-12">
+                    <div class="frm_fld_wrp">
+                        <input type="hidden" id="hidden_fldId2" />
+                        <label for="form-label">Note</label>
+                        <input type="text" name="" id="editponote" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-toggle="modal" data-bs-target="#po_exp_note" id="edtbtnsave">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="popupforeditponote1" tabindex="-1" arial-hidded="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit PO Expedite Notes</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="col-lg-12">
+                    <div class="frm_fld_wrp">
+                        <input type="hidden" id="hidden_fldId2" />
+                        <input type="hidden" id="hdn_poidonly" />
+                        <label for="form-label">Note</label>
+                        <input type="text" name="" id="editponoteonly" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-toggle="modal" data-bs-target="#po_exp_note1" id="edtbtnsave1">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+﻿<!-- scrips -->
+@* <script src="@Url.Content("~/js/jquery.min.js")"></script> *@
+@* <script src="@Url.Content("~/js/jquery-2.2.4.min.js")" asp-append-version="true"></script> *@
+
+<script src="@Url.Content("~/js/jquery.min.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/js/bootstrap.bundle.min.js")"></script>
+<script src="@Url.Content("~/js/Common.min.js")" asp-append-version="true"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+<!-- jquery ui js -->
+<script src="@Url.Content("~/js/jquery-ui.js")"></script>
+
+<!-- new added -->
+<!-- datatable bootstrap -->
+@* <script src="@Url.Content("~/js/datatables.min.js")"></script>
+<script src="@Url.Content("~/js/dataTables.bootstrap5.min.js")"></script>
+<script src="@Url.Content("~/js/dataTables.responsive.min.js")"></script>
+<script src="@Url.Content("~/js/responsive.bootstrap5.min.js")"></script>
+<script src="@Url.Content("~/js/dataTables.fixedHeader.js")"></script> *@
+<script src="@Url.Content("~/js/custom.datatables.min.js")"></script>
+@* <script src="https://cdn.datatables.net/v/bs5/dt-2.3.2/af-2.7.0/cr-2.1.1/fh-4.0.3/r-3.0.5/sc-2.4.3/sb-1.8.3/sp-2.3.4/sl-3.0.1/datatables.min.js"  crossorigin="anonymous"></script> *@
+
+
+<!-- multiselect -->
+<script src="@Url.Content("~/js/multiple-select.min.js")"></script>
+
+<script src="@Url.Content("~/js/fontawsome6.min.js")"></script>
+<script src="@Url.Content("~/js/tinymce/js/tinymce/tinymce.min.js")"></script>
+@* <script src="@Url.Content("~/js/custom.js")" asp-append-version="true"></script> *@
+<script src="@Url.Content("~/js/iziToast.min.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/scripts/Global.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/scripts/SystemAdmin.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/scripts/Vendor.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/scripts/Project.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/scripts/Budget.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/scripts/purchaseorder.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/scripts/Invoice.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/scripts/InvoiceManualPayments.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/scripts/InvoiceForManualPaymentSearch.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/scripts/Report.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/scripts/Expedite.js")" asp-append-version="true"></script>
+<script src="@Url.Content("~/scripts/DashBoard.js")" asp-append-version="true"></script>
+
+@if (TempData["GlobalErrorMessage"] != null)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.notify.success('Success', @Html.Raw(Json.Serialize(TempData["GlobalErrorMessage"])));
+        });
+    </script>
+}
+
+@* <script type="text/javascript">
+    $(document).on("click", "#OpnFeedBack", function () {
+       $("#feedback_mdl").modal("show");
+    });
+</script> *@

@@ -1,0 +1,75 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Budget
+
+ @model BridgeWeb.Domain.Model.MultipleModel
+ @{
+    var LineItemsList = Model.GetLineItemsList ?? Enumerable.Empty<GetLineItemsDTO>();
+
+    string FormatNumber(decimal number)
+    {
+
+        // Round the number to 2 decimal places first
+        number = Math.Round(number, 2);
+
+        // Format number with commas and ensure it's a string
+        return number.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+ }
+<table class="changedline_table table table-striped table-hover" id="changedline_table">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Item#</th>
+            <th>Description</th>
+            <th>Model</th>
+            <th>Spec</th>
+            <th>Vendor</th>
+            <th>Quantity</th>
+            <th>UOM</th>
+            <th>Cost</th>
+            <th>Total</th>         
+            <th>Space</th>
+            <th>Tax</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var items in LineItemsList)
+        {
+            <tr>
+                <td>
+                    @items.header
+                </td>
+                <td>
+                    @items.totalID
+                </td>
+                <td>@items.itemDescriptions</td>
+                <td>@items.model</td>
+                <td>@items.specNum</td>
+                <td>@items.vendor</td>
+                <td>@FormatNumber(Convert.ToDecimal(items.quantity))</td>
+                <td>@items.uom</td>
+                <td>@FormatNumber(Convert.ToDecimal(items.cost))</td>
+                <td>@FormatNumber(Convert.ToDecimal(items.quantity * items.cost)) </td>
+                @if (items.spacing == 0)
+                {
+                    <td>No</td>
+                }
+                else
+                {
+                    <td>Yes</td>
+                }
+                @if (items.taxable == false)
+                {
+                    <td>N</td>
+                }
+                else
+                {
+                    <td>Y</td>
+                }
+
+            </tr>
+        }
+
+
+    </tbody>
+</table>

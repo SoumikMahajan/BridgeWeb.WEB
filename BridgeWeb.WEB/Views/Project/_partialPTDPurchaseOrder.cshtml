@@ -1,0 +1,40 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+
+  string FormatNumber(decimal? number)
+  {
+
+    // Round the number to 2 decimal places first
+    number = Math.Round(number.Value, 2);
+
+    // Format number with commas and ensure it's a string
+    return number.Value.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+  }
+
+}
+<table class="display table table-striped table-hover pdt-breakdown" style="width:100%;" id="pdt-breakdown">
+    <thead>
+        <tr>
+            <th class="leftposition">Vendor Common Name</th>
+            <th class="right-txt rightposition">Amount</th>
+        </tr>
+    </thead>
+
+    <tbody>
+       
+            @foreach (var items in Model.PTDPurchaseList)
+            {
+                <tr>
+                    <td class="leftposition "><a href="javascript:void(0);" data-vendorid="@items.ParentVendorID" class="redirecttopolist">@items.ParentVendorName</a></td>
+                    <td class="right-txt rightposition">
+                    <span class="totalval">@(FormatNumber(items.Total))</span>
+                        <span class="totalcurrency">@(items.CurrencyCode is not null ? $"({items.CurrencyCode})" : "")</span>
+                    </td>
+                </tr>
+            }
+        
+     
+        
+      
+    </tbody>
+</table>

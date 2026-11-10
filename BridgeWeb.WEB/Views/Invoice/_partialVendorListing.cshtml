@@ -1,0 +1,8 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+<select multiple="multiple" class="multislct" data-width="100%" id="txt_Project3">
+
+    @foreach (var items in Model.ParentVendorListInvoice)
+    {
+        <option value="@items.VendorId">@items.Name</option>
+    }
+</select>

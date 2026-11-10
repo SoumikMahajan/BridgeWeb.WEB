@@ -1,0 +1,71 @@
+﻿
+@model BridgeWeb.Domain.Model.MultipleModel
+
+
+
+
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="frm_fld_wrp">
+            <input type="hidden" id="id_bankAcc" value="@Model.BankAccountDto.Fld_ID" />
+            <label for="AccName">Account Name</label>
+            <input type="text" class="form-control" id="AccName" placeholder="Bank Account 1" value="@Model.BankAccountDto.Bank_Account">
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="frm_fld_wrp">
+            <label for="AccDesc">Account Desc.</label>
+            <input type="text" class="form-control" id="AccDesc" placeholder="Descr" value="@Model.BankAccountDto.Desc">
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="frm_fld_wrp">
+            <label for="currecyDD">Curr</label>
+            <select class="form-select" id="currecyDD">
+                <option value="0">--Select Currency--</option>
+               @*  @if (Model.currencyList[0].CurrencyID == Model.BankAccountDto.CurrCode)
+                {
+                    <option value="@Model.currencyList[0].CurrencyID " selected>@Model.currencyList[0].Currency</option>
+                   @*  <option value="@Model.currencyList[0].CurrencyID">@Model.currencyList[0].Currency</option> *@
+                  @*   foreach(var item in Model.currencyList)
+                    {
+                        
+                    }
+                } *@ 
+                @foreach(var items in Model.currencyList)
+                {
+                    if(items.CurrencyID == Model.BankAccountDto.CurrCode)
+                    {
+                        <option value="@items.CurrencyID" selected>@items.Currency</option>
+                       @*  <option value="@items.CurrencyID">@items.Currency</option> *@
+                    }
+                    <option value="@items.CurrencyID">@items.Currency</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="frm_fld_wrp">
+            <label for="activeBankAcc">Active</label>
+            <select class="form-select" id="activeBankAcc">
+                @if(Model.BankAccountDto.IsActive ==true){
+                    <option value="true" selected>Yes</option>
+                    <option value="false" >No</option>
+                }
+                else
+                {
+
+                    <option value="true" >Yes</option>
+                    <option value="false" selected>No</option>
+                }
+
+                
+            </select>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,31 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+<h2 class="section_header">VENDORS</h2>
+<table id="vendorList_table" class="table table-striped table-hover vendor_table" style="width:100%">
+    <thead>
+        <tr>
+            <th>Common Name</th>
+            <th>Legal Name</th>
+            <th>Classification</th>
+            <th>City</th>
+            <th>Country</th>
+        </tr>
+    </thead>
+    <tbody >
+        @if(Model.vendorListDtos!=null)
+        {
+            foreach(var item in Model.vendorListDtos)
+            {
+                <tr>
+                    <td><a style="color:#7792a8;" asp-controller="Vendors" asp-action="EditVendor" asp-route-vendorid="@item.parentvendor_id" target="_blank">@item.parentvendorname</a> </td>
+                    <td><a style="color:#7792a8;" asp-controller="Vendors" asp-action="EditVendor" asp-route-vendorid="@item.parentvendor_id" target="_blank">@item.legalname</a></td>
+                    <td><a style="color:#7792a8;" asp-controller="Vendors" asp-action="EditVendor" asp-route-vendorid="@item.parentvendor_id" target="_blank">@item.Classifications</a></td>
+                    <td><a style="color:#7792a8;" asp-controller="Vendors" asp-action="EditVendor" asp-route-vendorid="@item.parentvendor_id" target="_blank">@item.city</a></td>
+                    <td><a style="color:#7792a8;" asp-controller="Vendors" asp-action="EditVendor" asp-route-vendorid="@item.parentvendor_id" target="_blank">@item.Country</a></td>
+                </tr>
+            }
+        }
+        
+        
+
+    </tbody>
+</table>

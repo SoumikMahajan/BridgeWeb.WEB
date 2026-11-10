@@ -1,0 +1,50 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    string FormatNumber(decimal? number)
+    {
+        if (!number.HasValue)
+        {
+            return "0.00";  // Return default value for null
+        }
+
+        // Round the number to 2 decimal places
+        decimal roundedNumber = Math.Round(number.Value, 2);
+
+        // Format with commas and two decimal places
+        return roundedNumber.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+    var clicked = Convert.ToBoolean(ViewBag.Clicked ?? false);
+}
+
+<table id="item_selector" class="table table-striped table-hover item_selector_table" style="width:100%">
+    <thead>
+        <tr>
+            <th>Item#</th>
+            <th>PO#</th>
+            <th>Description</th>
+            <th>PO Cost</th>
+            <th>Inv. Total</th>
+            <th class="d-none">POCR</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.POItemListinCN.Count() > 0)
+        {
+            foreach (var item in Model.POItemListinCN)
+            {
+                <tr data-poliid="@item.POLineItemID" data-pid="@item.POID" class="@(clicked == false && item.Selected == "selected" ? "selected noselect" : string.Empty)">
+                    <td><a href="javascript:void(0)" class="getotherinvoice underline" data-itemid="@item.POLineItemID" data-bs-target="#previnvoice">@item.POLineItemNumber</a></td>
+                    <td>@item.PONUMBER</td>
+                    <td>@item.ItemDescription</td>
+                    <td>@(FormatNumber(Convert.ToDecimal(item.POCost)))</td>
+                    <td>@(FormatNumber(item.LineItemTotal))</td>
+                    <td>@item.POCR</td>
+                </tr>
+            }
+
+        }
+
+
+    </tbody>
+</table>

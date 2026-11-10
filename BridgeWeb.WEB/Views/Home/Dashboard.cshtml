@@ -1,0 +1,311 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    var userRoleId = ViewData["UserRoleId"] ?? "0";
+    var userName = ViewData["UserName"] ?? "";
+}
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>TASK LIST</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+
+<!-- breadcrumb -->
+<!-- Expledite section -->
+<section class="master_wrap home_wrp">
+    <div class="container-fluid">
+        @* <button class="solid_teal_btn" onclick="openTaskManager()"><i class="fa fa-tasks mr-5"></i>Assign Task</button> *@
+        <h2 class="section_header">
+            @userName'S TASK LIST <i class="fa fa-refresh" title="Refresh Task List" id="refreshtask"></i>
+        </h2>
+        <div id="mytasklist">
+            @* Partial page _partialDashBoardProjectsList *@
+        </div>
+    </div>
+</section>
+<!-- Expledite section-->
+
+<input type="hidden" id="hdn_usertype" value="@userRoleId" />
+
+
+<!--Budget History Modal POPup-->
+<div class="modal fade" id="approval_history_new" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Approval History</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body approval_data approval_history" style="height:450px; overflow-y:auto;">
+                <div id="partailBudgetApprovalHistory">
+                    
+                </div>
+               
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-bs-dismiss="modal" class="offwhite_btn">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+<!--PO Approval  History Modal POPup-->
+<div class="modal fade" id="po_Approval_history" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Approval History</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body  approval_history_progress">
+                <div id="partailPoApprovalHistory">
+                   
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-bs-dismiss="modal" class="offwhite_btn">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+<!--PO Over Commited  History Modal POPup-->
+<div class="modal fade" id="po_over_commited_history" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div id="PoOverCommitedModal">
+
+            </div>
+            
+        </div>
+    </div>
+</div>
+<!---->
+<!--Fab  History Modal POPup-->
+<div class="modal fade" id="Fab_Approe_History" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Fabrication Approvals History</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="height:450px; overflow-y:auto;">
+                <div id="partialDashboardFabHistory">
+
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-bs-dismiss="modal" class="offwhite_btn">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+
+<!--Send mail to vendor Modal-->
+<div class="modal fade send_mail_modal" id="send_mail_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Send Mail</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mail_top">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>To:</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control" id="vendormailto" placeholder="vendor@vendor.com" data-email="" data-contactid="">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>Subject:</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control" id="subject">
+                        </div>
+                    </div>
+                    @* <div class="row">
+                        <div class="col-lg-3">
+                            <label>Add Dynamic field :</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <select name="" id="mailDynamicField" class="form-select">
+                                <option value="1">Link to Home</option>
+                                <option value="PROJECTNAME">Project Name</option>
+                                <option value="PROJECTNUMBER">Project Number</option>
+                                <option value="PONUMBER">PO Number</option>
+                                <option value="VENDORNAME">Vendor Name</option>
+                                <option value="CONTACTNAME">Contact Name</option>
+                                <option value="USERNAME">User Name</option>
+                                <option value="USERADDRESS">User Address</option>
+                            </select>
+                        </div>
+                    </div> *@
+                </div>
+                <textarea id="editor" class="ckeditor"></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <div class="cc_mail_btn">
+                    <label>Add self to CC <input type="checkbox" id="selfCC" checked></label>
+                </div>
+                <button type="button" class="offwhite_btn" id="mailsendvendorbtn" data-poid="" data-projectid="">Send Mail</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+
+<!--Send PDF to vendor Modal-->
+<div class="modal fade send_mail_modal" id="sendmailtovendor_new" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Send Mail</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mail_top">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>To:</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control" id="vendormailto_new" placeholder="vendor@vendor.com" data-email="" data-vid="">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>Subject:</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control" id="vendormailsubject_new" value="Approved Purchase Order Reminder">
+                        </div>
+                    </div>                    
+                </div>
+                <textarea id="vendormailbody_new" class="ckeditor"></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <div class="cc_mail_btn">
+                    <label>Add self to CC <input type="checkbox" id="sendaddcc_new" checked></label>
+                </div>
+                <button type="button" class="offwhite_btn" id="mailsendvendorbtn_new" data-poid="" data-projectid="" data-vendorid="">Send Mail</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+
+<div class="flote_icon hidden_flote">
+    <ul>
+       @*  <li id="btn_sendbatchatt" class="d-none">
+            <span class="badge" style="position: relative;top: -15px;left: 18px;font-size: 15px; background: #096000;">4</span>
+            <a href="javascript:void(0);" class="global-popover " title="Download PO/Attachment" id="">
+                <i class="fa fa-download" aria-hidden="true"></i>
+            </a>
+        </li> *@
+        <li data-bs-toggle="modal" data-bs-target="#download_files" id="downloadBtn" class="d-none" style="display: list-item;">
+            <a href="#" data-bs-toggle="popover" data-bs-content="Download PO/Attachment" data-bs-trigger="hover">
+                <span class="count" id="downloadCount">1</span>
+                <i class="fa fa-download" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+    </ul>
+</div>
+<!-- Modal -->
+<div class="modal fade download_files" id="download_files" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">DOWNLOAD SELECTED FILES</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    @* <div id="detailsandfilebind"></div> *@
+                    <div class="col-lg-6">
+                        <h2 class="section_header"><input type="checkbox" checked id="checkuncheckallpdfs">PURCHASE ORDER PDF(S)</h2>
+                        <div class="po_pdf">
+                            <div class="po_pdf_list" id="poPDFDownload">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <h2 class="section_header"><input type="checkbox" checked id="checkuncheckallattachments">ATTACHMENTS</h2>
+                        <div class="down_attact">
+                            <div class="down_attact_list" id="poAttachmentDownload">
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" data-bs-dismiss="modal" id="unselectBtn">CANCEL AND REMOVE UNSELECTED</button>
+                <button type="button" class="gray_checkbtn" id="downloadFilesBtn">DOWNLOAD SELECTED FILES</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="approvalsec" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Send For Approval</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body approval_data">
+                <div id="ListOfBudgetGroupList">
+
+                </div>
+            </div>
+            @* <div class="modal-footer"> *@
+            @*     <button type="button" class="offwhite_btn" id="sendbudgetgrpBtn">Send</button> *@
+            @* </div> *@
+        </div>
+    </div>
+</div>

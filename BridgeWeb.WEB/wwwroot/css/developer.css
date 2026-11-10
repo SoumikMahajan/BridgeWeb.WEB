@@ -1,0 +1,156 @@
+.errorClass {
+    border: 1px solid #E07E7E !important;
+}
+
+
+.reset_form {
+    max-width: 300px;
+    display: block;
+    margin: 34px auto 50px;
+}
+
+    .reset_form label {
+        font-family: "Alegreya", serif;
+        color: #208093;
+        padding-bottom: 8px;
+        position: relative;
+    }
+
+    .reset_form .frm_fld label::after {
+        color: #d00;
+        content: "*";
+        margin-left: 2px;
+    }
+
+    .reset_form input {
+        border: #208093 1px solid;
+        color: #208093;
+        height: 33px;
+        padding: 8px 4px;
+        width: 100%;
+        transition: all 100ms ease;
+    }
+
+.displayNone {
+    display: none;
+}
+
+.checked {
+    cursor: pointer;
+    font-size: 0.9em !important;
+    border: 5px solid #0a4e02;
+    border-radius: 16px;
+    height: 22px;
+    width: 22px;
+    text-align: center;
+    background: #0a4e02;
+    color: white;
+    padding: 1px;
+}
+/*02-01-2025 start*/
+
+.invoice_status {
+	/*font-weight: 700;*/
+	font-weight: bolder;
+}
+/*02-01-2025 end*/
+
+/*08-01-2025 start*/
+
+.displayoff {
+    display: none;
+}
+
+.displayon {
+    display: block;
+}
+
+/*08-01-2025 end*/
+
+
+/*11-02-2025 start*/
+
+.ui-dialog {
+	overflow: hidden;
+	position: absolute;
+	top: 0;
+	left: 0;
+	padding: .2em;
+	outline: 0;
+}
+
+	.ui-dialog .ui-dialog-titlebar {
+		padding: .4em 1em;
+		position: relative;
+	}
+
+	.ui-dialog .ui-dialog-title {
+		float: left;
+		margin: .1em 0;
+		white-space: nowrap;
+		width: 90%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.ui-dialog .ui-dialog-titlebar-close {
+		position: absolute;
+		right: .3em;
+		top: 50%;
+		width: 20px;
+		margin: -10px 0 0 0;
+		padding: 1px;
+		height: 20px;
+	}
+
+	.ui-dialog .ui-dialog-content {
+		position: relative;
+		border: 0;
+		padding: .5em 1em;
+		background: none;
+		overflow: auto;
+	}
+
+	.ui-dialog .ui-dialog-buttonpane {
+		text-align: left;
+		border-width: 1px 0 0 0;
+		background-image: none;
+		margin-top: .5em;
+		padding: .3em 1em .5em .4em;
+	}
+
+		.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+			float: right;
+		}
+
+		.ui-dialog .ui-dialog-buttonpane button {
+			margin: .5em .4em .5em 0;
+			cursor: pointer;
+		}
+
+	.ui-dialog .ui-resizable-se {
+		width: 12px;
+		height: 12px;
+		right: -5px;
+		bottom: -5px;
+		background-position: 16px 16px;
+	}
+
+.ui-draggable .ui-dialog-titlebar {
+	cursor: move;
+}
+/*11-02-2025 end */
+
+/*13-02-2025 start*/
+
+.cursor_pointer{
+	cursor:pointer;
+}
+/*13-02-2025 end*/
+
+/*27-02-2025 start   DEV4  */
+
+.accordion_lev_third .accordion-body table tr:first-child td {
+	font-weight: normal;
+}
+/*27-02-2025 end*/

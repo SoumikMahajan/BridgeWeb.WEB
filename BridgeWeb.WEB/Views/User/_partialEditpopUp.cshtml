@@ -1,0 +1,259 @@
+﻿@using System.Security.Claims
+@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+  var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+}
+
+<i class="fa-regular fa-hand-point-right pointer " data-bs-toggle="modal"
+  data-bs-target="#update_contact_info" data-id="@Model.systemUserviewDto.FldID" id="hiddenval" style="display:none;"></i>
+ 
+<div class="row">
+
+  <form action="#" class="custom_gutter5-x new_client_frm row" id="updateform">
+        @Html.AntiForgeryToken()
+        <div class="col-md-6">
+      
+          <div class="frm_fld_wrp">
+            <label for="companyName">Company Name</label>
+            <input type="text" class="form-control" id="companyName" value="@Model.systemUserviewDto.CompanyName">
+          </div>
+       </div>
+      <div class="col-md-6">
+        <div class="frm_fld_wrp">
+            <label for="companyTitle">Title</label>
+            <input type="text" class="form-control" id="companyTitle" value="@Model.systemUserviewDto.CompanyTitle">
+        </div>
+      </div>
+       <div class="col-md-6">
+        <div class="frm_fld_wrp">
+            <label for="firstName">First Name</label>
+                <input type="text" class="form-control text-uppercase" id="firstName" value="@Model.systemUserviewDto.Firstname">
+         </div>
+       </div>
+      <div class="col-md-6">
+        <div class="frm_fld_wrp">
+            <label for="lastName">Last Name</label>
+                <input type="text" class="form-control text-uppercase" id="lastName" value="@Model.systemUserviewDto.Lastname">
+        </div>
+     </div>
+      <div class="col-md-12">
+        <div class="frm_fld_wrp">
+            <label for="email">Email address</label>
+            <input type="email" class="form-control" id="email" value="@Model.systemUserviewDto.Email">
+        </div>
+     </div>
+     <div class="col-md-12">
+        <div class="frm_fld_wrp">
+            <label for="address">Address</label>
+            <textarea class="form-control" id="address" cols="30" rows="10">@Model.systemUserviewDto.Address</textarea>
+        </div>
+     </div>
+    
+     
+        <div class="col-md-6">
+            <div class="frm_fld_wrp">
+                <label for="country">Country</label>
+                <select name="country" id="country" class="form-select">
+                    <option value="0">--select Country--</option>
+                     @if (Model.systemUserviewDto.Country != null && Model.systemUserviewDto.Country != "" && Model.systemUserviewDto.Country.Trim().Length != 0 && Model.systemUserviewDto.Country!="undefined")
+                     {
+                            foreach (var item in Model.CountryList)
+                            {
+                                if (long.Parse(Model.systemUserviewDto.Country) == item.CountryID)
+                                {
+                                    <option value="@item.CountryID" selected>@item.Country</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.CountryID">@item.Country</option>
+                                }
+                            }
+                     }
+                        else
+                        {
+                            foreach(var item in Model.CountryList)
+                            {
+                                <option value="@item.CountryID">@item.Country</option>
+                            }
+                        }
+
+
+                </select>
+            </div>
+        </div>
+
+
+     
+    
+     
+
+
+        <div class="col-md-6">
+            <div class="frm_fld_wrp">
+                <label for="state">State/Prov</label>
+                <select name="state" id="state" class="form-select">
+                    <option value="0">--select State/Prov--</option>
+                    @if (Model.systemUserviewDto.State != 0)
+                    {   if(Model.StateList.Count()>0)
+                        {
+                            @foreach (var item in Model.StateList)
+                            {
+                                if (Model.systemUserviewDto.State == item.StateID)
+                                {
+                                    <option value="@item.StateID" selected>@item.State</option>
+                                }
+
+                                else
+                                {
+                                    <option value="@item.StateID">@item.State</option>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            
+                        }
+
+                    }
+                   
+
+                </select>
+            </div>
+        </div>
+     
+
+     <div class="col-md-6">
+        <div class="frm_fld_wrp">
+            <label for="city">City</label>
+            <input type="text" class="form-control" id="city" value="@Model.systemUserviewDto.City">
+        </div>
+     </div>
+     <div class="col-md-6">
+        <div class="frm_fld_wrp">
+            <label for="postalCode">Postal/Zip Code</label>
+            <input type="text" class="form-control" id="postalCode" value="@Model.systemUserviewDto.PostalCode">
+        </div>
+     </div>
+      <div class="col-md-6">
+        <div class="frm_fld_wrp">
+            <label for="usertype">
+                User Type <a href="javascript:void(0);" class="edit_usertype" id="edituserType">
+                    Edit Usertype
+                </a>
+            </label>
+            <select name="usertype" id="usertype" class="form-select toggleSystemUserProp" disabled>
+                @foreach (var items in Model.SystemUserTypeList)
+                {
+                    if (Model.systemUserviewDto.Usertype == items.Fldid)
+                    {
+                            <option value="@items.Fldid" selected >@items.Usertype</option>
+                    }
+                    else
+                    {
+                            <option value="@items.Fldid" >@items.Usertype</option>
+                    }
+
+                }
+
+            </select>
+        </div>
+       </div>
+  </form>
+
+
+    <div class="col-md-12 systemPermission">
+        <form action="#" class="row modal_frm custom_gutter5-x" >
+            @Html.AntiForgeryToken()
+            <div class="col-12 check_uncheck_all">
+                <input type="button" class="gray_checkbtn" value="Uncheck All" id="unchecked"></input>
+                <input type="button" class="gray_checkbtn" value="Check All" id="checked"></input>
+            </div>
+            @foreach (var item in Model.systemPermissionLists)
+            {
+                int key = 0;
+                <div class="col-lg-3">
+                    <div class="check_wrp">
+                        <div class="check_hdng">
+                            <h3>@item.SystemPermission</h3>
+                            <input type="checkbox" class="inSysPerm headerCheckbox" value="project" >
+                        </div>
+                        <ul class="check_list">
+                            @foreach (var option in item.SystemPermissionOption)
+                            {
+                                <li>
+                                    <label for="create">@option.description</label>
+                                    @if (option.is_selected == 1)
+                                    {
+                                        <input type="checkbox" id="@item.SystemPermission@key" data-partialid="@option.fldid" class="project_check soptions" checked>
+
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id="@item.SystemPermission@key" data-partialid="@option.fldid" class="project_check soptions">
+                                    }
+
+                                </li>
+                                  key++;
+                            }
+
+                        </ul>
+                    </div>
+                </div>
+            }
+
+        </form>
+    </div>
+    <div id="systemaccessOption" style="display:none;">
+    </div>
+     
+         <div class="frm_fld_wrp">
+                <label for="active" id="isbuyerLabel">Is this user a buyer?</label>
+               <select name="" id="active" class="form-select">
+
+                    @if (Model.systemUserviewDto.Isbuyer ==true)
+                    {
+                         <option value="1" selected>YES</option>
+                         <option value="0">NO</option>
+                    }
+
+
+
+                    else if (Model.systemUserviewDto.Isbuyer == false)
+                    {
+                          <option value="1" >YES</option>
+                          <option value="0" selected>NO</option>
+                    }
+                    
+                        
+                       
+                </select>
+    </div>
+    <div class="frm_fld_wrp">
+        <label for="active" id="buyerlabel">Default Buyer</label>
+        <input type="hidden" value="@Model.systemUserviewDto.DefaultbuyerID" id="defaultBuyerhidden" />
+          <select name="" id="defaultbuyer" class="form-select">
+
+            <option value="0">---</option>
+
+
+          </select>
+    </div>
+     
+        <input type="hidden" value="@(Model.systemUserviewDto.Isbuyer ==true ?1 :0)"  id="hiddenIsBuyer"/>
+        <input type="hidden" value="@Model.systemUserviewDto.Usertype" id="hiddenSystemUserType" />
+
+        <input type="hidden" value="@Model.systemUserviewDto.FldID" id="hiddenFldId"/>
+         <input type="hidden" class="form-control" id="originalEmail" value="@Model.systemUserviewDto.Email">
+    @* @if (role.ToUpper() == "Administrator".ToUpper())
+    { *@
+      
+        <div class="d-flex align-items-center mt-3 gap-3">
+            <label><input type="checkbox" id="send"> Send Login credential to User</label>
+            <label><input type="checkbox" id="mfaenabled" @(Model.systemUserviewDto.IsMFAEnabled ==true? "checked":"")> Enable Two-factor Authentication</label>
+        </div>
+    @* } *@
+    </div>
+</div>
+
+

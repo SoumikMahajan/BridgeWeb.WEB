@@ -1,0 +1,103 @@
+﻿@{
+    ViewData["Title"] = "Merge Vendor";
+}
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+ @model BridgeWeb.Domain.Model.MultipleModel
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("ContactList", "Vendors")">Vendors</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>SEARCH PURCHASE ORDER</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<section class="master_wrap marge_vendor">
+    <div class="container-fluid">
+        <h2 class="section_header">MERGE VENDORS</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="frm_fld_wrp">
+                    <label class="form-label">Vendor Common Name</label>
+                    <input type="hidden" value="@Model.mergeVendorContactDto.ParentVendor_ID" id="pvId"/>
+                    <input type="text" class="form-control" value="@Model.mergeVendorContactDto.ParentVendorName" disabled>
+                </div>
+                <button class="solid_teal_btn" @* data-bs-toggle="modal" data-bs-target="#all_vendor_list" *@ id="vendorListbtn">
+                    <i class="fa-solid fa-list mr-5"></i> Select Vendor(s) to merge
+                </button>
+            </div>
+            <div class="col-md-4">
+                <div class="frm_fld_wrp">
+                    <label class="form-label">Vendor Common Name</label>
+                    <input type="text" class="form-control" value="@Model.mergeVendorContactDto.LegalName" id="vendorlegalname" disabled>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="frm_fld_wrp">
+                    <label class="form-label">Vendor Currency</label>
+                    @if (Model.mergeVendorContactDto.CurrCode == Model.currencyDto.CurrencyID)
+                    {
+                        <input type="hidden" value="@Model.mergeVendorContactDto.CurrCode" id="CurrencyID" />
+                        <input type="text" class="form-control" value="@Model.currencyDto.Currency" disabled>
+                    }
+                    else
+                    {
+                        <input type="text" class="form-control" value="" disabled>
+                    }
+
+                </div>
+            </div>
+        </div>
+        <h2 class="section_header">SELECTED VENDOR(S)</h2>
+        <div class="row">
+            <div class="col-12">
+                <div class="marge_select">
+                    <p class="d-flex" id="notselected">None selected</p>
+                    <input type="hidden" id="hValId" />
+                    <div id="listToMerge" >
+                       
+                       @*  <ul class="comment_list">
+                            
+                            <li>None Selected</li>
+                           
+                        </ul> *@
+                       
+                    </div>
+                    
+                    <button class="solid_teal_btn" id="mergeBtn"><i class="fa fa-clipboard mr-5"></i> Merge Selected</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<div class="modal fade all_vendor_list" id="all_vendor_list" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fa fa-table table_icn"></i>
+                <h1 class="modal-title">Vendor List (US Dollar)</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="partialVendorListMerge">
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal" id="AddVndMerge">Add selected</button>
+            </div>
+        </div>
+    </div>
+</div>

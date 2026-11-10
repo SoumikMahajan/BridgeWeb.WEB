@@ -1,0 +1,30 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Budget
+ @model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var SectionList = Model.SectionList ?? new List<SectionListDTO>();
+    var minSectionOrder = SectionList.Min(s => s.SectionOrder);
+}
+<select multiple="multiple" class="multislct" data-width="100%" id="ProjectSectionDropDown">
+    @if (SectionList.Any())
+    {
+        foreach (var items in SectionList)
+        {
+            if (minSectionOrder == items.SectionOrder)
+            {
+                <option value="@items.BudgetSectionID" selected>@items.Sectionnumber @items.Name</option>
+            }
+            else
+            {
+                <option value="@items.BudgetSectionID">@items.Sectionnumber @items.Name</option>
+            }
+
+        }
+    }
+    else
+    {
+        
+    }
+
+    
+   
+</select>

@@ -1,0 +1,92 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var status = string.Empty;
+}
+<table id="payment_listredirected" class="table table-striped table-hover payment_list_table" style="width:100%">
+    <thead>
+        <tr>
+            <th class="leftposition tdMultipleQBO" style="width:1%;"></th>
+            <th class="leftposition">Date</th>
+            <th class="leftposition">Vendor</th>
+            <th class="leftposition">Account</th>
+            <th class="leftposition">Type</th>
+            <th class="leftposition">Number</th>
+            <th class="leftposition">Currency</th>
+            <th class="rightposition">Fx Rate</th>
+            <th class="rightposition">Amount</th>
+            <th class="rightposition">Status</th>
+            <th class="rightposition">QBO #</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.PaymentDetailsAdvanced.Count() > 0)
+        {
+            foreach (var items in Model.PaymentDetailsAdvanced)
+            {
+                {
+                    status = string.Empty;
+                    if (items.TotalPayment != 0 && string.IsNullOrEmpty(items.QBO) || string.IsNullOrWhiteSpace(items.QBO))
+                    {
+                        status = "Pending";
+                    }
+                    else if (items.TotalPayment != 0 && !string.IsNullOrEmpty(items.QBO) || !string.IsNullOrWhiteSpace(items.QBO))
+                    {
+                        if (items.QBOStatus?.ToLower() == "PrintComplete".ToLower())
+                        {
+                            status = "Printed";
+                        }
+                        else
+                        {
+                            status = "Posted";
+                        }
+                    }
+                    else if (items.TotalPayment == 0)
+                    {
+                        status = "Void";
+                    }
+
+                }
+
+                <tr data-status="@status" data-id="@items.FldID">
+                    <td><input type="checkbox" class="chkMultipleQBO"></td>
+                    <td>@items.PaymentDate</td>
+                    <td>@items.ParentVendorName</td>
+                    <td>@items.Bank_Account</td>
+                    <td>@items.PaymentTypeName</td>
+                    <td>@items.PaymentNumber</td>
+                    <td>@items.CurrencyCode</td>
+                    <td>@items.ConvRate</td>
+                    <td>@items.TotalPayment</td>
+                    <td>@status</td>
+                    <td style="cursor:pointer;">
+                        @if (status == "Posted" || status == "Printed")
+                        {
+                            if (items.QBO == "-")
+                            {
+                                <span>Not Printed</span> <a href="#" data-bs-toggle="modal" data-bs-target="#sync_modal">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <span>@items.QBO</span> <a href="#" data-bs-toggle="modal" data-bs-target="#sync_modal">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+
+                    </td>
+                </tr>
+            }
+        }
+
+
+
+    </tbody>
+</table>

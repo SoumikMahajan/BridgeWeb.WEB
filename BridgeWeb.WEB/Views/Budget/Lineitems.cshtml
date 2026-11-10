@@ -1,0 +1,581 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Budget
+@{
+    ViewData["Title"] = "LineItems";
+}
+@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var previousProjectID = ViewBag.PreviousSelected ?? "0";
+}
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Lineitems", "Budget")">BUDGETS</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>DETAIL</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<!-- flote icon -->
+<div class="flote_icon">
+    <ul>
+        <li>
+            <a href="#" data-bs-toggle="popover" data-bs-content="Copy Budget" data-bs-trigger="hover">
+                <i class="fa-regular fa-copy" data-bs-toggle="modal" data-bs-target="#copybudget" id="btn_CopyBudget"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- flote icon -->
+<!-- Budget Detail-->
+@* <input type="hidden" value="" id="previousSelectedProject"/> *@
+<input type="hidden" id="IsBudgetApproved" value="" />
+<input type="hidden" id="IsBudgetLocked" value="" />
+<input type="hidden" id="IsSentForApproval" value="" />
+<input type="hidden" id="VersionNumberForApproval" value="" />
+<input type="hidden" id="Currentversion" value="" />
+<input type="hidden" id="IsBudgetChanged" value="" />
+<input type="checkbox" id="chk_VrsnCrt" value="" class="d-none" />
+<input type="hidden" id="cansendforapproval" value="true" />
+
+<section class="master_wrap budget_sec budget_dtl_footer_fixed">
+    <div class="container-fluid">
+        <div class="budget_detail_wrp">
+            <h2 class="section_header">Budget Detail</h2>
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="multi_slc_wrp">
+                        <label for="Project_Name_List" class="form-label">Select Project<span class="req">*</span></label>
+                        <select multiple="multiple" class="multislct" data-width="100%" id="Project_Name_List">
+                            @{
+                                var ProjectNameDropDown = Model.ProjectNameDropDown ?? new List<ProjectDropDownListDTO>();
+                                if (ProjectNameDropDown.Any())
+                                {
+                                    <!option value="0" data-id="0" selected>--Select Project--</!option>
+                                    @foreach (var item in ProjectNameDropDown)
+                                    {
+
+                                        if (item.ProjectID == Model.SelectedProjectID)
+                                        {
+                                            // <option value="@item.ProjectID" data-id="@item.ProjectID">@item.ProjectName</option>//
+                                            <option value="@item.ProjectID" data-id="@item.ProjectID" selected>
+                                                @item.ProjectName
+                                            </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.ProjectID" data-id="@item.ProjectID">
+                                                @item.ProjectName
+                                            </option>
+                                        }
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="frm_fld_wrp">
+                        <label class="form-label">
+                            Select Version <i class="fa-solid fa-pencil" id="editCV"></i> <i class="fa-solid fa-trash-can" id="deleteCV"></i>
+                        </label>
+                        <div id="currentVersion"></div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-1">
+                    <div class="history_btns">
+                        <i class="fa fa-history" data-bs-target="#approval_history" data-bs-toggle="modal" id="approvalHistory" title="View Approval History"></i>
+                        <i class="fa fa-info-circle" data-bs-target="#budget_history" data-bs-toggle="modal" id="budgetHistory" title="View Budget History"></i>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="multi_slc_wrp">
+                        <label class="form-label" id="labelProject">Select Section</label>
+                        <div id="ProjectSectionList"></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2">
+                    @* <button class="add_budget_btn collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#add_budget_tab" aria-expanded="false" aria-controls="add_budget_tab" id="addBudgetBtn">
+                        <i class="fa-solid fa-plus"></i>
+                        <i class="fa-solid fa-minus"></i>
+                        Add Budget Items
+                    </button> *@
+                    <button class="add_budget_btn" type="button" data-bs-toggle="modal"
+                            data-bs-target="#add_budget_tab" aria-expanded="false" aria-controls="add_budget_tab" id="addBudgetBtn">
+                        Add Budget Items
+                    </button>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="line_itmes">
+            <h2 class="section_header">
+                <i class="fa-solid fa-magnifying-glass-plus" id="MagnifyPlus" title="Zoom In"></i>
+                LINE ITEMS
+                <i class="fa-solid fa-magnifying-glass-minus" id="MagnifyMinus" title="Zoom Out"></i>
+            </h2>
+            <div class="adj_btn">
+                <ul class="d-none" id="btns">
+                    <li id="deleteSelection"><i class="fa fa-trash-o"></i> Delete selected Items</li>
+                    <li id="cancelSelectionBtn"><i class="fa fa-times-circle"></i> Cancel all selections</li>
+                </ul>
+                <button type="button" class="gray_checkbtn" id="AdjustRemaining">Adjust All Remaining</button>
+            </div>
+            <div id="lineItemsTable"></div>
+
+        </div>
+
+        <div class="btm_fxd_sec">
+            <div class="ess_btn">
+                <button type="button" class="gray_checkbtn" id="btnExporToExcel">Export to Excel</button>
+                <button type="button" class="gray_checkbtn" id="lckbtn">Lock Budget</button>
+                <div class="dropdown unlock_budget">
+                    <button class="gray_checkbtn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="unlockbtn">
+                        Unlock Budget
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <span id="unlockyes">Yes</span> <input type="text" placeholder="Name for new version" id="newversionname">
+                            </a>
+                        </li>
+                        <li><a class="dropdown-item isapproved" href="#" id="unlckno">No</a></li>
+                    </ul>
+                </div>
+                <button type="button" class="gray_checkbtn" id="svsndAprvl">Save and Send for approval</button>
+            </div>
+            <form action="#" id="ImportExportLineItems">
+                <div class="file_up">
+                    <input type="file" name="file" id="FileUpload">
+                    <button type="button" class="offwhite_btn" id="UpldLineItems">Upload</button>
+                </div>
+                <div class="down_format">
+                    <a href="@Url.Content("~/assets/samples/budgetitemuploadformatguide.xlsx")">Download Format Guide</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<!-- Budget Detail-->
+<!-- Modal -->
+<div class="modal fade" id="copybudget" tabindex="-1" aria-labelledby="copybudgetLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">COPY BUDGET</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="multi_slc_wrp">
+                            <label for="Ddl_SelProCopy" class="form-label">Select Project</label>
+                            <select multiple="multiple" class="multislctCopy" id="Ddl_SelProCopy" data-width="100%">
+                                <option value="0">--Select Project--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="multi_slc_wrp">
+                            <label for="Ddl_SelSecCopy" class="form-label">Project Section</label>
+
+                            <select multiple="multiple" name="" id="Ddl_SelSecCopy" class="multislctCopyforSection" data-width="100%">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" id="saveCopyBudget">Copy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="edit_line_item" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title lineItemTotalId">Edit Line Item-</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                @Html.AntiForgeryToken()
+                <div class="row">
+                        <div class="col-md-6">
+                            <div class="frm_fld_wrp">
+                                <label>Description:</label>
+                                <input type="text" class="form-control editDesc" id="">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="frm_fld_wrp">
+                                <label>Spec #:</label>
+                                <input type="text" class="form-control editSpec" id="">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="frm_fld_wrp">
+                                <label>Model:</label>
+                                <input type="text" class="form-control editModel" id="">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="frm_fld_wrp">
+                                <label>Vendor:</label>
+                                <input type="text" class="form-control editVendor" id="">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="frm_fld_wrp">
+                                <label>Category:</label>
+                                <input type="text" class="form-control editCategory" id="">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="frm_fld_wrp">
+                                <label>QTY:</label>
+                                <input type="text" class="form-control editQty" id="">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="frm_fld_wrp">
+                                <label>UOM:</label>
+                                <select class="editUOM">
+                                    <option value="0">--Select UOM--</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="frm_fld_wrp">
+                                <label>COST:</label>
+                                <input type="text" class="form-control editCost" id="">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="frm_fld_wrp">
+                                <label>Notes:</label>
+                                <input type="text" class="form-control editNotes" id="">
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-none">
+                            <div class="frm_fld_wrp">
+                                <label>Notes:</label>
+                                <input type="text" class="form-control edtitemcommitted " id="">
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-none">
+                            <div class="frm_fld_wrp">
+                                <label >Notes:</label>
+                                <input type="text" class="form-control edtitemremaining " id="">
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-none">
+                            <div class="frm_fld_wrp">
+                                <label>Notes:</label>
+                                <input type="text" class="form-control edtitemadjust " id="">
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-none">
+                            <div class="frm_fld_wrp">
+                                <label>Notes:</label>
+                                <input type="text" class="form-control lineItemID " id="">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="line_edti_checkwrp">
+                                <label for="taxb">Taxable? <input type="checkbox" name="" id="taxb"></label>
+                                <label for="freig">Freight/Duty? <input type="checkbox" name="" id="freig"></label>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" id="Move_Previous">Move To Previous</button>
+                <button type="button" class="gray_checkbtn" id="edtsvbtn">Save</button>
+                <button type="button" class="gray_checkbtn" id="Move_Next">Move To Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="savnot" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit Note</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body sav_not">
+                <div class="frm_fld_wrp">
+                    <label for="" class="form-label noteItem">Notes for item: 1188-001-0091</label>
+                    <textarea class="form-control noteDesc" cols="30" rows="10"></textarea>
+                    <input class="linteItemId" type="hidden" value="" id="hiddenLineItemId" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" id="saveNoteBtn">Save Note</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="approval_history" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Approval History</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body approval_data approval_history" style="height:450px; overflow-y:auto;">
+                <div id="approvedBudgetHistoryTable"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-bs-dismiss="modal" class="offwhite_btn">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="budget_history" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Budget History</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="BudgetHistoryDataTable"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade " id="changeLI" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Budget History</h1>
+                <button type="button" class="modal-close" data-bs-toggle="modal" data-bs-target="#budget_history">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="ChangedLI">
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" data-bs-toggle="modal" data-bs-target="#budget_history">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- alart -->
+<div class="alert alert-primary d-none" role="alert">
+    A simple primary alert—check it out!
+</div>
+
+<div class="modal fade" id="currentVersionEdit" tabindex="-1" aria-labelledby="exampleModalLabel" role="dialog">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Edit Version Name</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="frm_fld_wrp">
+                    <label for="">Version</label>
+                    <input type="text" class="form-control" id="CurrversionName">
+                    <input type="hidden" id="hiddenFldID" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal_btn offwhite_btn" data-bs-dismiss="modal" id="updateVersion">SAVE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="lineItemExcelModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Select sheet to upload</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body approval_data">
+                <div id="LineitemExcelSheetList"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" id="UpldLineItems2">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ListOfBudgetGroupModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Send For Approval</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body approval_data">
+                <div id="ListOfBudgetGroupList">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="offwhite_btn" id="sendbudgetgrpBtn">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="add_budget_tab" tabindex="-1" aria-labelledby="budgetModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">Add Budget Items</h1>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form acion="#" id="add_budget_lineitem_modal_form">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Description<span class="req">*</span></label>
+                                <input type="text" class="form-control" id="itemdescription" placeholder="Enter Description">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Spec #</label>
+                                <input type="text" class="form-control" id="specnum" placeholder="Spec #">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Model</label>
+                                <input type="text" class="form-control" id="modelno" placeholder="Enter Model">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Vendor</label>
+                                <input type="text" class="form-control" id="vendor" placeholder="Enter Vendor">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Category</label>
+                                <input type="text" class="form-control" id="itemheader" placeholder="Enter Category">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Quantity</label>
+                                <input type="number" class="form-control right-txt" id="itemquantity" value="0.00">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Cost</label>
+                                <input type="number" class="form-control right-txt" id="cost" value="0.00">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">UOM</label>
+                                <select name="" id="uomdd" class="form-select">
+                                    @{
+                                        var AllOUMDetailsListInBudgetDetails = Model.AllOUMDetailsListInBudgetDetails ?? new List<AllOUMDetailsDTO>();
+                                        if (AllOUMDetailsListInBudgetDetails.Any())
+                                        {
+                                            foreach (var items in AllOUMDetailsListInBudgetDetails)
+                                            {
+                                                if (items.UOM_ID == 56)
+                                                {
+                                                    <option value="@items.UOM_ID" selected>@items.UOM</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@items.UOM_ID">@items.UOM</option>
+                                                }
+                                            }
+
+                                        }
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="frm_fld_wrp">
+                                <label for="" class="form-label">Notes</label>
+                                <input type="text" class="form-control" id="notes" placeholder="Enter notes">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            @*<div class="budget_check_wrp">
+                                
+                            </div>*@
+                            <label for="taxable">Taxable? <input type="checkbox" name="" id="taxable" checked></label>
+                            <label for="duty">Freight/Duty? <input type="checkbox" name="" id="duty"></label>
+
+                        </div>
+
+
+                    </div>
+                </form>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="gray_checkbtn" id="btn_CreateBudget">Add Items</button>
+            </div>
+        </div>
+    </div>
+</div>

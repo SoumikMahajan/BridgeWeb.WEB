@@ -1,0 +1,33 @@
+﻿ @model string
+@{
+    var response = @Model.Split(",").Length;    
+}
+
+<div id="sheetselector">
+    <p style='font-size: 1.3em;'>
+        The file contains @response sheets.Please select a sheet for uploading.
+    </p>
+    @{
+        bool isFirst = true;
+        foreach (var item in @Model.Split(","))
+        {
+            var value = item.Trim();
+            <label>
+                <input name="sheetnm"
+                       class="sheetselect"
+                       value="@value"
+                       type="radio"
+                @(isFirst ? "checked" : "") />
+                @value
+            </label>
+
+            <br />
+
+            isFirst = false;
+        }
+    }
+    
+</div>
+
+
+   

@@ -1,0 +1,75 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var groupedPermissions = Model.ProjectUserListPermissions.GroupBy(p => p.GroupType).ToList();
+}
+<div class="row custom_gutter5-x " id="permissionList">
+    @* <div class="col-lg-6 col-xl-3">
+        <div class="check_wrp">
+            <div class="check_hdng">
+                <h3>EXPEDITING</h3>
+                <input type="checkbox" value="expedit" onclick="isChecked5(this)">
+            </div>
+            <ul class="check_list">
+                <li>
+                    <label for="Readinfo">Read Information</label>
+                    <input type="checkbox" id="Readinfo" class="exp_chk">
+                </li>
+                <li>
+                    <label for="EditInfo">Edit Information</label>
+                    <input type="checkbox" id="EditInfo" class="exp_chk">
+                </li>
+                <li>
+                    <label for="Add_Info">Add Information</label>
+                    <input type="checkbox" id="Add_Info" class="exp_chk">
+                </li>
+            </ul>
+        </div>
+    </div> *@
+    @foreach (var group in groupedPermissions)
+    {
+        if (group.Key.ToUpper() != "PROJECT" && group.Key.ToUpper() != "USER" && group.Key.ToUpper() != "VENDOR")
+        {
+            <div class="col-lg-3 gy-2">
+                <div class="check_wrp">
+                    <div class="check_hdng">
+                        <h3>@group.Key</h3>
+                        <input type="checkbox" id="@group.Key.ToLower()_header" value="@group.Key.ToLower()" class="headerCheckbox">
+                    </div>
+                    <ul class="check_list">
+                        @foreach (var permission in group)
+                        {
+                            <li>
+                                <label for="@permission.priority_name">@permission.priority_name</label>
+                                @if(permission.is_selected ==1)
+                                {
+                                    if (permission.security_id == 16 || permission.security_id == 6 || permission.security_id == 3 || permission.security_id == 2 || permission.security_id==1||permission.security_id ==17||permission.security_id==4)
+                                    {
+                                        <input type="checkbox" data-sysid="@permission.security_id"
+                                               id="@permission.priority_name"
+                                        class="@group.Key.ToLower()_check project_check systemoption" checked />
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" data-sysid="@permission.security_id"
+                                       id="@permission.priority_name"
+                                        class="@group.Key.ToLower()_check project_check systemoption" checked />
+                                    }
+                                }
+                                else
+                                {
+                                    <input type="checkbox" data-sysid="@permission.security_id"
+                                       id="@permission.priority_name"
+                                       class="@group.Key.ToLower()_check project_check systemoption" />
+                                }
+
+                               
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+    }
+    
+</div>

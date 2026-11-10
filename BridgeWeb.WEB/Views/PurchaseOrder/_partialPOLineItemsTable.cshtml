@@ -1,0 +1,170 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    var conversionRate = Convert.ToDecimal("1.00");
+    var toExtended = Convert.ToDecimal(Model.POLineItemList.Sum(u => u.Extended));
+    var calcualtedTax = Model.GetPOCalculatedTax.CalcualtedTax ?? 0;
+    string FormatNumber(decimal? number)
+    {
+        if (number is null)
+            return string.Empty;
+        // Round the number to 2 decimal places first
+        number = Math.Round(number.Value, 2);
+
+        // Format number with commas and ensure it's a string
+        return number.Value.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+}
+<table id="po_table" class="po_table table table-striped table-hover" style="width:100%">
+    <thead>
+        <tr class="filterpo">
+            <th class="leftposition" style="width: 216px;">Actions</th>
+            <th class="leftposition" style="width: 161px;">Item #</th>
+            <th class="leftposition" style="width: 143px;">Spec</th>
+            <th class="leftposition" style="width: 143px;">Model</th>
+            <th class="leftposition" style="width: 491px;">Description</th>
+            <th class="rightposition" style="width: 168px;">Qty</th>
+            <th class="leftposition" style="width: 60px; padding-left: 11px !important;">Units</th>
+            <th class="rightposition" style="width: 168px;">Unit Cost</th>
+            <th class="rightposition" style="width: 147px;">Ext. Cost</th>
+            <th class="rightposition" style="width: 88px;">Received</th>
+            <th style="display:none;">POLineItemID</th>
+            <th style="display:none;">IsExceded</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+        @if (Model.POLineItemList.Count() > 0)
+        {
+            var index = 1;
+            foreach (var items in Model.POLineItemList)
+            {
+                var costdetials = (items.Spacing ?? "").Split("^^");
+
+                decimal pocost = 0;
+                decimal bcost = 0;
+                var curr = "";
+
+                if (costdetials.Length > 2)
+                {
+                    decimal.TryParse(costdetials[1], out pocost);
+                    decimal.TryParse(costdetials[2], out bcost);
+                    decimal.TryParse(costdetials[3], out conversionRate);
+                    curr = costdetials[0];
+                }
+                //var pocost = Convert.ToDecimal(costdetials.Split("^^")[1]);
+                //var bcost = Convert.ToDecimal(costdetials.Split("^^")[2]);
+                //var curr = costdetials.Split("^^")[0];
+                //conversionRate = Convert.ToDecimal(costdetials.Split("^^")[3]);
+                var tmppocost = pocost * conversionRate;
+
+                <tr style="background-color:@(Model.isCommitted == "1" ? items.IsExceeded == "1" ? "rgb(238, 238, 238);" : "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.5)")" data-id="@index" data-poitemid="@items.POLineItemID">
+                    <td class="leftposition action_area disable-sort">
+
+                        <a href="javascript:void(0);" class="reorder_row global-popover ui-sortable-handle @(Model.isCommitted == "1" ? "d-none" : "")  sortrow" data-bs-toggle="popover" data-bs-trigger="hover" title="Reorder Item" data-bs-placement="bottom">
+                            <img src="@Url.Content("~/images/NewSort.png")" alt="">
+                        </a>
+
+                        <a href="javascript:void(0);" class="expand_row editpolineitems" id="LineItemEdit_@items.POLineItemID" data-poitemid="@items.POLineItemID" data-uom="@items.UOMID">
+                            <i class="fa-solid fa-caret-right" data-bs-toggle="popover"
+                               data-bs-trigger="hover" title="Edit Item" data-bs-placement="bottom"></i>
+                        </a>
+
+                        <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#fav_approv" id="OpenFabricationHistory" data-lineitemid="@items.POLineItemID">
+                            <i class="fa-solid fa-industry global-popover" data-bs-toggle="popover" data-bs-trigger="hover"
+                               title="Fabrication Approval" data-bs-placement="bottom"></i>
+                        </a>
+
+                        <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#po_exp_note" class="expNotebtn" data-id="@items.POLineItemID">
+                            <i class="fa-solid fa-truck" data-bs-toggle="popover" data-bs-trigger="hover"
+                               title="Expedite" data-bs-placement="bottom"></i>
+                        </a>
+
+                        <a href="javascript:void(0);" class="@(Model.isCommitted == "1" ? "d-none" : "") save_po_lineitems" id="saveitemsdetials_@items.POLineItemID" data-id="@items.POLineItemID">
+                            <i class="fa-regular fa-floppy-disk" data-bs-toggle="popover" data-bs-trigger="hover"
+                               title="Save Item Details" data-bs-placement="bottom"></i>
+                        </a>
+                        @if (items.IsExceeded == "1")
+                        {
+                            if (tmppocost > (bcost + 0.5m))
+                            {
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#committedmodal" class="committedcostdetails" data-costdetails="@items.Spacing" data-li="@items.POLineItemID">
+                                    <i class="fa-solid fa-circle-exclamation" data-bs-toggle="popover" data-bs-trigger="hover"
+                                       title="@($"PO Ext. Cost: {FormatNumber(pocost)} Budget Cost: {FormatNumber(bcost)} {curr}")"
+                                       data-bs-placement="bottom" style="color: #e85b5b;"></i>
+                                </a>
+                            }
+
+                        }
+                        else
+                        {
+                            if (pocost > (bcost + 0.5m))
+                            {
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#committedmodal" class="committedcostdetails" data-costdetails="@items.Spacing" data-li="@items.POLineItemID">
+                                    <i class="fa-solid fa-circle-exclamation" data-bs-toggle="popover" data-bs-trigger="hover"
+                                       title="@($"PO Ext. Cost: {FormatNumber(pocost)} Budget Cost: {FormatNumber(bcost)} {curr}")"
+                                       data-bs-placement="bottom" style="color: #e85b5b;"></i>
+                                </a>
+                            }
+                        }
+
+                        <a href="javascript:void(0);" class="delPOLI @(Model.isCommitted == "1" ? "d-none" : "")" data-poli="@items.POLineItemID">
+                            <i class="fa-solid fa-trash-can " data-bs-toggle="popover" data-bs-trigger="hover"
+                               title="Delete Item" data-bs-placement="bottom">
+                            </i>
+                        </a>
+                    </td>
+                    <td class="leftposition" id="item_@items.POLineItemID">@items.TotalID</td>
+                    <td class="leftposition">@items.SpecNum</td>
+                    <td class="leftposition">@items.Model</td>
+                    <td class="leftposition">@items.ItemDescription </td>
+                    <td class="rightposition Edit_Line">
+                        <input type="text" value="@Math.Round((decimal)items.Quantity, 0)" class="rightposition form-control LineItem_Quantity" data-prevquantity="@Math.Round((decimal)items.Quantity, 0)" id="Quantity_@items.POLineItemID" @(Model.isCommitted == "1" ? "disabled" : "")>
+                    </td>
+
+                    <td class="leftposition uomID" style="padding-left:11px !important;" data-uomid="@items.UOMID">@items.UOM</td>
+
+                    <td class="rightposition Edit_Line_Cost">
+                        <input type="text" value="@FormatNumber(Math.Round(items.Cost.Value, 2))" class="rightposition form-control LineItem_Cost" data-prevcost="@FormatNumber(Math.Round(items.Cost.Value, 2))" id="Cost_@items.POLineItemID" @(Model.isCommitted == "1" ? "disabled" : "")>
+                    </td>
+
+                    <td class="rightposition" id="ExtCost_@items.POLineItemID">@FormatNumber(Convert.ToDecimal(items.Extended))</td>
+                    <td class="rightposition">@items.ReceivedQuantity.Split(".")[0]</td>
+                    <td style="display:none;">@items.POLineItemID|@items.UOMID</td>
+                    <td style="display:none;">@items.IsExceeded</td>
+                </tr>
+
+                index++;
+            }
+        }
+        else
+        {
+
+        }
+
+
+    </tbody>
+
+    <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                Sub Total:<br>
+                Tax:<br>
+                Grand Total:
+            </td>
+            <td>
+                @FormatNumber(toExtended)<br>@FormatNumber(calcualtedTax)<br>@FormatNumber((Math.Round(Convert.ToDecimal(toExtended) + calcualtedTax, 2)))
+            </td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+

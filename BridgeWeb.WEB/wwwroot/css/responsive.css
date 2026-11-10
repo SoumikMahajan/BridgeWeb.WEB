@@ -1,0 +1,327 @@
+@media (min-width: 576px) {
+    .modal {
+        --bs-modal-margin: 4rem;
+    }
+
+    /* .project_editUser .modal-dialog {
+        max-width: 80%;
+    } */
+    .download_files .modal-dialog {
+        max-width: 75%;
+    }
+
+}
+
+@media (min-width: 767px) {
+    .modal-md {
+        --bs-modal-width: 600px;
+    }
+
+    #orderVendor .modal-dialog {
+        max-width: 85%;
+    }
+}
+
+@media (min-width: 992px) {
+
+    /* 05.03.24 header*/
+    .navbar-nav .nav-item:hover .dropdown-menu {
+        display: block;
+    }
+
+    /* 05.03.24 header*/
+}
+
+@media (min-width: 1600px) {}
+
+
+
+
+
+@media (max-width: 1399px) {}
+
+@media (max-width: 1199px) {
+
+    /* 05.03.24 */
+    .add_client_innr_wrp .add_new_consulteant {
+        padding-bottom: 20px;
+    }
+
+    .project_term_btn_wrp,
+    .bridge_sp {
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 991px) {
+    .status_div p {
+        text-align: left;
+    }
+
+    .and_or {
+        margin: 10px 0px 15px;
+        text-align: left;
+    }
+
+    .delete_po_wrp .src_btn_wrp {
+        margin-top: 15px;
+    }
+
+    .section_header {
+        font-size: 16px;
+    }
+
+    .history_btns {
+        margin-top: 5px;
+        margin-bottom: 10px;
+    }
+
+    .budget_summery.master_wrap {
+        padding-right: 10px;
+    }
+
+    .appr_grp {
+        margin-top: 10px;
+    }
+
+    .row_shifter {
+        justify-content: center;
+    }
+
+    .report_input label,
+    .report_input .lblHeader {
+        margin-bottom: 5px;
+    }
+
+    .invoice_search_wrp .row .gray_checkbtn {
+        margin-top: 10px;
+    }
+
+    .payment_search_wrp .solid_teal_btn {
+        margin-top: 10px;
+    }
+
+    .sync_btn_wrp .solid_teal_btn {
+        max-width: 100%;
+        margin-top: 15px;
+        margin-bottom: 20px;
+    }
+
+    /* 08.03.24 */
+    .ms-drop {
+        width: 100%;
+    }
+
+    /* 05.03.24 header*/
+    .navbar-nav .nav-item:not(:last-child)::after {
+        display: none;
+    }
+
+    .navbar-nav .nav-item {
+        padding: 5px 0px;
+    }
+
+    .navbar-nav .dropdown-menu.show {
+        background-color: transparent;
+        border-color: transparent;
+    }
+
+    .navbar-nav .nav-item .nav-link:hover {
+        color: #fff;
+        background-color: #526779;
+    }
+
+    /* 05.03.24 header*/
+
+    /* 18.03.24 */
+    .pfiles .fileinput-button {
+        font-size: 18px;
+    }
+
+    /* 08.04.24 */
+    .search_pyment_wrp.master_wrap {
+        padding: 10px 10px 138px;
+    }
+
+    .add-member-wrap {
+        margin-bottom: 8px;
+    }
+
+    .add_client_wrp {
+        padding-right: 0px;
+    }
+}
+
+@media (max-width: 1024px) {}
+
+@media (max-width: 767px) {
+    .tab_container .nav-link {
+        padding: 2px 10px;
+    }
+
+    .master_wrap.search_purchase_order {
+        padding-right: 10px;
+    }
+
+    .poedti-accordian-wrp .section_header {
+        font-size: 15px;
+    }
+
+    .total_inputs_row {
+        flex-direction: column;
+    }
+
+    .total_inputs_row .total_inputs_col {
+        max-width: 100%;
+    }
+
+    .shift_btns {
+        margin: 0px auto 8px;
+    }
+
+    .row_shifter {
+        flex-direction: column;
+    }
+
+    .row_shifter .frm_fld_wrp {
+        width: 100%;
+    }
+
+    .master_wrap.report_sec {
+        padding: 10px 10px 138px;
+    }
+
+    .master_wrap.budget_sec {
+        padding: 10px 15px 265px;
+    }
+
+    .table-responsive table th {
+        font-size: 13px;
+    }
+
+    .table>:not(caption)>*>* {
+        padding: 5px;
+    }
+
+    .email_top_fld .fld_label {
+        margin-bottom: 8px;
+    }
+
+    .email_top_fld .top_fld_row {
+        margin-bottom: 0px;
+    }
+}
+
+@media (max-width: 575px) {
+    .appro_box_hedr label {
+        font-size: 13px;
+    }
+
+    .project-team-box {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-team-box1 {
+        grid-column: 1;
+    }
+
+    .project_budget_dtls span {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .btm_fxd_sec {
+        bottom: 74px;
+    }
+
+    .master_wrap.budget_sec {
+        padding: 10px 15px 285px;
+    }
+
+    .invoices .frm_wrp,
+    .support_controle_wrp .frm_wrp {
+        padding: 0px;
+    }
+
+    .branding h2 {
+        font-size: 20px;
+    }
+
+    .login_form {
+        margin: 40px auto 40px;
+    }
+
+    .login_footer {
+        padding-top: 20px;
+    }
+
+    /* 05.03.24 */
+    .top_hedr .user_cred a.user_name {
+        margin-right: 10px;
+    }
+
+    .top_hedr .user_cred a {
+        font-size: 14px;
+    }
+
+    /* 06.03.24 */
+    .policy-items .security-title {
+        font-size: 13px;
+    }
+
+    .system_lavel_innr_wrp h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .fileinput-button {
+        font-size: 16px;
+    }
+
+    .file_name p {
+        font-size: 13px;
+    }
+
+    .file_name p a {
+        padding: 0px 10px 0px 10px;
+    }
+
+    /* 18.03.24 */
+    .pfiles .fileinput-button {
+        font-size: 15px;
+    }
+
+    .create_project_sec .frm_wrp {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+}
+
+@media (max-width: 480px) {
+    .st_dtRange {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    /* 08.03.24 */
+    .dataTables_info {
+        margin-bottom: 10px;
+    }
+
+    .dataTables_length,
+    .pagination_wrp {
+        flex-direction: column;
+    }
+
+    .headerbar span,
+    #sortable li {
+        font-size: 10px;
+    }
+
+    .shortable_wrp .headerbar .number span i {
+        margin-left: 5px;
+    }
+}
+
+@media (max-width: 420px) {}

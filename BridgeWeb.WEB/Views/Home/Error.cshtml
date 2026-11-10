@@ -1,0 +1,13 @@
+﻿@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Error";
+}
+
+<div class="show_error_msg">   
+    <div class="alert-danger">
+        <strong>@ViewBag.ErrorMessage</strong>
+    </div>
+
+    <a href="@Url.Content("~/Home/Dashboard")" class="solid_teal_btn">Back to Home</a>
+</div>
+

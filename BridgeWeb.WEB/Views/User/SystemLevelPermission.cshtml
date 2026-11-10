@@ -1,0 +1,960 @@
+﻿@using System.Security.Claims
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpAcc
+@{
+    ViewData["Title"] = "System Level Permission";
+}
+
+<!-- breadcrumb -->
+<div class="bread_cumb_wrp">
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">System Admin</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span>ASSIGN SYSTEM LEVEL PERMISSION</span></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- breadcrumb -->
+<!-- system_level_permission start -->
+<section class="master_wrap">
+    <div class="container-fluid">
+        <div class="system_lavel_innr_wrp">
+            <h2>Welcome @User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value</h2>
+            <div class="policy-items accordion" id="security_accordian">
+                @* <div class="security_wrp">
+                    <button class="security-title" type="button" data-bs-toggle="collapse" aria-expanded="false"
+                            data-bs-target="#collapseOne">
+                        Accountant
+                    </button>
+                    <div id="collapseOne" class="security-detail accordion-collapse collapse"
+                         data-bs-parent="#security_accordian">
+                        <table class="logo_container_table" cellspacing="0" cellpadding="0" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>Security Item</th>
+                                    <th>Assigned</th>
+                                </tr>
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="security_wrp">
+                    <button class="security-title" type="button" data-bs-toggle="collapse" aria-expanded="false"
+                            data-bs-target="#collapseTwo">
+                        Administrator
+                    </button>
+                    <div id="collapseTwo" class="security-detail accordion-collapse collapse"
+                         data-bs-parent="#security_accordian">
+                        <table class="logo_container_table" cellspacing="0" cellpadding="0" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>Security Item</th>
+                                    <th>Assigned</th>
+                                </tr>
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="security_wrp">
+                    <button class="security-title" type="button" data-bs-toggle="collapse" aria-expanded="false"
+                            data-bs-target="#collapseThree">
+                        Buyer
+                    </button>
+                    <div id="collapseThree" class="security-detail accordion-collapse collapse"
+                         data-bs-parent="#security_accordian">
+                        <table class="logo_container_table" cellspacing="0" cellpadding="0" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>Security Item</th>
+                                    <th>Assigned</th>
+                                </tr>
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="security_wrp">
+                    <button class="security-title" type="button" data-bs-toggle="collapse" aria-expanded="false"
+                            data-bs-target="#collapseFour">
+                        Client/Operator
+                    </button>
+                    <div id="collapseFour" class="security-detail accordion-collapse collapse"
+                         data-bs-parent="#security_accordian">
+                        <table class="logo_container_table" cellspacing="0" cellpadding="0" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>Security Item</th>
+                                    <th>Assigned</th>
+                                </tr>
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="security_wrp">
+                    <button class="security-title" type="button" data-bs-toggle="collapse" aria-expanded="false"
+                            data-bs-target="#collapseFive">
+                        Consultant
+                    </button>
+                    <div id="collapseFive" class="security-detail accordion-collapse collapse"
+                         data-bs-parent="#security_accordian">
+                        <table class="logo_container_table" cellspacing="0" cellpadding="0" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>Security Item</th>
+                                    <th>Assigned</th>
+                                </tr>
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="security_wrp">
+                    <button class="security-title" type="button" data-bs-toggle="collapse" aria-expanded="false"
+                            data-bs-target="#collapseSix">
+                        Logistics/Warehousing/Freight Forwarder
+                    </button>
+                    <div id="collapseSix" class="security-detail accordion-collapse collapse"
+                         data-bs-parent="#security_accordian">
+                        <table class="logo_container_table" cellspacing="0" cellpadding="0" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>Security Item</th>
+                                    <th>Assigned</th>
+                                </tr>
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="security_wrp">
+                    <button class="security-title" type="button" data-bs-toggle="collapse" aria-expanded="false"
+                            data-bs-target="#collapseSeven">
+                        Vendor
+                    </button>
+                    <div id="collapseSeven" class="security-detail accordion-collapse collapse"
+                         data-bs-parent="#security_accordian">
+                        <table class="logo_container_table" cellspacing="0" cellpadding="0" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>Security Item</th>
+                                    <th>Assigned</th>
+                                </tr>
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="black_stripe" colspan="2">Accounting</td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Create Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Edit Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Record Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Issue Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Print Cheques</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Invoice</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Read Payment</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bank Account</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="">Bridge Supporter</label></td>
+                                    <td>
+                                        <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div> *@
+            </div>
+        </div>
+    </div>
+</section>
+<!-- system_level_permission end -->

@@ -1,0 +1,164 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@if (Model.SystemLevelPermissions != null)
+{
+    int index = 0;
+    foreach(var item in Model.SystemLevelPermissions)
+    {
+        var Targetusertpe = item.userType;
+        if (item.userType == "Logistics/Warehousing/Freight Forwarder")
+        {
+            Targetusertpe = "LogisticsWarehousing_FreightForwarder";
+        }
+        <div class="security_wrp">
+            <button class="security-title" type="button" data-bs-toggle="collapse" aria-expanded="false"
+                    data-bs-target="#@Targetusertpe">
+                @item.userType
+            </button>
+            <div id="@Targetusertpe" class="security-detail accordion-collapse collapse"
+                 data-bs-parent="#security_accordian">
+                <table class="logo_container_table" cellspacing="0" cellpadding="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <th>Security Item</th>
+                            <th>Assigned</th>
+                        </tr>
+                        @foreach(var group in item.groupTypes)
+                        {
+                            
+                            <tr>
+                                <td class="black_stripe" colspan="2">@group.groupType</td>
+                            </tr>
+                            @foreach (var permission in group.permission)
+                            {
+                                <tr>
+                                    <td><label for="">@permission.description</label></td>
+                                    <td>
+                                        @if (permission.isSelected == "YES")
+                                        {
+                                            <div class="switch-wrapper"><input type="checkbox" id="permission_@index" checked data-flid="@permission.fldID" class="chkScrty"></div>
+                                        }
+                                        else
+                                        {
+                                            <div class="switch-wrapper"><input type="checkbox" id="permission_@index" data-flid="@permission.fldID" class="chkScrty"></div>
+                                        }
+
+                                    </td>
+                                </tr>
+                                index++;
+                            }
+                        }
+                        
+                        
+                        @* <tr>
+                            <td><label for="">Edit Invoice</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Record Payment</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Issue Payment</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Print Cheques</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Read Invoice</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Read Payment</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Bank Account</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Bridge Supporter</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="black_stripe" colspan="2">Accounting</td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Create Invoice</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Edit Invoice</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Record Payment</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Issue Payment</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Print Cheques</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Read Invoice</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Read Payment</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Bank Account</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="">Bridge Supporter</label></td>
+                            <td>
+                                <div class="switch-wrapper"><input type="checkbox" class="chkScrty"></div>
+                            </td>
+                        </tr> *@
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}

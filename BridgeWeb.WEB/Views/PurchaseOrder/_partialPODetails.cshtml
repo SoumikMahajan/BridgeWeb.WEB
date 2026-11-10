@@ -1,0 +1,326 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+@{
+    string FormatNumber(decimal? number)
+    {
+
+        // Round the number to 2 decimal places first
+        number = Math.Round(number.Value, 2);
+
+        // Format number with commas and ensure it's a string
+        return number.Value.ToString("#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+}
+<form action="#" id="po_details_edit_form">
+    @Html.AntiForgeryToken()
+    <div class="row input_row input_row1">
+        <div class="col-lg-3">
+            <label class="invoice_status" id="invstatus">Invoice partially received</label>
+        </div>
+        <div class="col-lg-2">
+            <label class="hide_po">
+                Hide PO for Vendors
+                <input type="checkbox" id="Chk_hidden">
+            </label>
+        </div>
+        <div class="col-lg-6">
+            <button type="button" id="Vendorconfirmation" class="solid_teal_btn">Vendor Confirmation</button>
+            <div class="dropdown bill_comment">
+                <button class="solid_teal_btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="approveforvendor">Accept/Decline on behalf of BILL MULLER</button>
+                <ul class="dropdown-menu w-100">
+                    <li>
+                        <input type="text" class="form-control" placeholder="Enter Comment" id="APRRJCT_Comment">
+                    </li>
+
+                    <li><a href="javascript:void(0);" class="solid_teal_btn" id="confirmforvendor">Accept</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row input_row input_row2 custom_gutter5-x">
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label">Project<span class="req">*</span></label>
+                <select class="form-select" disabled id="Ddl_Project">
+                    <option value="@Model.GetPODetails.Project_ID" selected>@Model.GetPODetails.Project</option>
+
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="frm_fld_wrp nsaqbo">
+                <label for="" class="form-label">
+                    <div>Vendor<span class="req">*</span></div>
+                    <span><a href="javascript:void(0);" id="editVendorContact"><i class="fa-regular fa-pen-to-square"></i></a></span>
+                </label>
+                <select class="multislct" id="txt_VendorName" multiple="multiple" style="width:100%;">
+
+
+                    @if (Model.VendorListNew.Count() > 0)
+                    {
+                        <option value="0">---Select---</option>
+                        foreach (var items in Model.VendorListNew)
+                        {
+                            if (Model.GetPODetails.Vendor_ID == @items.VendorId)
+                            {
+
+                                <option value="@items.VendorId" selected>@items.VendorName</option>
+                            }
+                            else
+                            {
+                                <option value="@items.VendorId">@items.VendorName</option>
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        <option value="@Model.GetPODetails.Vendor_ID" selected>@Model.GetPODetails.VendorName</option>
+                    }
+
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label">
+                    Buyer<span class="req">*</span>
+                </label>
+                <select class="form-select makedisable" id="Ddl_Buyer">
+                    @if (Model.BuyerDetailsDD.Count > 0)
+                    {
+                        <option value="0">--Select Buyer--</option>
+
+                        foreach (var items in Model.BuyerDetailsDD)
+                        {
+                            if (Model.GetPODetails.Buyer_ID == items.BuyerId)
+                            {
+
+                                <option value="@items.BuyerId" selected>@items.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@items.BuyerId">@items.Name</option>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <option value="0">--Select Buyer--</option>
+
+
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label">Currency</label>
+                <input type="text" class="form-control" data-codeid="@Model.GetPODetails.CurrencyId" value="@Model.GetPODetails.CurrencyCode" disabled>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label">Conv. Rate</label>
+                <input type="number" class="form-control right-txt makedisable" id="txt_ConversionRate" value="@Model.GetPODetails.ConversionRate">
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label">Payment Schedule</label>
+                <select class="form-select makedisable " id="txt_Terms">
+
+                    @if (Model.ActiveTermsDDList.Count() > 0)
+                    {
+                        <option value="0">--select Terms--</option>
+
+                        foreach (var item in Model.ActiveTermsDDList)
+                        {
+                            if (item.TermId == Convert.ToInt32(Model.GetPODetails.Terms))
+                            {
+                                <option value="@item.TermId" selected>@item.Terms</option>
+                            }
+                            else
+                            {
+                                <option value="@item.TermId">@item.Terms</option>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <option value="0" selected>--select Terms--</option>
+
+                    }
+
+
+
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row input_row input_row3 custom_gutter5-x">
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label">Ship Via</label>
+                <select class="form-select makedisable " id="Ddl_Shipment">
+                    @if (Model.ShipmentDDList.Count() > 0)
+                    {
+                        <option value="0">--Select Shipping Method--</option>
+                        foreach (var items in Model.ShipmentDDList)
+                        {
+                            if (items.ShipId == Model.GetPODetails.ShipMethod)
+                            {
+                                <option value="@items.ShipId" selected>@items.ShipMode</option>
+                            }
+                            else
+                            {
+                                <option value="@items.ShipId">@items.ShipMode</option>
+
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <option value="0" selected>--Select Shipping Method--</option>
+                    }
+
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label">Shipping Instructions</label>
+                <input type="text" class="form-control makedisable" id="txt_Freight" value="@Model.GetPODetails.Freight">
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label">FOB</label>
+                <input type="text" class="form-control makedisable " id="txt_FOB" value="@Model.GetPODetails.FOB">
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label ">Delivery date</label>
+                <input type="text" class="form-control makedisable" id="txt_ArrivalDate" placeholder="Select Delivery date" value="@(string.IsNullOrEmpty(Model.GetPODetails.ArrivalDate) ? string.Empty : DateTime.Parse(Model.GetPODetails.ArrivalDate).ToString("yyyy-MM-dd"))">
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label">Select Check Back Date</label>
+                <input type="text" class="form-control" id="txt_CheckDate" placeholder="Select Check Back Date" value="@(string.IsNullOrEmpty(Model.GetPODetails.CheckBackDate) ? string.Empty : DateTime.Parse(Model.GetPODetails.CheckBackDate).ToString("yyyy-MM-dd"))">
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label">Reference</label>
+                <input type="text" class="form-control makedisable " id="txt_Remarks" value="@Model.GetPODetails.Remarks">
+            </div>
+        </div>
+    </div>
+
+    <div class="row input_row input_row4 custom_gutter5-x">
+        <div class="col-lg-3">
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label">Ship to</label>
+                <input type="text" id="txt_ShipTo" class="form-control makedisable " value="@Model.GetPODetails.ShipTo">
+            </div>
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label  ">Vendor(C/O):</label>
+                <select class="multislct" id="txt_VendorCO" multiple="multiple" style="width:100%;">
+                    @if (Model.VendorCoList.Count() > 0)
+                    {
+                        <!option value="0">--Select Project--</!option>
+                        foreach (var items in Model.VendorCoList)
+                        {
+                            <!option value="@items.VendorId" @(Model.GetPODetails.VendorCO == items.VendorId ? "selected" : "")>@items.VendorName </!option>
+                        }
+
+                    }
+                    else
+                    {
+                        <!option value="@Model.GetPODetails.VendorCO" selected>@Model.GetPODetails.VendorCareOfName </!option>
+                    }
+
+                </select>
+            </div>
+
+            <div class="frm_fld_wrp">
+                <label for="" class="form-label">Invoice To</label>
+                <input type="text" id="txt_InvoiceTo" value="@Model.GetPODetails.InvoiceTo" class="form-control makedisable ">
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="frm_fld_wrp nsaqbo">
+                <label for="" class="form-label">
+                    <span>Address</span>
+                    <span class="addrchange" data-bs-toggle="modal" data-bs-target="#addresslistmodal" id="addresslist">
+                        Change
+                        Address
+                    </span>
+                </label>
+                <textarea class="form-control vpoaddress makedisable" id="txt_addr1">@Model.GetPODetails.Address1</textarea>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="po_function_btn">
+                <button type="button" class="solid_teal_btn" data-bs-toggle="modal" data-bs-target="#po_taxes" id="btn_openpotax">
+                    <i class="fa-solid fa-bars"></i>PO
+                    Taxes
+                </button>
+                <button type="button" class="solid_teal_btn" data-bs-toggle="modal"
+                        data-bs-target="#popupforTaxComment" id="comment_attachments">
+                    <i class="fa-solid fa-bars"></i>PO Comment and
+                    Attachments
+                </button>
+                <button type="button" class="solid_teal_btn" data-bs-toggle="collapse"
+                        data-bs-target="#po_expedite_note" aria-expanded="false" aria-controls="po_expedite_note" id="getpoexnotes">
+                    <i class="fa-solid fa-bars"></i>PO Expedite
+                    Notes
+                </button>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="calculated_tax_wrp">
+                <div class="frm_fld_wrp">
+                    <label for="" class="form-label">Calculated Tax:</label>
+                    <input type="text" class="form-control" id="txt_CalculatedTaxAmount" value="@(string.IsNullOrWhiteSpace(Model.calculatedTax) ? "0.00" : FormatNumber(Convert.ToDecimal(Model.calculatedTax)))" disabled>
+                </div>
+                <div class="frm_fld_wrp">
+                    <label for="" class="form-label">Notes</label>
+                    <textarea class="form-control notes_tarea" id="txt_Notes">@Model.GetPODetails.Notes</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div id="po_expedite_note" class="accordion-collapse collapse po_exp_note_body">
+    <div class="accordion-body">
+        <div class="row custom_gutter5-x">
+            <div class="col-lg-8">
+                @*    <div class="form-group" style="max-height: 250px; overflow-y: auto;" id="expeditenotelist">
+                      <span class="remove">
+                          <a >x</a>
+                          <span>
+                              STEVEN J (2018.05.09) : test demo
+                              <i class="fa fa-pencil-square-o mrg5L" data-content="test demo" ></i>
+                              <span class="displaynone">
+                                  test demo
+                              </span>
+                          </span>
+                      </span>
+                  </div> *@
+                <div id="poexpeditenotelist"></div>
+
+
+            </div>
+            <div class="col-lg-4">
+                <div class="add_exp_note frm_fld_wrp">
+                    <textarea class="form-control" id="txt_ExpediteNotes"></textarea>
+                    <button type="button" class="solid_teal_btn" id="addExpNote">Add Expedite Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,31 @@
+﻿@model MultipleModel
+
+<table class="table table-striped table-hover" id="line_item_table" style="width:100%">
+    <thead>
+        <tr>
+            <th>Item Description</th>
+            <th>SpecNum</th>
+            <th>Vendor</th>
+            <th>Quantity</th>
+            <th>UOM</th>
+            <th>Cost</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model.POLineItems_POHistoryDetails)
+        {
+            var total = (item.Quantity * item.Cost);
+            <tr>
+                <td>@item.ItemDescription</td>
+                <td>@item.SpecNum</td>
+                <td>@item.Vendor</td>
+                <td>@item.Quantity</td>
+                <td>@item.UOM</td>
+                <td>@item.Cost</td>
+                <td>@total</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

@@ -1,0 +1,37 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+<table class="table table-striped table-hover" id="table_state" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Action</th>
+            <th>State/Prov Name</th>
+            <th>State/Prov Code</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.StateList.Count > 0)
+        {
+            @foreach (var item in Model.StateList)
+            {
+                <tr>
+                    <td class="action_tab">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#editStateProv" class="edit_modal"  data-id="@item.StateID" id="editState_prov">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                        </a>
+                        <i class="fa @(item.Status == false ? "fa-times-circle" : "fa-check-circle")"></i>
+                    </td>
+                    <td>@item.State</td>
+                    <td>@item.StateCode</td>
+                </tr>
+            }
+        }
+        @* else *@
+        @* { *@
+        @*     <tr> *@
+        @*         <td colspan="3" class="empty_cell">No data available in table</td> *@
+        @*     </tr> *@
+        @* } *@
+        
+    </tbody>
+</table>

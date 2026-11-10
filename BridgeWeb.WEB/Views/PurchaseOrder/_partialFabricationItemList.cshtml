@@ -1,0 +1,156 @@
+﻿@model BridgeWeb.Domain.Model.MultipleModel
+
+@{
+    var Usertype = Model.UserType;
+    var IsManager = Model.IsManager;
+    var hideOnBehalfOf = (Usertype == "3" || Usertype == "2") ? "" : "display:none;";
+    var disableFabpath = (Usertype == "3" || Usertype == "2" || IsManager == "1") ? "" : "disabled";
+}
+
+
+<table class="table itemapporval">
+    <thead>
+        <tr>
+            <td>Action</td>
+            <td>Type</td>
+            <td>Status</td>
+            <td>Approval Desc.</td>
+            <td>PO #</td>
+            <td>Item Desc.</td>
+            <td>Spec</td>
+            <td style="@hideOnBehalfOf">On behalf of</td>
+            <td>Comment</td>
+            <td>Attachments</td>
+            <td>Approval path</td>
+            <td></td>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model.FabricationDataDTO)
+        {
+            var id = item.ItemApprovalID;
+            var approvedby = item.TotalNumberOfApproval;
+            var requiredby = item.NumberToApprovPO;
+            var alreadyapproved = item.TotalNumberOfLevelApproval;
+            var TotallevelApprover = item.NumberToApprovedLevel;
+            var latestStatus = string.IsNullOrEmpty(item.LatestStatus) || item.LatestStatus == "Added" ? "Required" : item.LatestStatus;
+
+            // Determine lhtm status
+            var lhtm = (approvedby == "0" && requiredby == "0" && latestStatus == "Approved") ?
+                        "(All Approved)" :
+                        (latestStatus == "Required" && !string.IsNullOrEmpty(TotallevelApprover)) ?
+                        $" (0/1) ({latestStatus})" :
+                        $" ({approvedby}/{requiredby}) ({latestStatus})";
+
+            // Determine lhtm1 status
+            var lhtm1 = (string.IsNullOrEmpty(TotallevelApprover) && (latestStatus == "Required" || latestStatus == "Rejected")) ?
+                        $" (Level 0/{alreadyapproved})" :
+                        (latestStatus == "Approved" && string.IsNullOrEmpty(TotallevelApprover)) ?
+                        $" (Level {alreadyapproved}/{alreadyapproved})" :
+                        $" (Level {TotallevelApprover}/{alreadyapproved})";
+
+            
+
+
+            <tr>
+                <td>
+                    <select class="form-select ddl_actiontype_change" id="ddl_actiontype_@id" data-polineiteam="@id">
+                        <option value="0" selected>---Select Action---</option>
+                        @foreach (var allowdAction in item.AllowdAction)
+                        {
+                            <option value="@allowdAction.fldid">@allowdAction.actiontype</option>
+                        }
+                    </select>
+                    <input style="display:none;" autocomplete="off" type="text" name="name" value="" class="form-control fabdate mt-2" placeholder="YYYY.MM.DD" id="datepicker_@id"/>
+                </td>
+                <td>@item.ItemName</td>
+                <td>@lhtm@lhtm1</td>
+                <td>
+                    @item.Description
+                    <a href="#" class="editFabDes" data-id="@id" data-description="@item.Description" data-type="@item.ItemName">
+                        <i class="fa-regular fa-pen-to-square ms-1 pointer" style="color: #728fa6;"></i>
+                    </a>
+                </td>
+                <td>@item.TotalPOID</td>
+                <td>@item.Remarks</td>
+                <td>@item.SpecNum</td>
+                <td style="@hideOnBehalfOf">
+                    @if (IsManager == "1")
+                    {
+                        <select class="form-select selectuser" id="ddl_selectuser_@id">
+                            <option value="0">---Select User---</option>
+                        </select>
+                    }
+                </td>
+                <td>
+                    <input type="text" class="form-control" id="textarea_@id" autocomplete="off">
+                </td>
+                <td>
+                    <input type="file" multiple name="" id="file_@id">
+                </td>
+                <td>
+                    <select class="form-select ddl_approvalpath_change" id="ddl_grpname_@id" data-id="@id" data-item="@item.POLineItemID" @disableFabpath>
+                        <!option value="0">---Select Action---</!option>
+                        @foreach (var FabPath in item.FabPathList)
+                        {                           
+                            <!option value="@FabPath.Id" selected="@(item.FabPathId.ToString() == FabPath.Id.ToString() ? "selected" : null)">@FabPath.Name</!option>
+                        }                       
+                    </select>
+                </td>
+                <td class="save_row">
+                    <button type="button" class="solid_teal_btn saveData" data-approval="@id" data-item="@item.POLineItemID">Save</button>
+                    <i class="fa-solid fa-circle-exclamation ms-1 openindvfabhistory" style="cursor:pointer;" data-approval="@id"></i>
+                </td>
+            </tr>
+        }
+        @* <tr>
+            <td>
+                <select class="form-select">
+                    <option value="0" selected>---Select Action---</option>
+                    <option value="1">Add comment</option>
+                    <option value="2">Amend</option>
+                </select>
+            </td>
+            <td>Seaming Plan</td>
+            <td>(All Approved) (Level 0/0)</td>
+            <td>
+                Seaming Plan
+                <a href="#" data-bs-toggle="modal" data-bs-target="#desc_update">
+                    <i class="fa-regular fa-pen-to-square ms-1 pointer" style="color: #728fa6;"
+                       data-bs-toggle="popover" data-bs-content="Edit Description" data-bs-trigger="hover"
+                       id="edit_descrip_modal"></i>
+                </a>
+            </td>
+            <td>1002-0006B</td>
+            <td>Carpet  Guestroom </td>
+            <td>CPT-01 </td>
+            <td>
+                <select class="form-select">
+                    <option value="0" selected>---Select Action---</option>
+                    <option value="1">Add comment</option>
+                    <option value="2">Amend</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" class="form-control">
+            </td>
+            <td>
+                <input type="file" name="" id="">
+            </td>
+            <td>
+                <select class="form-select">
+                    <option value="0" selected>---Select Action---</option>
+                    <option value="1">Add comment</option>
+                    <option value="2">Amend</option>
+                </select>
+            </td>
+            <td class="save_row">
+                <button type="button" class="solid_teal_btn">Save</button>
+                <i class="fa-solid fa-circle-exclamation ms-1" data-bs-toggle="modal"
+                   data-bs-target="#fev_approv_history"></i>
+            </td>
+        </tr>  *@      
+    </tbody>
+</table>
+

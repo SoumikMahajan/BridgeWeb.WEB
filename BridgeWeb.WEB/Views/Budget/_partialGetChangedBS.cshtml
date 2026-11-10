@@ -1,0 +1,39 @@
+﻿@using BridgeWeb.Domain.Model.Dto.Budget
+@model BridgeWeb.Domain.Model.MultipleModel
+
+ @{
+    var ChangedBSList = Model.ChangedBSList ?? new List<LOG_BudgetSectionDTO>();
+ }
+
+<table class="budget_hist_table table table-striped table-hover" id="changedBStable" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Field</th>
+            <th>Old Value</th>
+            <th>New Value</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (ChangedBSList.Any())
+        {
+            @if (ChangedBSList[0].Sectionnumber?.Trim() != ChangedBSList[1].Sectionnumber?.Trim())
+            {
+                <tr>
+                    <td>Section Number</td>
+                    <td>@ChangedBSList[0].Sectionnumber</td>
+                    <td>@ChangedBSList[1].Sectionnumber</td>
+                </tr>
+            }
+            @if (ChangedBSList[0].Name?.Trim() != ChangedBSList[1].Name?.Trim())
+            {
+                <tr>
+                    <td>Section Name</td>
+                    <td>@ChangedBSList[0].Name</td>
+                    <td>@ChangedBSList[1].Name</td>
+                </tr>
+            }
+
+        }
+    </tbody>
+</table>
